@@ -1,0 +1,11 @@
+{
+  "name": "rescue-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Rescue — Latvia's pick-your-own anti-waste grocery. Concept site.",
+  "type": "commonjs",
+  "main": "server.js",
+  "engines": { "node": ">=18" },
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "^4.21.2" }
+}
