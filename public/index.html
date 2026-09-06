@@ -151,6 +151,7 @@
   .acct { padding: 18px; overflow-y: auto; flex: 1; }
   .acct__lead { color: var(--ink-70); font-size: 0.92rem; }
   .acct__fine { margin-top: 14px; font: 400 12px/1.5 var(--f-mono); color: var(--ink-70); }
+  .acct__error { color: var(--maroon); font-weight: 700; }
   #googleSignInDiv { display: flex; justify-content: center; min-height: 40px; }
   .field { display: block; margin: 12px 0; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; }
   .field input, .field select { width: 100%; margin-top: 6px; padding: 10px; border: var(--edge); background: #fff; color: var(--ink); font: 500 14px var(--f-body); border-radius: 3px; }
@@ -1068,6 +1069,11 @@
         <label class="field"><span data-i18n="account.email">Email</span>
           <input type="email" id="acctEmail" autocomplete="email" required>
         </label>
+        <label class="field"><span data-i18n="account.password">Password</span>
+          <input type="password" id="acctPassword" autocomplete="current-password" minlength="4" required>
+        </label>
+        <p class="acct__fine" data-i18n="account.passwordhint">New here? This sets your password. Already registered with this email? Enter it to sign back in.</p>
+        <p class="acct__fine acct__error" id="acctPasswordError" hidden></p>
       </div>
 
       <div class="acct__group">
@@ -1098,9 +1104,9 @@
         <p class="acct__fine" data-i18n="account.dietnote">Filters what the shelf and your emails suggest — no meat items if vegetarian, no animal products at all if vegan.</p>
       </div>
 
-      <button class="btn btn--solid btn--block" type="submit" data-i18n="account.create">Create account</button>
+      <button class="btn btn--solid btn--block" type="submit" data-i18n="account.continue">Continue</button>
     </form>
-    <p class="acct__fine" data-i18n="account.fine">No password needed — this demo profile is stored on this device only.</p>
+    <p class="acct__fine" data-i18n="account.fine">This demo login is stored on this device only — your password isn't sent anywhere or checked by a real server.</p>
   </div>
 
   <div class="acct" id="acctSignedIn" hidden>
@@ -1220,7 +1226,8 @@
       "ticker.lead": "SAME FOOD · 30% LESS · ~€1,400 A YEAR BACK", "ticker.rejected": "REJECTED:", "ticker.was": "WAS",
       "search.none": "No products match", "account.welcome": "Welcome, {name}!",
       "account.mailsent": "Check your inbox — we just sent you a welcome email.",
-      "account.mailerr": "Account created, but the welcome email couldn't be sent."
+      "account.mailerr": "Account created, but the welcome email couldn't be sent.",
+      "account.wrongpass": "Wrong password for this email.", "account.welcomeback": "Welcome back, {name}!"
     },
     lv: {
       "tab.good": "Pilnīgi labs", "tab.thirty": "Tie 30%", "tab.store": "Veikals", "tab.shop": "Pirkt", "tab.intake": "Plūsma", "tab.comein": "Ienāc",
@@ -1323,7 +1330,9 @@
       "account.googleerr": "Neizdevās nolasīt Google atbildi — izmanto formu zemāk.",
       "account.name": "Vārds", "account.email": "E-pasts",
       "account.newsletter": "Sūtīt man iknedēļas jaunumus — kas ir lēts, kas ir jauns",
-      "account.create": "Izveidot kontu", "account.fine": "Parole nav vajadzīga — šis demo profils tiek glabāts tikai šajā ierīcē.",
+      "account.create": "Izveidot kontu", "account.continue": "Turpināt", "account.fine": "Šī demo pieteikšanās tiek glabāta tikai šajā ierīcē — tava parole nekur netiek sūtīta un to nepārbauda īsts serveris.",
+      "account.password": "Parole", "account.passwordhint": "Šeit pirmo reizi? Tas iestata tavu paroli. Jau reģistrējies ar šo e-pastu? Ievadi to, lai pieteiktos atkal.",
+      "account.wrongpass": "Nepareiza parole šim e-pastam.", "account.welcomeback": "Ar atgriešanos, {name}!",
       "account.saved": "ietaupīts kopā", "account.orders": "rezervācijas", "account.signout": "Iziet",
       "account.manage": "Pārvaldīt", "account.diet": "Uzturs", "account.future": "Tavs turpmākais profils",
       "account.dietnote": "Filtrē, ko iesakām plauktā un vēstulēs — bez gaļas, ja veģetārietis; bez dzīvnieku izcelsmes produktiem, ja vegāns.",
@@ -1442,7 +1451,9 @@
       "account.googleerr": "Impossible de lire la réponse Google — utilisez le formulaire ci-dessous.",
       "account.name": "Nom", "account.email": "E-mail",
       "account.newsletter": "M'envoyer le rayon de la semaine — ce qui est pas cher, ce qui est nouveau",
-      "account.create": "Créer un compte", "account.fine": "Aucun mot de passe requis — ce profil de démo est stocké uniquement sur cet appareil.",
+      "account.create": "Créer un compte", "account.continue": "Continuer", "account.fine": "Cette connexion de démo est stockée uniquement sur cet appareil — votre mot de passe n'est envoyé nulle part et n'est vérifié par aucun vrai serveur.",
+      "account.password": "Mot de passe", "account.passwordhint": "Nouveau ici ? Ceci définit votre mot de passe. Déjà inscrit avec cet e-mail ? Entrez-le pour vous reconnecter.",
+      "account.wrongpass": "Mot de passe incorrect pour cet e-mail.", "account.welcomeback": "Content de vous revoir, {name} !",
       "account.saved": "économisés au total", "account.orders": "réservations", "account.signout": "Se déconnecter",
       "account.manage": "Gérer", "account.diet": "Régime", "account.future": "Votre futur profil",
       "account.dietnote": "Filtre ce qu'on vous suggère au rayon et par e-mail — plus de viande si végétarien, plus aucun produit animal si végan.",
@@ -1962,19 +1973,52 @@
   try { basket = JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) { basket = {}; }
   function saveBasket() { try { localStorage.setItem(LS, JSON.stringify(basket)); } catch (e) {} }
 
-  /* ---- account: local demo profile (localStorage-only, no real backend on this static site) ---- */
-  var ACCT_LS = "rescue.account.v1";
+  /* ---- account: local demo profile (localStorage-only, no real backend on this static site).
+     Accounts live in a small directory keyed by email instead of one always-on slot, so signing
+     out and back in with the right password gets you your own data back. The password itself is
+     only ever SHA-256'd and compared inside this browser — never sent anywhere, never verified by
+     a real server. That's still zero real security (anyone with devtools can read the hash), it
+     just makes the demo behave like a login instead of a single profile that resets on sign-out. */
+  var ACCTS_LS = "rescue.accounts.v1", SESSION_LS = "rescue.session.v1";
+  function loadAccountsDir() { try { return JSON.parse(localStorage.getItem(ACCTS_LS)) || {}; } catch (e) { return {}; } }
+  function saveAccountsDir(dir) { try { localStorage.setItem(ACCTS_LS, JSON.stringify(dir)); } catch (e) {} }
+  function hashPassword(pw) {
+    try {
+      return crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw)).then(function (buf) {
+        return Array.prototype.map.call(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+      });
+    } catch (e) { return Promise.resolve(null); }
+  }
   var account = null;
-  try { account = JSON.parse(localStorage.getItem(ACCT_LS)) || null; } catch (e) { account = null; }
-  function saveAccount() { try { localStorage.setItem(ACCT_LS, JSON.stringify(account)); } catch (e) {} }
+  (function migrateAndLoadAccount() {
+    var dir = loadAccountsDir();
+    // one-time migration from the old single-account slot, so early testers don't lose their demo profile
+    try {
+      var legacy = JSON.parse(localStorage.getItem("rescue.account.v1"));
+      if (legacy && legacy.email && !dir[legacy.email.toLowerCase()]) { dir[legacy.email.toLowerCase()] = legacy; saveAccountsDir(dir); }
+      if (legacy) localStorage.removeItem("rescue.account.v1");
+    } catch (e) {}
+    var activeEmail = null;
+    try { activeEmail = localStorage.getItem(SESSION_LS); } catch (e) {}
+    if (activeEmail && dir[activeEmail]) account = dir[activeEmail];
+  })();
+  function saveAccount() {
+    if (!account) { try { localStorage.removeItem(SESSION_LS); } catch (e) {} return; }
+    var dir = loadAccountsDir();
+    dir[account.email.toLowerCase()] = account;
+    saveAccountsDir(dir);
+    try { localStorage.setItem(SESSION_LS, account.email.toLowerCase()); } catch (e) {}
+  }
   function signInAccount(data) {
-    var prior = (account && account.email === data.email) ? account : null;
+    var dir = loadAccountsDir();
+    var prior = dir[(data.email || "").toLowerCase()] || null;
     account = {
       name: data.name || (prior && prior.name) || "",
       email: data.email || (prior && prior.email) || "",
       avatar: data.avatar || (prior && prior.avatar) || null,
       avatarVeg: data.avatarVeg || pendingVeggie || (prior && prior.avatarVeg) || null,
       via: data.via || "local",
+      passwordHash: data.passwordHash !== undefined ? data.passwordHash : (prior ? prior.passwordHash : null),
       newsletter: data.newsletter != null ? data.newsletter : (prior ? prior.newsletter : true),
       alertsRestock: data.alertsRestock != null ? data.alertsRestock : (prior ? prior.alertsRestock : true),
       newsletterCSR: data.newsletterCSR != null ? data.newsletterCSR : (prior ? prior.newsletterCSR : false),
@@ -1999,7 +2043,9 @@
         .catch(function () { toast(t("account.mailerr", "Account created, but the welcome email couldn't be sent.")); });
     }
   }
-  function signOutAccount() { account = null; saveAccount(); renderAccount(); }
+  // signing out only clears the active session — the account itself stays in the directory so its
+  // password can sign back into it later
+  function signOutAccount() { account = null; try { localStorage.removeItem(SESSION_LS); } catch (e) {} renderAccount(); }
   function renderAccount() {
     var out = $("#acctSignedOut"), inn = $("#acctSignedIn");
     var btn = $("#profileBtn"), icon = $("#profileBtnIcon"), btnAv = $("#profileBtnAvatar");
@@ -2030,6 +2076,7 @@
     } else {
       out.hidden = false; inn.hidden = true;
       $("#acctForm").reset(); $("#acctNewsletter").checked = true; $("#acctAlerts").checked = true;
+      if ($("#acctPasswordError")) $("#acctPasswordError").hidden = true;
       pendingVeggie = null;
       $$(".acct__veggies").forEach(function (el) { el.innerHTML = veggiePickerHTML(null); });
       var apv = $("#acctAvatarPreview");
@@ -5497,9 +5544,28 @@
   $("#acctDiet2").addEventListener("change", function () { if (account) { account.diet = this.value; saveAccount(); renderGrid(); } });
   $("#acctForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    var name = $("#acctName").value.trim(), email = $("#acctEmail").value.trim();
-    if (!name || !email) return;
-    signInAccount({ name: name, email: email, newsletter: $("#acctNewsletter").checked, alertsRestock: $("#acctAlerts").checked, newsletterCSR: $("#acctCSR").checked, diet: $("#acctDiet").value, via: "local" });
+    var name = $("#acctName").value.trim(), email = $("#acctEmail").value.trim(), password = $("#acctPassword").value;
+    var errEl = $("#acctPasswordError");
+    if (errEl) errEl.hidden = true;
+    if (!name || !email || !password) return;
+    var prior = loadAccountsDir()[email.toLowerCase()] || null;
+    hashPassword(password).then(function (hash) {
+      // returning email with a password already set: check it rather than silently overwriting the account
+      if (prior && prior.passwordHash) {
+        if (prior.passwordHash !== hash) {
+          if (errEl) { errEl.textContent = t("account.wrongpass", "Wrong password for this email."); errEl.hidden = false; }
+          else toast(t("account.wrongpass", "Wrong password for this email."));
+          return;
+        }
+        account = prior; pendingVeggie = null;
+        saveAccount(); renderAccount(); closeProfileDrawer();
+        toast(tp("account.welcomeback", { name: (account.name || account.email).split(" ")[0] }));
+        return;
+      }
+      // new email, or an existing one with no password yet (created via Google or the quick club
+      // form) — this sets/claims the password going forward
+      signInAccount({ name: name, email: email, passwordHash: hash, newsletter: $("#acctNewsletter").checked, alertsRestock: $("#acctAlerts").checked, newsletterCSR: $("#acctCSR").checked, diet: $("#acctDiet").value, via: "local" });
+    });
   });
   $("#clubJoinForm").addEventListener("submit", function (e) {
     e.preventDefault();
