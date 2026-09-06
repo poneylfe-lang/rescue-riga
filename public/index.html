@@ -2017,7 +2017,7 @@
   /* ---- Google Sign-In (Google Identity Services) — set GOOGLE_CLIENT_ID to a real OAuth Web Client
      ID from Google Cloud Console (APIs & Services → Credentials) to switch this on. Until then the
      button stays hidden and the form below is the only way to create a profile. ---- */
-  var GOOGLE_CLIENT_ID = "";
+  var GOOGLE_CLIENT_ID = "805943838344-4n7icpq0umlh0cq70ti1br404fbg9go7.apps.googleusercontent.com";
   function handleGoogleCredential(resp) {
     try {
       var payload = JSON.parse(decodeURIComponent(atob(resp.credential.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")).split("").map(function (c) {
