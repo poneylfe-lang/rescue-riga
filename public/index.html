@@ -167,14 +167,21 @@
   .acct__stats span { font: 600 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-70); }
   .field__label { display: block; margin: 4px 0 8px; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-70); }
   /* signed-in drawer: the veggie picker is discreet too — only surfaces on hovering your own photo */
-  .acct__veggies-reveal { max-height: 0; margin: 0 !important; opacity: 0; overflow: hidden; transition: opacity 0.15s ease, max-height 0.2s ease; }
-  .acct__avatar-zone:hover .acct__veggies-reveal, .acct__avatar-zone:focus-within .acct__veggies-reveal { max-height: 160px; opacity: 1; margin: 4px 0 8px !important; }
+  /* grid-rows 0fr→1fr instead of a fixed max-height in px — the old fixed number was sized for one
+     drawer width and clipped the top of the top row / bottom of the bottom row at any other width
+     (a wider drawer means wider, taller circles from `aspect-ratio:1`). This variant sizes to
+     whatever the content actually needs, at any circle size. */
+  .acct__veggies-reveal { display: grid; grid-template-rows: 0fr; opacity: 0; transition: opacity 0.15s ease, grid-template-rows 0.2s ease; }
+  .acct__veggies-reveal-inner { overflow: hidden; min-height: 0; }
+  .acct__avatar-zone:hover .acct__veggies-reveal, .acct__avatar-zone:focus-within .acct__veggies-reveal { grid-template-rows: 1fr; opacity: 1; }
   .acct__avatar-zone .acct__id { cursor: pointer; }
   .acct__veggies { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
-  .veggie-opt { padding: 6px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--card); cursor: pointer; aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; }
+  /* background matches the FIG_BG rect baked into every veggie SVG exactly (#efe7d6) — any other
+     value here shows up as a mismatched patch around the icon's own background square.
+     Hover/selected are the same thicker black ring, never a color change, so that patch can never appear. */
+  .veggie-opt { padding: 6px; border: 1.5px solid var(--ink); border-radius: 50%; background: #efe7d6; cursor: pointer; aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; transition: border-width 0.1s ease; }
   .veggie-opt svg { width: 140%; height: 140%; }
-  .veggie-opt:hover { background: var(--paper-2); }
-  .veggie-opt.is-selected { background: var(--mustard); box-shadow: 0 0 0 2px var(--ink); }
+  .veggie-opt:hover, .veggie-opt.is-selected { border-width: 3px; }
   .acct__avatar-hint { color: var(--ink-70); font: 500 12.5px/1.3 var(--f-body); }
 
   /* ---- sign-up form: "or" divider + logical groups instead of one long list ---- */
@@ -1069,8 +1076,10 @@
           <span class="acct__avatar" id="acctAvatarPreview"></span>
           <div><strong data-i18n="account.pickavatar_short">Club card picture</strong><br><span class="acct__avatar-hint" data-i18n="account.pickavatar_hint">Hover to pick a wonky veg</span></div>
         </div>
-        <span class="field__label acct__veggies-reveal" data-i18n="account.pickavatar">Pick your Club card picture — a wonky veg, like the rest of the shelf</span>
-        <div class="acct__veggies acct__veggies-reveal"></div>
+        <div class="acct__veggies-reveal"><div class="acct__veggies-reveal-inner">
+          <span class="field__label" data-i18n="account.pickavatar">Pick your Club card picture — a wonky veg, like the rest of the shelf</span>
+          <div class="acct__veggies"></div>
+        </div></div>
       </div>
 
       <div class="acct__group">
@@ -1126,8 +1135,10 @@
         <span class="acct__avatar" id="acctAvatar"></span>
         <div><strong id="acctDisplayName"></strong><br><span class="acct__email" id="acctDisplayEmail"></span></div>
       </div>
-      <span class="field__label acct__veggies-reveal" data-i18n="account.pickavatar">Pick your Club card picture — a wonky veg, like the rest of the shelf</span>
-      <div class="acct__veggies acct__veggies-reveal"></div>
+      <div class="acct__veggies-reveal"><div class="acct__veggies-reveal-inner">
+        <span class="field__label" data-i18n="account.pickavatar">Pick your Club card picture — a wonky veg, like the rest of the shelf</span>
+        <div class="acct__veggies"></div>
+      </div></div>
     </div>
 
     <div class="acct__group">
@@ -2098,12 +2109,12 @@
       pendingVeggie = null;
       $$(".acct__veggies").forEach(function (el) { el.innerHTML = veggiePickerHTML(null); });
       var apv = $("#acctAvatarPreview");
-      if (apv) { apv.style.backgroundImage = ""; apv.innerHTML = genericAvatarHTML(); }
+      if (apv) { apv.style.backgroundImage = ""; apv.style.background = ""; apv.innerHTML = genericAvatarHTML(); }
       btn.classList.remove("profile-btn--signed"); icon.removeAttribute("hidden"); btnAv.hidden = true;
       // popover still works when signed out — a generic avatar + a plain-language placeholder,
       // and "Create account" instead of "Manage / Sign out"
       var pav = $("#popoverAvatar");
-      pav.style.backgroundImage = ""; pav.textContent = "";
+      pav.style.backgroundImage = ""; pav.style.background = ""; pav.textContent = "";
       pav.innerHTML = genericAvatarHTML();
       $("#popoverName").textContent = t("account.future", "Your future profile");
       $("#popoverSaved").textContent = "";
@@ -2315,7 +2326,7 @@
       pendingVeggie = id;
       $$(".acct__veggies").forEach(function (el) { el.innerHTML = veggiePickerHTML(pendingVeggie); });
       var prev = $("#acctAvatarPreview");
-      if (prev) { prev.style.backgroundImage = ""; prev.innerHTML = pendingVeggie ? veggieSVG(pendingVeggie) : genericAvatarHTML(); }
+      if (prev) { prev.style.backgroundImage = ""; prev.style.background = pendingVeggie ? "#efe7d6" : ""; prev.innerHTML = pendingVeggie ? veggieSVG(pendingVeggie) : genericAvatarHTML(); }
     }
   }
   function avatarMarkup(acct) {
@@ -2324,9 +2335,11 @@
   }
   function applyAvatar(el, acct) {
     var vegHtml = avatarMarkup(acct);
-    if (vegHtml) { el.style.backgroundImage = ""; el.innerHTML = vegHtml; }
-    else if (acct.avatar) { el.style.backgroundImage = "url(" + acct.avatar + ")"; el.innerHTML = ""; }
-    else { el.style.backgroundImage = ""; el.textContent = (acct.name || acct.email || "?").trim().charAt(0).toUpperCase(); }
+    // veggie icons carry their own #efe7d6 background rect (FIG_BG) — match it here too, or the
+    // element's default mustard tile shows through as a mismatched ring around the icon
+    if (vegHtml) { el.style.backgroundImage = ""; el.style.background = "#efe7d6"; el.innerHTML = vegHtml; }
+    else if (acct.avatar) { el.style.background = ""; el.style.backgroundImage = "url(" + acct.avatar + ")"; el.innerHTML = ""; }
+    else { el.style.background = ""; el.style.backgroundImage = ""; el.textContent = (acct.name || acct.email || "?").trim().charAt(0).toUpperCase(); }
   }
   function bbText(days) {
     var pre = t("bb.pre", "Best before:");
