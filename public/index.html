@@ -175,7 +175,7 @@
   .acct__veggies-reveal-inner { overflow: hidden; min-height: 0; }
   .acct__avatar-zone:hover .acct__veggies-reveal, .acct__avatar-zone:focus-within .acct__veggies-reveal { grid-template-rows: 1fr; opacity: 1; }
   .acct__avatar-zone .acct__id { cursor: pointer; }
-  .acct__veggies { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+  .acct__veggies { display: grid; grid-template-columns: repeat(4, minmax(0, 56px)); justify-content: center; gap: 8px; margin-bottom: 16px; }
   /* background matches the FIG_BG rect baked into every veggie SVG exactly (#efe7d6) — any other
      value here shows up as a mismatched patch around the icon's own background square.
      Hover/selected are the same thicker black ring, never a color change, so that patch can never appear. */
