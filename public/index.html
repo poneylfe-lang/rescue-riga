@@ -358,10 +358,8 @@
   /* the mugshot is a studio-lit product photo, not a dark box: light seamless backdrop,
      a mustard exhibit tag pinned to the corner, a flat navy placard for the charge/plea. */
   .mugshot { position: relative; margin: 0; border: var(--edge); border-radius: var(--r); overflow: hidden; background: radial-gradient(120% 100% at 50% 10%, #f4eee1, #ded3ba); min-height: 400px; box-shadow: var(--shadow-lg); }
-  .mugshot__stage { position: absolute; inset: 0; }
-  .mugshot__stage canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; display: block; touch-action: pan-y; cursor: grab; }
-  .mugshot__stage:active canvas { cursor: grabbing; }
-  .mugshot__spinner { position: absolute; inset: 0; display: grid; place-items: center; font: 700 11px/1 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-70); }
+  .mugshot__art { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 64px 28px 116px 60px; }
+  .mugshot__art svg { width: 100%; height: 100%; max-width: 260px; overflow: visible; }
   .mugshot__tag { position: absolute; z-index: 2; right: 14px; top: 14px; display: inline-block; white-space: nowrap; font: 800 11px/1.3 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--spruce); background: var(--mustard); border: var(--edge); border-radius: var(--pill); padding: 9px 15px; text-align: right; }
   .mugshot__scale { position: absolute; left: 14px; top: 16px; bottom: 116px; display: flex; flex-direction: column; justify-content: space-between; font: 700 10px/1 var(--f-mono); color: var(--ink-70); pointer-events: none; }
   .mugshot__scale span { position: relative; padding-left: 17px; }
@@ -370,10 +368,6 @@
   .mugshot__charge { font: 800 10px/1 var(--f-mono); letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
   .mugshot__crime { font: 800 clamp(1.5rem, 3.4vw, 2.15rem)/1.02 var(--f-display); letter-spacing: -0.02em; text-transform: uppercase; color: var(--mustard); }
   .mugshot__plea { font: 800 12px/1.2 var(--f-mono); letter-spacing: 0.04em; text-transform: uppercase; color: rgba(255, 255, 255, 0.78); }
-  .mugshot__fallback { position: absolute; inset: 0; display: none; }
-  .mugshot__fallback svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .mugshot.is-fallback .mugshot__stage, .mugshot.is-fallback .mugshot__scale { display: none; }
-  .mugshot.is-fallback .mugshot__fallback { display: block; }
 
   @media (max-width: 860px) {
     .rejected__head-in { grid-template-columns: 1fr; }
@@ -890,22 +884,20 @@
           <h3 data-i18n="rej.h3">Rejected for:</h3>
           <p data-i18n="rej.intro">Six real lots on the shelf this week. None of it is off. All of it was refused.</p>
         </div>
-        <figure class="mugshot" id="rejMug" role="img" aria-label="A hyper-real two-legged carrot, studio-lit and slowly turning against a police-lineup backdrop. Charge: abnormal curvature. Plea: delicious.">
+        <figure class="mugshot" id="rejMug" role="img" aria-label="A flat illustration of a two-legged carrot on a police-lineup backdrop. Charge: abnormal curvature. Plea: delicious.">
           <p class="mugshot__tag" data-i18n="rej.exhibit">Exhibit A · the two-legged carrot</p>
-          <div class="mugshot__stage" id="rejStage">
-            <div class="mugshot__spinner" id="rejSpinner" data-i18n="rej.developing">Developing…</div>
-          </div>
           <div class="mugshot__scale" aria-hidden="true"><span>70</span><span>60</span><span>50</span><span>40</span></div>
-          <div class="mugshot__fallback" aria-hidden="true">
-            <svg viewBox="0 0 260 320" preserveAspectRatio="xMidYMid slice">
-              <rect width="260" height="320" fill="#ded3ba" />
-              <g stroke="rgba(23,19,14,0.1)" stroke-width="1">
-                <line x1="0" y1="64" x2="260" y2="64" /><line x1="0" y1="128" x2="260" y2="128" />
-                <line x1="0" y1="192" x2="260" y2="192" /><line x1="0" y1="256" x2="260" y2="256" />
-              </g>
-              <g transform="translate(130 160)">
-                <path d="M-8 -96 C 12 -86, 10 -52, 3 -18 C 28 8, 38 52, 16 100 C 6 120, -6 120, -13 102 C -34 58, -24 10, 0 -13 C -10 -44, -24 -76, -13 -96 C -10 -104, -5 -104, -8 -96 Z" fill="#df7a24" stroke="#17130e" stroke-width="3" />
-                <path d="M-8 -96 c -10 -13 -3 -29 8 -34 M3 -90 c 5 -16 18 -21 26 -16 M-3 -93 c -3 -18 8 -29 18 -29" fill="none" stroke="#3f8f45" stroke-width="6" stroke-linecap="round" />
+          <div class="mugshot__art" aria-hidden="true">
+            <svg viewBox="0 -30 300 380">
+              <path d="M128,168 C116,190 104,216 96,246 C90,270 86,292 93,309 C97,318 107,321 115,314 C122,308 126,295 130,276 C137,248 141,218 143,190 C140,180 134,172 128,168 Z" fill="#e07a33" stroke="#17130e" stroke-width="5" stroke-linejoin="round" />
+              <path d="M175,170 C186,195 197,222 205,253 C211,278 214,302 207,320 C202,330 191,333 183,325 C177,318 174,304 171,285 C166,252 163,218 161,190 C164,180 170,174 175,170 Z" fill="#e07a33" stroke="#17130e" stroke-width="5" stroke-linejoin="round" />
+              <path d="M150,46 C114,46 95,64 93,94 C91,122 98,148 108,170 C118,190 133,202 150,204 C167,202 182,190 192,170 C202,148 209,122 207,94 C205,64 186,46 150,46 Z" fill="#e8752f" stroke="#17130e" stroke-width="5" stroke-linejoin="round" />
+              <g fill="none" stroke-linecap="round">
+                <path d="M148,58 C136,34 126,14 128,-8" stroke="#3f8f45" stroke-width="10" />
+                <path d="M150,58 C150,28 152,2 150,-22" stroke="#5aa94a" stroke-width="10" />
+                <path d="M153,58 C166,34 176,14 173,-10" stroke="#3f8f45" stroke-width="10" />
+                <path d="M142,60 C126,42 112,28 108,10" stroke="#4e9b3e" stroke-width="9" />
+                <path d="M159,60 C176,42 190,28 194,10" stroke="#4e9b3e" stroke-width="9" />
               </g>
             </svg>
           </div>
@@ -1476,7 +1468,6 @@
       "rej.intro": "Sešas īstas partijas uz plaukta šonedēļ. Neviena nav bojāta. Visas tika atteiktas.",
       "rej.eyebrow": "Lietas materiāli",
       "rej.exhibit": "Pierādījums A · burkāns ar divām kājām",
-      "rej.developing": "Attīsta…",
       "rej.chargeLabel": "Apsūdzība",
       "rej.charge": "Nenormāls izliekums",
       "rej.plea": "Aizstāvība: garšīgs.",
@@ -1626,7 +1617,6 @@
       "rej.intro": "Six lots réels en rayon cette semaine. Rien n’est avarié. Tout a été refusé.",
       "rej.eyebrow": "Pièces du dossier",
       "rej.exhibit": "Pièce A · la carotte à deux jambes",
-      "rej.developing": "Développement…",
       "rej.chargeLabel": "Chef d’accusation",
       "rej.charge": "Courbure anormale",
       "rej.plea": "Plaidoyer : délicieux.",
@@ -2585,12 +2575,6 @@
       }, { rootMargin: "180px 0px 180px 0px" }).observe(storeP);
     }
 
-    var rejStage = document.getElementById("rejStage");
-    if (rejStage && typeof MugStage !== "undefined") {
-      new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) { if (e.isIntersecting) MugStage.start(); else MugStage.stop(); });
-      }, { rootMargin: "160px 0px 160px 0px" }).observe(rejStage);
-    }
   }
 
   /* ============================ PRODUCT PHOTOS ============================
@@ -5673,251 +5657,6 @@
     };
   })();
 
-  /* ===================== REJECTED-FOR 3D MUGSHOT =====================
-     One hero exhibit for the "Rejected for:" band — the two-legged carrot,
-     sculpted (lathe profile + bend deformer + groove normal map), studio-lit
-     with soft shadows and ACES tone mapping, turning slowly on its own like a
-     product turntable. Same recipe as the ProductView modal, trimmed to one
-     model. Falls back to a flat SVG carrot if WebGL / THREE isn't there. */
-  var MugStage = (function () {
-    var T, ren, scene, cam, root, carrot, raf = 0, running = false, host, broken = false;
-    var spin = { y: 0.62 }, pitch = -0.06, drag = null, auto = true;
-    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    function ctex(w, h, draw) {
-      var cv = document.createElement("canvas"); cv.width = w; cv.height = h;
-      draw(cv.getContext("2d"), w, h);
-      var t = new T.CanvasTexture(cv);
-      if (T.sRGBEncoding) t.encoding = T.sRGBEncoding;
-      return t;
-    }
-    function bendY(geo, k) {
-      var pos = geo.attributes.position, v = new T.Vector3();
-      geo.computeBoundingBox();
-      var y0 = geo.boundingBox.min.y, H = (geo.boundingBox.max.y - geo.boundingBox.min.y) || 1, R = H / k;
-      for (var i = 0; i < pos.count; i++) {
-        v.fromBufferAttribute(pos, i);
-        var a = (v.y - y0) / R, rr = R - v.x;
-        pos.setXYZ(i, R - rr * Math.cos(a), y0 + rr * Math.sin(a), v.z);
-      }
-      pos.needsUpdate = true; geo.computeVertexNormals(); return geo;
-    }
-    function grooveNormal() {                    // faint ring grooves down the root
-      var size = 128;
-      var hc = document.createElement("canvas"); hc.width = hc.height = size;
-      var hx = hc.getContext("2d"); hx.fillStyle = "#808080"; hx.fillRect(0, 0, size, size);
-      hx.strokeStyle = "#3a3a3a"; hx.lineWidth = 2;
-      for (var y = 0; y < size; y += 7) { hx.beginPath(); hx.moveTo(0, y + (Math.random() - 0.5) * 3); hx.lineTo(size, y + (Math.random() - 0.5) * 3); hx.stroke(); }
-      var src = hx.getImageData(0, 0, size, size).data;
-      var nc = document.createElement("canvas"); nc.width = nc.height = size;
-      var nx = nc.getContext("2d"), out = nx.createImageData(size, size), o = out.data, st = 1.1;
-      function Hs(x, y) { x = (x + size) % size; y = (y + size) % size; return src[(y * size + x) * 4] / 255; }
-      for (var yy = 0; yy < size; yy++) for (var xx = 0; xx < size; xx++) {
-        var dx = (Hs(xx - 1, yy) - Hs(xx + 1, yy)) * st, dy = (Hs(xx, yy - 1) - Hs(xx, yy + 1)) * st;
-        var len = Math.sqrt(dx * dx + dy * dy + 1), i = (yy * size + xx) * 4;
-        o[i] = (dx / len * 0.5 + 0.5) * 255; o[i + 1] = (dy / len * 0.5 + 0.5) * 255; o[i + 2] = (1 / len * 0.5 + 0.5) * 255; o[i + 3] = 255;
-      }
-      nx.putImageData(out, 0, 0);
-      var t = new T.CanvasTexture(nc); t.encoding = T.LinearEncoding;
-      t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(3, 3);
-      return t;
-    }
-    function carrotMat() {
-      var m = new T.MeshStandardMaterial({ color: new T.Color("#e8621f"), roughness: 0.55, metalness: 0 });
-      m.envMapIntensity = 0.25;
-      m.normalMap = grooveNormal(); m.normalScale = new T.Vector2(0.35, 0.35);
-      return m;
-    }
-    // classic tapered carrot silhouette: rounded shoulder at the top, long point at the bottom
-    function carrotGeo(len, topR, bend) {
-      var pts = [];
-      for (var t = 0; t <= 1.0001; t += 0.04) {
-        var body = Math.pow(1 - t, 0.62);                                  // taper to the tip
-        var shoulder = t < 0.17 ? Math.sin((t / 0.17) * Math.PI / 2) : 1;  // round off the crown
-        var r = topR * body * shoulder * (1 + 0.045 * Math.sin(t * 34));   // faint knobs
-        pts.push(new T.Vector2(Math.max(0.02, r), (0.5 - t) * len));        // wide up top, point down low
-      }
-      var geo = new T.LatheGeometry(pts, 40);
-      if (bend) bendY(geo, bend);                                          // "abnormal curvature"
-      geo.computeVertexNormals();
-      return geo;
-    }
-    // leafy crown: broad blades fanning up and out of the carrot's shoulders
-    function leafCrown(parent, topY) {
-      var greens = ["#3f8f45", "#4e9b3e", "#5aa94a", "#357a3d"];
-      var hub = new T.Mesh(new T.SphereGeometry(topY.hubR || 0.12, 16, 12), new T.MeshStandardMaterial({ color: new T.Color("#6a4a22"), roughness: 0.9 }));
-      hub.position.y = topY.y; hub.scale.y = 0.6; hub.castShadow = true; parent.add(hub);
-      var n = 9;
-      for (var i = 0; i < n; i++) {
-        var a = (i / n) * Math.PI * 2 + Math.random() * 0.3;
-        var lg = new T.ConeGeometry(0.085 + Math.random() * 0.03, 0.62 + Math.random() * 0.28, 5);
-        bendY(lg, 0.55 + Math.random() * 0.35);
-        var blade = new T.Mesh(lg, new T.MeshStandardMaterial({ color: new T.Color(greens[i % greens.length]), roughness: 0.78 }));
-        blade.scale.z = 0.22;                                              // flatten into a blade
-        blade.position.set(Math.cos(a) * 0.08, topY.y + 0.02, Math.sin(a) * 0.08);
-        blade.rotation.set(Math.cos(a) * 0.62, -a, -Math.sin(a) * 0.62);   // splay outward, tips up
-        blade.castShadow = true;
-        parent.add(blade);
-        // a shorter inner frond for fullness
-        var lg2 = new T.ConeGeometry(0.05, 0.34, 4); bendY(lg2, 0.5);
-        var b2 = new T.Mesh(lg2, blade.material);
-        b2.scale.z = 0.2;
-        b2.position.set(Math.cos(a) * 0.03, topY.y + 0.06, Math.sin(a) * 0.03);
-        b2.rotation.set(Math.cos(a) * 0.3, -a, -Math.sin(a) * 0.3);
-        b2.castShadow = true; parent.add(b2);
-      }
-    }
-    function envCube() {
-      function face(a, b, c) {
-        var cv = document.createElement("canvas"); cv.width = cv.height = 128;
-        var x = cv.getContext("2d"), g = x.createLinearGradient(0, 0, 0, 128);
-        g.addColorStop(0, a); g.addColorStop(0.5, b); g.addColorStop(1, c);
-        x.fillStyle = g; x.fillRect(0, 0, 128, 128); return cv;
-      }
-      var cube = new T.CubeTexture([
-        face("#2a3050", "#1e2340", "#161a30"), face("#262c48", "#1c2038", "#14182c"),
-        face("#333a5c", "#272d48", "#1d2238"), face("#12152a", "#0f1222", "#0c0e1c"),
-        face("#2a3050", "#1e2340", "#161a30"), face("#262c48", "#1c2038", "#14182c")
-      ]);
-      cube.needsUpdate = true;
-      if (T.sRGBEncoding) cube.encoding = T.sRGBEncoding;
-      return cube;
-    }
-    // a warm, light studio backdrop — matches the CSS card behind it, so the fallback
-    // (no WebGL) and the live render look like the same photo, not two different cards.
-    function bgTex() {
-      return ctex(512, 512, function (x, w, h) {
-        var g = x.createRadialGradient(w * 0.5, h * 0.36, 20, w * 0.5, h * 0.55, w * 0.9);
-        g.addColorStop(0, "#f6f0e3"); g.addColorStop(0.55, "#efe4cc"); g.addColorStop(1, "#d8cba9");
-        x.fillStyle = g; x.fillRect(0, 0, w, h);
-        var vgn = x.createRadialGradient(w / 2, h * 0.46, h * 0.2, w / 2, h * 0.5, h * 0.8);
-        vgn.addColorStop(0, "rgba(0,0,0,0)"); vgn.addColorStop(1, "rgba(40,32,18,0.22)");
-        x.fillStyle = vgn; x.fillRect(0, 0, w, h);
-      });
-    }
-
-    function build() {
-      root = new T.Group(); scene.add(root);
-
-      // soft contact shadow beneath the floating root
-      var blob = new T.Mesh(new T.PlaneGeometry(3.4, 3.4), new T.MeshBasicMaterial({
-        map: ctex(256, 256, function (x, w, h) {
-          var g = x.createRadialGradient(w / 2, h / 2, 4, w / 2, h / 2, w / 2);
-          g.addColorStop(0, "rgba(0,0,0,0.42)"); g.addColorStop(0.55, "rgba(0,0,0,0.16)"); g.addColorStop(1, "rgba(0,0,0,0)");
-          x.fillStyle = g; x.fillRect(0, 0, w, h);
-        }), transparent: true, depthWrite: false
-      }));
-      blob.rotation.x = -Math.PI / 2; blob.position.y = -1.5; scene.add(blob);
-
-      // even, punchy lighting — no tone-mapping wash, so the orange stays orange
-      scene.add(new T.HemisphereLight(new T.Color("#ffffff"), new T.Color("#1a1f3a"), 0.62));
-      var key = new T.DirectionalLight(new T.Color("#fff4e4"), 0.82);
-      key.position.set(-2.4, 4.6, 4.2); key.castShadow = true;
-      key.shadow.mapSize.set(2048, 2048);
-      key.shadow.camera.left = -3; key.shadow.camera.right = 3; key.shadow.camera.top = 3.5; key.shadow.camera.bottom = -3.5;
-      key.shadow.camera.near = 1; key.shadow.camera.far = 20; key.shadow.bias = -0.0005; key.shadow.radius = 5;
-      scene.add(key);
-      var rim = new T.DirectionalLight(new T.Color("#9ab8ff"), 0.55); rim.position.set(3.6, 1.8, -3.4); scene.add(rim);
-      var fill = new T.DirectionalLight(new T.Color("#ffffff"), 0.35); fill.position.set(2.4, 0.4, 3.6); scene.add(fill);
-
-      // ---- the exhibit: one bent carrot ("abnormal curvature") ----
-      carrot = new T.Group();
-      var len = 2.2, mat = carrotMat();
-      var body = new T.Mesh(carrotGeo(len, 0.42, 0.7), mat);
-      body.castShadow = true; body.receiveShadow = true;
-      carrot.add(body);
-      leafCrown(carrot, { y: len * 0.5, hubR: 0.13 });
-      carrot.rotation.z = -0.12;                                          // lean into the curve
-      root.add(carrot);
-
-      // scale to a fixed size, centre the whole thing at the origin (it floats — turntable style)
-      var box = new T.Box3().setFromObject(carrot), c = new T.Vector3(), sz = new T.Vector3();
-      box.getCenter(c); box.getSize(sz);
-      var k = 2.35 / Math.max(sz.x, sz.y, sz.z, 0.001);
-      carrot.scale.setScalar(k);
-      box.setFromObject(carrot); box.getCenter(c);
-      carrot.position.sub(c);
-    }
-
-    function applyCam() {
-      var r = 6.2, ph = 1.32 + pitch, th = spin.y;
-      cam.position.set(r * Math.sin(ph) * Math.sin(th), r * Math.cos(ph), r * Math.sin(ph) * Math.cos(th));
-      cam.lookAt(0, 0, 0);
-    }
-    function frame() {
-      if (!running || broken || !scene || !cam) { raf = 0; return; }
-      raf = requestAnimationFrame(frame);
-      if (auto && !drag) spin.y += 0.0052;
-      applyCam();
-      ren.render(scene, cam);
-    }
-    function fit() {
-      if (!ren || !host || !cam) return;
-      var w = host.clientWidth || 400, h = host.clientHeight || 360;
-      ren.setSize(w, h, false);
-      cam.aspect = w / h; cam.updateProjectionMatrix();
-    }
-    function fail() {
-      broken = true; running = false;
-      var m = document.getElementById("rejMug"); if (m) m.classList.add("is-fallback");
-      var sp = document.getElementById("rejSpinner"); if (sp) sp.remove();
-    }
-    function init() {
-      T = window.THREE;
-      host = document.getElementById("rejStage");
-      if (!host || !T) { fail(); return false; }
-      try { ren = new T.WebGLRenderer({ antialias: true, alpha: true }); }
-      catch (e) { fail(); return false; }
-      ren.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-      if (T.sRGBEncoding) ren.outputEncoding = T.sRGBEncoding;
-      if (T.NoToneMapping != null) ren.toneMapping = T.NoToneMapping;   // keep the carrot orange, not beige
-      ren.shadowMap.enabled = true; ren.shadowMap.type = T.PCFSoftShadowMap;
-      host.insertBefore(ren.domElement, host.firstChild);
-
-      scene = new T.Scene();
-      scene.background = bgTex();
-      scene.environment = envCube();
-      cam = new T.PerspectiveCamera(30, 1, 0.1, 100);
-
-      auto = !reduced;
-      if (reduced) { spin.y = 0.72; pitch = -0.04; }
-
-      var dom = ren.domElement;
-      dom.addEventListener("pointerdown", function (e) {
-        drag = { x: e.clientX, y: e.clientY, ty: spin.y, tp: pitch };
-        try { dom.setPointerCapture(e.pointerId); } catch (x) {}
-      });
-      dom.addEventListener("pointermove", function (e) {
-        if (!drag) return;
-        spin.y = drag.ty - (e.clientX - drag.x) * 0.01;
-        pitch = Math.max(-0.7, Math.min(0.5, drag.tp + (e.clientY - drag.y) * 0.006));
-      });
-      var end = function () { drag = null; };
-      dom.addEventListener("pointerup", end);
-      dom.addEventListener("pointercancel", end);
-
-      build();
-      fit();
-      var sp = document.getElementById("rejSpinner"); if (sp) sp.remove();
-      return true;
-    }
-
-    return {
-      start: function () {
-        if (broken) return;
-        if (!window.THREE) { fail(); return; }
-        try {
-          if (!ren && !init()) return;
-          running = true;
-          fit();
-          if (!raf) frame();
-        } catch (e) { running = false; fail(); }
-      },
-      stop: function () { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; },
-      resize: fit
-    };
-  })();
-
   /* ============================ PRODUCT MODAL ============================ */
   function openModal(id) {
     var p = P[id]; if (!p) return;
@@ -6379,7 +6118,7 @@
   });
   window.addEventListener("resize", (function () {
     var tmo;
-    return function () { clearTimeout(tmo); tmo = setTimeout(function () { if (typeof Store3D !== "undefined") Store3D.resize(); if (typeof ProductView !== "undefined") ProductView.resize(); if (typeof MugStage !== "undefined") MugStage.resize(); }, 200); };
+    return function () { clearTimeout(tmo); tmo = setTimeout(function () { if (typeof Store3D !== "undefined") Store3D.resize(); if (typeof ProductView !== "undefined") ProductView.resize(); }, 200); };
   })());
 
   /* ============================ INIT ============================ */
