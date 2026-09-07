@@ -356,7 +356,9 @@
   .calc__out span { font: 400 10px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-70); }
   .calc__note { font: 400 12px var(--f-mono); color: var(--ink-70); margin: 16px 0 0; }
   .thirty__sub { font-size: 1.4rem; margin-bottom: 20px; }
-  .carriers { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(214px, 1fr)); gap: 18px; }
+  .carriers { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  @media (max-width: 920px) { .carriers { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 560px) { .carriers { grid-template-columns: repeat(2, 1fr); } }
   .carrier { border: var(--edge); border-radius: var(--r); background: var(--card); overflow: hidden; transition: transform 0.12s ease, box-shadow 0.12s ease; }
   .carrier:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
   .carrier__art { aspect-ratio: 1; background: var(--paper-2); }
