@@ -369,24 +369,6 @@
   .carrier__price { font: 500 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-70); margin: 0; }
   @media (max-width: 720px) { .thirty__hero { grid-template-columns: 1fr; gap: 18px; } .calc__row { grid-template-columns: 1fr; } .calc__out { text-align: left; flex-wrap: wrap; } }
 
-  /* ---------------- TAB: NOT A BAG ---------------- */
-  .bag__body { display: grid; grid-template-columns: 1.05fr 1fr; gap: 36px; margin-bottom: 44px; }
-  .bag__body .lede { margin: 0; }
-  @media (max-width: 800px) { .bag__body { grid-template-columns: 1fr; } }
-  .compare { display: grid; grid-template-columns: 1fr auto 1fr; border: var(--edge); box-shadow: var(--shadow-lg); }
-  .compare__col { padding: 26px; }
-  .compare__col--us { background: var(--spruce); color: var(--paper); }
-  .compare__col--them { background: var(--paper-2); }
-  .compare__col h3 { font-size: 1.3rem; margin-bottom: 14px; }
-  .compare__col--us h3 { color: var(--mustard); }
-  .compare__col ul { list-style: none; margin: 0; padding: 0; }
-  .compare__col li { padding: 12px 0; border-top: 1.5px solid rgba(23, 19, 14, 0.16); font-size: 0.96rem; display: flex; gap: 10px; }
-  .compare__col li:first-child { border-top: 0; }
-  .compare__col--us li::before { content: "\002B"; color: var(--mustard); font-weight: 700; }
-  .compare__col--them li::before { content: "\2013"; color: var(--maroon); font-weight: 700; }
-  .compare__vs { display: grid; place-items: center; padding: 0 12px; background: var(--ink); color: var(--paper); font: 800 0.95rem var(--f-display); }
-  @media (max-width: 720px) { .compare { grid-template-columns: 1fr; } .compare__vs { padding: 8px; } }
-
   /* ---------------- TAB: THE STORE ---------------- */
   .store__stage { display: grid; grid-template-columns: 1fr 296px; border: var(--edge); border-radius: var(--r); box-shadow: var(--shadow-lg); overflow: hidden; }
   .store3d { position: relative; overflow: hidden; background: radial-gradient(120% 90% at 50% 0%, #eee7d8, #dcd4c2); min-height: 480px; }
@@ -811,7 +793,7 @@
      <div class="howstep" role="listitem">
        <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="9" width="22" height="22" rx="4" /><circle cx="20" cy="20" r="5" /><path d="M20 4 V9 M20 31 V36 M4 20 H9 M31 20 H36" /></svg>
        <b data-i18n="how.2t">Sorted by AI</b>
-       <span data-i18n="how.2s">overnight — matched to what sells, priced by how urgent it is</span>
+       <span data-i18n="how.2s">overnight — matched to what sells, priced by how urgent it is, double-checked by our human team</span>
      </div>
      <svg class="howstep__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12 H20 M13 5 L20 12 L13 19" /></svg>
      <div class="howstep" role="listitem">
@@ -835,7 +817,7 @@
          <div class="mission__card">
            <span class="n" data-i18n="mission.n2">02 · Sorted</span>
            <h4 data-i18n="how.2t">Sorted by AI</h4>
-           <p data-i18n="how.2s">overnight — matched to what sells, priced by how urgent it is</p>
+           <p data-i18n="how.2s">overnight — matched to what sells, priced by how urgent it is, double-checked by our human team</p>
          </div>
          <div class="mission__card">
            <span class="n" data-i18n="mission.n3">03 · Shelved</span>
@@ -923,6 +905,7 @@
     <div class="panel__head">
       <p class="eyebrow" data-i18n="eb.store">The store</p>
       <h2 data-i18n="h2.store">A shop you walk — not a bag you gamble on.</h2>
+      <p class="lede" data-i18n="bag.lede">Surprise-bag apps do a real job — but they hand you a sealed bag and hope for the best. Rescue is the opposite bet: a fixed address, named products, visible dates, and a reason printed on every label.</p>
       <p class="panel__note" data-i18n="store.note">Move your pointer to look around · tap an aisle marker.</p>
       <p class="store__promise" data-i18n="store.promise">Shop this 3D aisle for real — add what you click, then walk in and pick it up.</p>
     </div>
@@ -946,15 +929,6 @@
       </aside>
     </div>
 
-    <div class="bag__body" style="margin-top: 46px">
-      <p class="lede" data-i18n="bag.lede">Surprise-bag apps do a real job — but they hand you a sealed bag and hope for the best. Rescue is the opposite bet: a fixed address, named products, visible dates, and a reason printed on every label.</p>
-      <p data-i18n="bag.p2">Because you see what you’re buying, you can plan around it — dinner tonight, something for the freezer, staples for the cupboard. And because we’re a store you come back to, we do what an app can’t: member prices, a stamp card, a quiet first-pick hour before the after-work rush.</p>
-    </div>
-    <div class="compare">
-      <div class="compare__col compare__col--us"><h3 data-i18n="cmp.us">Rescue</h3><ul id="cmpUs"></ul></div>
-      <div class="compare__vs" aria-hidden="true" data-i18n="cmp.vs">vs</div>
-      <div class="compare__col compare__col--them"><h3 data-i18n="cmp.them">A mystery bag</h3><ul id="cmpThem"></ul></div>
-    </div>
   </section>
 
   <!-- ===================== TAB: SHOP ===================== -->
@@ -1396,7 +1370,7 @@
       "good.lead": "Katru nedēļu Latvijas veikali un ražotāji noņem no pārdošanas tonnām labas pārtikas — nepareiza forma, vecs logo, īss derīguma termiņš. Mākslīgais intelekts to pārpalikumu sašķiro vienā naktī; mēs to noliekam uz īstiem plauktiem, īstā veikalā, lēti.",
       "good.cta1": "Ko dod ietaupījums", "good.cta2": "Šodienas plaukts",
       "how.1t": "Noraidīts", "how.1s": "no veikaliem un ražotājiem — nepareiza forma, vecs logo, īss derīguma termiņš",
-      "how.2t": "Sašķiro AI", "how.2s": "katru nakti — atbilstoši pieprasījumam, cena pēc steidzamības",
+      "how.2t": "Sašķiro AI", "how.2s": "katru nakti — atbilstoši pieprasījumam, cena pēc steidzamības, ar dubultpārbaudi no mūsu cilvēku komandas",
       "how.3t": "Uz mūsu plauktiem", "how.3s": "īsts veikals ar durvīm Rīgā — tajā pašā dienā, lēti",
       "good.loc": "Miera iela 58, Rīga · atvērts līdz 20:00 · ienāc jebkurā laikā",
       "good.placard": "Apsūdzība: nenormāls izliekums. Aizstāvība: garšīgs.",
@@ -1532,7 +1506,7 @@
       "good.lead": "Chaque semaine, magasins et producteurs lettons retirent de la vente des tonnes de bonne nourriture — mauvaise forme, ancien logo, date courte. Une IA trie ces surplus pendant la nuit ; on les met en rayon, dans un vrai magasin, pas cher.",
       "good.cta1": "Ce que l’économie permet", "good.cta2": "Le rayon du jour",
       "how.1t": "Recalé", "how.1s": "par les magasins et producteurs — mauvaise forme, ancien logo, date courte",
-      "how.2t": "Trié par IA", "how.2s": "chaque nuit — selon la demande, prix selon l’urgence",
+      "how.2t": "Trié par IA", "how.2s": "chaque nuit — selon la demande, prix selon l’urgence, vérifié en double par notre équipe humaine",
       "how.3t": "En rayon", "how.3s": "une vraie épicerie physique à Rīga — le jour même, pas cher",
       "good.loc": "Miera iela 58, Rīga · ouvert jusqu’à 20:00 · entrez quand vous voulez",
       "good.placard": "Chef d’accusation : courbure anormale. Plaidoyer : délicieux.",
@@ -2125,14 +2099,6 @@
     { crime: "A forklift kissed the case", stamp: "BOX", body: "Corner of the cardboard took a knock. Six tins inside, mint. The box took it personally.", verdict: "Verdict: chilli tonight." }
   ];
 
-  var COMPARE = [
-    ["You choose every single item", "A sealed mystery bag"],
-    ["Price & best-before shown before you pay", "Revealed after you pay"],
-    ["Walk the aisles, or order for pickup", "App-only, one time window"],
-    ["Plan by budget, household & meals", "One bag size fits nobody"],
-    ["Member prices, stamps, first-pick hour", "No relationship, no loyalty"],
-    ["Sorted: cook-tonight / freezer / pantry", "Whatever didn’t sell, mixed"]
-  ];
   var PARTNERS = ["Rimi", "Maxima", "Barbora", "Valmiermuiža Bakery", "Talsu Piens", "Spilva", "Balticovo", "Ķekava"];
 
   // Stores that feed surplus into the pipeline — real Latvian chains + stand-ins
@@ -5760,8 +5726,6 @@
     clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, 1900);
   }
   function renderStatic() {
-    $("#cmpUs").innerHTML = COMPARE.map(function (r) { return "<li>" + L(r[0]) + "</li>"; }).join("");
-    $("#cmpThem").innerHTML = COMPARE.map(function (r) { return "<li>" + L(r[1]) + "</li>"; }).join("");
     $("#partners").textContent = PARTNERS.join(" · ");
     $("#zoneChips").innerHTML =
       '<button data-zone="all" class="is-active">' + t("zonechip.all") + "</button>" +
