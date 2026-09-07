@@ -1145,8 +1145,11 @@
             <label class="field"><span data-i18n="account.email">Email</span>
               <input type="email" id="acctEmail" autocomplete="email" required>
             </label>
-            <label class="field"><span id="acctPasswordLabel" data-i18n="account.password">Password</span>
-              <input type="password" id="acctPassword" autocomplete="current-password" minlength="4" required>
+            <label class="field acct__only-reset2" id="acctCodeField" hidden><span data-i18n="account.code">Code from your email</span>
+              <input type="text" id="acctResetCode" inputmode="numeric" autocomplete="one-time-code" placeholder="123456">
+            </label>
+            <label class="field" id="acctPasswordField"><span id="acctPasswordLabel" data-i18n="account.password">Password</span>
+              <input type="password" id="acctPassword" autocomplete="current-password" minlength="4">
             </label>
             <p class="acct__fine" id="acctPasswordHint" data-i18n="account.passwordhint.create">Choose a password for your new account.</p>
             <a href="#" class="acct__forgot acct__only-signin" id="acctForgotLink" data-i18n="account.forgot">Forgot your password? Reset here</a>
@@ -1393,7 +1396,11 @@
       "shop.count1": "{n} product available", "shop.countn": "{n} products available",
       "account.points.tocard": "{n} stamps to your next €5 off", "account.points.almost": "One more stamp — your next €5 off is close.",
       "account.resetbtn": "Reset password", "account.newpassword": "New password",
-      "account.passwordhint.reset": "Set a new password for this email. This demo has no real identity check — anyone who knows the email can reset it.",
+      "account.passwordhint.reset": "Enter the code we emailed you and choose a new password.",
+      "account.sendcode": "Send reset code", "account.resethint1": "Enter the email on your account — we'll send a 6-digit code to it.",
+      "account.codesent": "Code sent — check your inbox.", "account.badcode": "Wrong or expired code.",
+      "account.codeexpired": "That code expired — request a new one.",
+      "account.codewrongdevice": "This reset link only works in the browser you requested it from — accounts on this demo site live on your device, not a real server.",
       "account.resetdone": "Password updated — sign in with your new password.",
       "h2.account.in": "Welcome back, {name}."
     },
@@ -1508,7 +1515,11 @@
       "account.points.almost": "Vēl viens zīmogs — nākamā €5 atlaide ir tuvu.",
       "account.forgot": "Aizmirsi paroli? Atiestati šeit", "account.backtosignin": "Atcerējies? Pieteikties",
       "account.resetbtn": "Atiestatīt paroli", "account.newpassword": "Jaunā parole",
-      "account.passwordhint.reset": "Iestati jaunu paroli šim e-pastam. Šai demo versijai nav īstas identitātes pārbaudes — ikviens, kas zina e-pastu, var to atiestatīt.",
+      "account.passwordhint.reset": "Ievadi kodu, ko nosūtījām uz tavu e-pastu, un izvēlies jaunu paroli.",
+      "account.sendcode": "Nosūtīt kodu", "account.resethint1": "Ievadi sava konta e-pastu — mēs uz to nosūtīsim 6 ciparu kodu.",
+      "account.codesent": "Kods nosūtīts — pārbaudi savu iesūtni.", "account.badcode": "Nepareizs vai novecojis kods.",
+      "account.codeexpired": "Šim kodam beidzies derīguma termiņš — pieprasi jaunu.",
+      "account.codewrongdevice": "Šī atiestatīšanas saite darbojas tikai pārlūkā, no kura to pieprasīji — šīs demo vietnes konti dzīvo tavā ierīcē, nevis īstā serverī.",
       "account.resetdone": "Parole atjaunināta — piesakies ar savu jauno paroli.",
       "account.group.password": "Parole", "account.changepass": "Mainīt paroli",
       "h2.account.in": "Laipni lūdzam atpakaļ, {name}.",
@@ -1649,7 +1660,11 @@
       "account.points.almost": "Encore un tampon — votre prochaine réduction de 5€ approche.",
       "account.forgot": "Mot de passe oublié ? Réinitialiser ici", "account.backtosignin": "Vous vous en souvenez ? Se connecter",
       "account.resetbtn": "Réinitialiser le mot de passe", "account.newpassword": "Nouveau mot de passe",
-      "account.passwordhint.reset": "Définissez un nouveau mot de passe pour cet e-mail. Cette démo n'a pas de vraie vérification d'identité — n'importe qui connaissant l'e-mail peut le réinitialiser.",
+      "account.passwordhint.reset": "Entrez le code que nous vous avons envoyé par e-mail et choisissez un nouveau mot de passe.",
+      "account.sendcode": "Envoyer le code", "account.resethint1": "Entrez l'e-mail de votre compte — nous y enverrons un code à 6 chiffres.",
+      "account.codesent": "Code envoyé — vérifiez votre boîte mail.", "account.badcode": "Code incorrect ou expiré.",
+      "account.codeexpired": "Ce code a expiré — demandez-en un nouveau.",
+      "account.codewrongdevice": "Ce lien de réinitialisation ne fonctionne que dans le navigateur depuis lequel vous l'avez demandé — les comptes de ce site de démo vivent sur votre appareil, pas sur un vrai serveur.",
       "account.resetdone": "Mot de passe mis à jour — connectez-vous avec votre nouveau mot de passe.",
       "account.group.password": "Mot de passe", "account.changepass": "Changer le mot de passe",
       "h2.account.in": "Content de vous revoir, {name}.",
@@ -5908,43 +5923,79 @@
   $("#acctCSR2").addEventListener("change", function () { if (account) { account.newsletterCSR = this.checked; saveAccount(); } });
   $("#acctDiet2").addEventListener("change", function () { if (account) { account.diet = this.value; saveAccount(); renderGrid(); } });
   // three modes instead of one form guessing intent from whether the email already exists —
-  // "reset" is reached only via the "Forgot your password?" link, never shown as its own tab
+  // "reset" is reached only via the "Forgot your password?" link, never shown as its own tab, and
+  // has two steps: request a code by email, then enter that code + a new password.
   var acctMode = "create";
-  function setAcctMode(mode) {
-    acctMode = mode;
+  var resetStep = 1;
+  var RESET_LS = "rescue.pwreset.v1";
+  function loadResetRequest() { try { return JSON.parse(localStorage.getItem(RESET_LS)); } catch (e) { return null; } }
+  function saveResetRequest(r) { try { localStorage.setItem(RESET_LS, JSON.stringify(r)); } catch (e) {} }
+  function clearResetRequest() { try { localStorage.removeItem(RESET_LS); } catch (e) {} }
+  function genResetCode() { return String(Math.floor(100000 + Math.random() * 900000)); }
+  function setAcctMode(mode, step) {
+    acctMode = mode; resetStep = step || 1;
     $$(".acct__mode-tab").forEach(function (b) { var on = b.dataset.mode === mode; b.classList.toggle("is-active", on); b.setAttribute("aria-selected", String(on)); });
     $$("#acctForm .acct__only-create").forEach(function (el) { el.hidden = mode !== "create"; });
     $$("#acctForm .acct__only-signin").forEach(function (el) { el.hidden = mode !== "signin"; });
     $$("#acctForm .acct__only-reset").forEach(function (el) { el.hidden = mode !== "reset"; });
+    $$("#acctForm .acct__only-reset2").forEach(function (el) { el.hidden = !(mode === "reset" && resetStep === 2); });
     $("#acctName").required = mode === "create";
+    var showPw = mode === "create" || mode === "signin" || (mode === "reset" && resetStep === 2);
+    var pwField = $("#acctPasswordField"); if (pwField) pwField.hidden = !showPw;
+    $("#acctPassword").required = showPw;
     var btn = $("#acctSubmitBtn");
-    if (btn) btn.textContent = t(mode === "create" ? "account.create" : mode === "reset" ? "account.resetbtn" : "account.mode.signin");
+    if (btn) btn.textContent = t(mode === "create" ? "account.create" : mode === "signin" ? "account.mode.signin" : resetStep === 1 ? "account.sendcode" : "account.resetbtn");
     var lbl = $("#acctPasswordLabel");
     if (lbl) lbl.textContent = t(mode === "reset" ? "account.newpassword" : "account.password");
     var hint = $("#acctPasswordHint");
-    if (hint) hint.textContent = t(mode === "create" ? "account.passwordhint.create" : mode === "reset" ? "account.passwordhint.reset" : "account.passwordhint.signin");
+    if (hint) hint.textContent = t(mode === "create" ? "account.passwordhint.create" : mode === "signin" ? "account.passwordhint.signin" : resetStep === 1 ? "account.resethint1" : "account.passwordhint.reset");
     $("#acctPassword").autocomplete = mode === "reset" ? "new-password" : "current-password";
     var errEl = $("#acctPasswordError"); if (errEl) errEl.hidden = true;
   }
   $$(".acct__mode-tab").forEach(function (b) { b.addEventListener("click", function () { setAcctMode(b.dataset.mode); }); });
-  $("#acctForgotLink").addEventListener("click", function (e) { e.preventDefault(); setAcctMode("reset"); });
-  $("#acctBackToSigninLink").addEventListener("click", function (e) { e.preventDefault(); setAcctMode("signin"); });
+  $("#acctForgotLink").addEventListener("click", function (e) { e.preventDefault(); setAcctMode("reset", 1); });
+  $("#acctBackToSigninLink").addEventListener("click", function (e) { e.preventDefault(); clearResetRequest(); setAcctMode("signin"); });
   $("#acctForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    var email = $("#acctEmail").value.trim(), password = $("#acctPassword").value;
+    var email = $("#acctEmail").value.trim();
     var errEl = $("#acctPasswordError");
     if (errEl) errEl.hidden = true;
-    if (!email || !password) return;
+    function showError(msg) { if (errEl) { errEl.textContent = msg; errEl.hidden = false; } else toast(msg); }
+    if (!email) return;
     var dir = loadAccountsDir();
     var prior = dir[email.toLowerCase()] || null;
-    function showError(msg) { if (errEl) { errEl.textContent = msg; errEl.hidden = false; } else toast(msg); }
 
-    if (acctMode === "reset") {
+    if (acctMode === "reset" && resetStep === 1) {
       if (!prior || !prior.passwordHash) { showError(t("account.noaccount", "No account with this email yet — use Create account instead.")); return; }
-      hashPassword(password).then(function (hash) {
+      var code = genResetCode();
+      saveResetRequest({ email: email.toLowerCase(), code: code, expires: Date.now() + 30 * 60000 });
+      var link = location.origin + location.pathname + "?reset=" + code;
+      var sendBtn = $("#acctSubmitBtn"); if (sendBtn) sendBtn.disabled = true;
+      fetch("/api/reset-email", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: prior.name, email: email, code: code, link: link })
+      }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, body: d }; }); })
+        .then(function (res) {
+          if (sendBtn) sendBtn.disabled = false;
+          if (res.ok) { toast(t("account.codesent", "Code sent — check your inbox.")); setAcctMode("reset", 2); $("#acctResetCode").focus(); }
+          else { clearResetRequest(); showError(t("account.mailerr", "Account created, but the welcome email couldn't be sent.") + " (" + (res.body && res.body.error) + ")"); }
+        })
+        .catch(function () { if (sendBtn) sendBtn.disabled = false; clearResetRequest(); showError(t("account.mailerr", "Account created, but the welcome email couldn't be sent.")); });
+      return;
+    }
+
+    if (acctMode === "reset" && resetStep === 2) {
+      var newPw = $("#acctPassword").value, codeEntered = $("#acctResetCode").value.trim();
+      if (!newPw || !codeEntered) return;
+      var pending = loadResetRequest();
+      if (!pending || pending.email !== email.toLowerCase() || pending.code !== codeEntered) { showError(t("account.badcode", "Wrong or expired code.")); return; }
+      if (Date.now() > pending.expires) { clearResetRequest(); showError(t("account.codeexpired", "That code expired — request a new one.")); return; }
+      if (!prior || !prior.passwordHash) { showError(t("account.noaccount", "No account with this email yet — use Create account instead.")); return; }
+      hashPassword(newPw).then(function (hash) {
         prior.passwordHash = hash;
         dir[email.toLowerCase()] = prior;
         saveAccountsDir(dir);
+        clearResetRequest();
         toast(t("account.resetdone", "Password updated — sign in with your new password."));
         setAcctMode("signin");
         $("#acctEmail").value = email;
@@ -5952,6 +6003,9 @@
       });
       return;
     }
+
+    var password = $("#acctPassword").value;
+    if (!password) return;
 
     if (acctMode === "signin") {
       if (!prior || !prior.passwordHash) { showError(t("account.noaccount", "No account with this email yet — use Create account instead.")); return; }
@@ -6030,6 +6084,24 @@
   renderPlan(buildPlan(20, 4, 5));
   initScrollSpy();
   renderAccount();
+  // clicking the link from the reset email — the code is only meaningful in the browser that
+  // requested it (accounts live in localStorage, not a real database), so a mismatch here just
+  // means "open this on the device you asked from", which the email itself explains
+  (function checkResetLink() {
+    var m = location.search.match(/[?&]reset=([0-9]{6})/);
+    if (!m) return;
+    var code = m[1];
+    history.replaceState(null, "", location.pathname + location.hash);
+    var pending = loadResetRequest();
+    if (!pending || pending.code !== code || Date.now() > pending.expires) {
+      toast(t("account.codewrongdevice", "This reset link only works in the browser you requested it from."));
+      return;
+    }
+    showTab("account");
+    setAcctMode("reset", 2);
+    $("#acctEmail").value = pending.email;
+    $("#acctResetCode").value = code;
+  })();
   initGoogleSignIn();
   if (LANG !== "en") setLang(LANG);
   (function () {

@@ -61,6 +61,47 @@ app.post('/api/welcome-email', async (req, res) => {
   }
 });
 
+// password-reset code/link email. There's no real user database on this server — accounts live in
+// the browser's localStorage — so this only sends the mail; the code itself is generated and
+// checked entirely client-side (see the reset flow in public/index.html). That means a reset link
+// only works back in the same browser that requested it, which is disclosed in the email itself.
+app.post('/api/reset-email', async (req, res) => {
+  if (!BREVO_API_KEY) return res.status(503).json({ ok: false, error: 'BREVO_API_KEY is not set on the server.' });
+  if (!BREVO_SENDER_EMAIL) return res.status(503).json({ ok: false, error: 'BREVO_SENDER_EMAIL is not set on the server.' });
+  const { name, email, code, link } = req.body || {};
+  if (!email || typeof email !== 'string') return res.status(400).json({ ok: false, error: 'Missing email address.' });
+  if (!code || typeof code !== 'string') return res.status(400).json({ ok: false, error: 'Missing reset code.' });
+  const firstName = (name || '').trim().split(' ')[0] || 'there';
+  const safeLink = typeof link === 'string' ? link : '';
+
+  try {
+    const r = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: { 'api-key': BREVO_API_KEY, 'Content-Type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({
+        sender: { name: BREVO_SENDER_NAME, email: BREVO_SENDER_EMAIL },
+        to: [{ email, name: name || undefined }],
+        subject: 'Reset your Rescue Club password',
+        htmlContent:
+          '<div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:24px;background:#ece7da;color:#17130e">' +
+          `<h1 style="font-size:22px;margin:0 0 12px">Hi ${firstName},</h1>` +
+          '<p style="line-height:1.6">Someone (hopefully you) asked to reset the password on this Rescue Club account.</p>' +
+          (safeLink
+            ? `<p style="margin:22px 0"><a href="${safeLink}" style="background:#e8562f;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:700;display:inline-block">Reset my password</a></p>`
+            : '') +
+          `<p style="line-height:1.6">Or enter this code by hand: <b style="font-size:20px;letter-spacing:0.1em">${code}</b></p>` +
+          '<p style="line-height:1.6;color:#4b433a;font-size:13px">The code expires in 30 minutes, and only works back in the browser you requested it from — this concept site keeps accounts on your device, not on a real server. If you didn’t ask for this, ignore the email.</p>' +
+          '</div>',
+      }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) return res.status(r.status).json({ ok: false, error: data.message || 'Brevo rejected the request.' });
+    res.json({ ok: true, id: data.messageId });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 app.use(
   express.static(PUBLIC, {
     extensions: ['html'],
