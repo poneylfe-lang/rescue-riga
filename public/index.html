@@ -7,7 +7,7 @@
 <meta name="description" content="Concept site for Rescue, a walk-in anti-waste supermarket in Rīga. Supermarkets bin food for wrong shapes, old labels and dented boxes — Rescue buys it and sells it with the reason on the label." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" />
 <!-- Google Identity Services — powers the "Continue with Google" button in the account panel.
      Only activates once GOOGLE_CLIENT_ID (near the top of the main script) is set to a real
      OAuth Web Client ID from Google Cloud Console; harmless no-op until then. -->
@@ -47,7 +47,9 @@
 
     --f-display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
     --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --f-mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    /* was a monospace typewriter face — that read as indie/zine-y, not a real store. Small
+       uppercase/tabular labels now share the body grotesque instead of switching typeface. */
+    --f-mono: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
     --wrap: 1240px;
     color-scheme: light;
@@ -197,16 +199,33 @@
   /* ---- sign-up form: "or" divider + logical groups instead of one long list ---- */
   .acct__divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-70); }
   .acct__divider::before, .acct__divider::after { content: ""; flex: 1; height: 1.5px; background: var(--ink); opacity: 0.16; }
-  .acct__group { margin: 22px 0 0; padding-top: 18px; border-top: 1px dashed rgba(23, 19, 14, 0.2); }
+  .acct__group { margin: 22px 0 0; padding-top: 18px; border-top: 1.5px solid rgba(23, 19, 14, 0.14); }
   .acct__group:first-of-type { border-top: 0; padding-top: 0; margin-top: 6px; }
   .acct__group-title { display: block; font: 800 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink); margin-bottom: 4px; }
 
   /* ---- create-account / sign-in toggle: two explicit modes instead of one form guessing intent ---- */
-  .acct__mode-tabs { display: flex; border: var(--edge); border-radius: var(--r); overflow: hidden; margin-bottom: 18px; }
+  .acct__mode-tabs { display: flex; border: var(--edge); border-radius: var(--pill); overflow: hidden; margin-bottom: 18px; }
   .acct__mode-tab { flex: 1; font: 700 12px/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; padding: 11px 8px; border: 0; background: var(--paper); color: var(--ink-70); cursor: pointer; }
   .acct__mode-tab + .acct__mode-tab { border-left: 1.5px solid var(--ink); }
-  .acct__mode-tab.is-active { background: var(--ink); color: var(--paper); }
+  .acct__mode-tab.is-active { background: var(--spruce); color: #fff; }
   .acct__mode-tab:hover:not(.is-active) { background: var(--mustard); color: var(--ink); }
+
+  /* ---- signed-in account: Profile / Orders / Club points, navigated inside the page ---- */
+  .acct__subnav { display: flex; gap: 8px; margin: 4px 0 22px; flex-wrap: wrap; }
+  .acct__subtab { font: 700 12px/1 var(--f-body); padding: 10px 16px; border: var(--edge); border-radius: var(--pill); background: var(--card); color: var(--ink-70); cursor: pointer; }
+  .acct__subtab.is-active { background: var(--spruce); color: #fff; border-color: var(--spruce); }
+  .acct__subtab:hover:not(.is-active) { background: var(--mustard); color: var(--ink); }
+  .acct__saved-msg { color: var(--leaf); font-weight: 700; }
+  .acct__group .btn--sm { margin-top: 14px; }
+
+  .acct__orders { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .acct__order { border: var(--edge); border-radius: var(--r); padding: 16px 18px; }
+  .acct__order__head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+  .acct__order__head b { font: 800 0.95rem var(--f-display); }
+  .acct__order__head span { font: 600 12px var(--f-mono); color: var(--ink-70); }
+  .acct__order__items { color: var(--ink-70); font-size: 0.88rem; margin: 0 0 10px; }
+  .acct__order__foot { display: flex; justify-content: space-between; align-items: center; font-size: 0.86rem; }
+  .acct__order__foot .save { color: var(--leaf); font-weight: 700; }
 
   /* ---- Club: join online ---- */
   .club-join { margin-top: 18px; background: var(--card); border: var(--edge); border-radius: var(--r); padding: 20px 22px 22px; box-shadow: var(--shadow); }
@@ -326,7 +345,7 @@
   .thirty__big span { font-size: 0.32em; margin-top: 0.15em; }
   .thirty__big .pct { font-size: 0.42em; }
   .thirty__claim { font-size: 1.14rem; line-height: 1.5; max-width: 46ch; margin: 0; }
-  .calc { border: var(--edge); box-shadow: var(--shadow-lg); background: var(--card); padding: 24px 26px; margin-bottom: 46px; }
+  .calc { border: var(--edge); border-radius: var(--r); box-shadow: var(--shadow-lg); background: var(--card); padding: 24px 26px; margin-bottom: 46px; }
   .calc__row { display: grid; grid-template-columns: 1fr auto; gap: 30px; align-items: end; }
   .calc .ctl { max-width: 420px; }
   .calc__out { display: flex; gap: 26px; text-align: right; }
@@ -355,7 +374,7 @@
   .compare__col h3 { font-size: 1.3rem; margin-bottom: 14px; }
   .compare__col--us h3 { color: var(--mustard); }
   .compare__col ul { list-style: none; margin: 0; padding: 0; }
-  .compare__col li { padding: 12px 0; border-top: 1.5px dashed currentColor; font-size: 0.96rem; display: flex; gap: 10px; }
+  .compare__col li { padding: 12px 0; border-top: 1.5px solid rgba(23, 19, 14, 0.16); font-size: 0.96rem; display: flex; gap: 10px; }
   .compare__col li:first-child { border-top: 0; }
   .compare__col--us li::before { content: "\002B"; color: var(--mustard); font-weight: 700; }
   .compare__col--them li::before { content: "\2013"; color: var(--maroon); font-weight: 700; }
@@ -407,7 +426,7 @@
   @media (max-width: 820px) { .store__stage { grid-template-columns: 1fr; } .store3d { min-height: 380px; } }
 
   /* ---------------- TAB: SHOP ---------------- */
-  .planner { border: var(--edge); box-shadow: var(--shadow-lg); background: var(--card); margin-bottom: 40px; }
+  .planner { border: var(--edge); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-lg); background: var(--card); margin-bottom: 40px; }
   .planner__intro { padding: 22px 26px 0; }
   .planner__intro h3 { font-size: 1.3rem; margin-bottom: 6px; }
   .planner__intro p { max-width: 56ch; color: var(--ink-70); font-size: 0.95rem; }
@@ -433,8 +452,8 @@
   .plan__chip { font: 500 13px var(--f-body); border: 1.5px solid var(--ink); padding: 4px 9px; border-radius: 10px; background: var(--paper-2); }
   .plan__chip b { font-family: var(--f-mono); }
   .plan__recipes { list-style: none; margin: 0 0 16px; padding: 0; counter-reset: rc; }
-  .plan__recipes li { display: flex; flex-direction: column; gap: 2px; padding: 9px 0 9px 30px; border-bottom: 1.5px dashed var(--ink); position: relative; }
-  .plan__recipes li:first-child { border-top: 1.5px dashed var(--ink); }
+  .plan__recipes li { display: flex; flex-direction: column; gap: 2px; padding: 9px 0 9px 30px; border-bottom: 1.5px solid rgba(23, 19, 14, 0.16); position: relative; }
+  .plan__recipes li:first-child { border-top: 1.5px solid rgba(23, 19, 14, 0.16); }
   .plan__recipes li::before { counter-increment: rc; content: counter(rc); position: absolute; left: 0; top: 9px; width: 20px; height: 20px; display: grid; place-items: center; background: var(--rescue); color: #fff; border-radius: 50%; font: 800 11px var(--f-mono); }
   .plan__recipes b { font: 800 1rem var(--f-display); }
   .plan__recipes span { font: 400 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-70); }
@@ -523,7 +542,7 @@
   .pipeline .stage .metric { font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--leaf); }
   .pipeline .stage--gate { background: #f7efe0; }
   .pipeline .stage--gate .metric { color: var(--maroon); }
-  .pipeline .reject { margin-top: 8px; font: 400 11px var(--f-mono); color: var(--maroon); border-top: 1.5px dashed var(--maroon); padding-top: 8px; }
+  .pipeline .reject { margin-top: 8px; font: 400 11px var(--f-mono); color: var(--maroon); border-top: 1.5px solid rgba(194, 59, 47, 0.35); padding-top: 8px; }
   @media (max-width: 820px) { .pipeline { grid-template-columns: 1fr; } .pipeline .stage { border-right-width: 2px; border-bottom-width: 0; } .pipeline .stage:last-child { border-bottom-width: 2px; } }
 
   .intake__grid { display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 26px; align-items: start; }
@@ -558,7 +577,7 @@
   .visit-info > div:first-child { border-top: 0; }
   .visit-info dt { font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.09em; color: var(--ink-70); }
   .visit-info dd { margin: 5px 0 0; font-size: 1rem; }
-  .stampcard { border: var(--edge); background: var(--maroon); color: var(--paper); padding: 22px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+  .stampcard { border: var(--edge); border-radius: var(--r); background: var(--maroon); color: var(--paper); padding: 22px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
   .stampcard__head { display: flex; justify-content: space-between; font: 700 12px var(--f-mono); letter-spacing: 0.1em; }
   .stampcard__grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 11px; margin: 18px 0; }
   .stampcard__grid button { aspect-ratio: 1; border: 2px solid var(--paper); background: transparent; border-radius: 50%; cursor: pointer; color: var(--paper); font: 800 0.95rem var(--f-display); display: grid; place-items: center; transition: background 0.15s; }
@@ -604,7 +623,7 @@
   .drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: var(--edge); }
   .drawer__head h2 { font-size: 1.32rem; }
   .drawer__items { list-style: none; margin: 0; padding: 6px 18px; overflow-y: auto; flex: 1; }
-  .di { display: grid; grid-template-columns: 1fr auto; gap: 5px 12px; padding: 15px 0; border-bottom: 1.5px dashed var(--ink); }
+  .di { display: grid; grid-template-columns: 1fr auto; gap: 5px 12px; padding: 15px 0; border-bottom: 1.5px solid rgba(23, 19, 14, 0.16); }
   .di h4 { margin: 0; font: 800 0.98rem var(--f-display); }
   .di .b { font: 700 9px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-70); }
   .di .p { font: 800 1rem var(--f-display); text-align: right; font-variant-numeric: tabular-nums; }
@@ -1173,38 +1192,76 @@
           </div></div>
         </div>
 
-        <div class="acct__group">
-          <span class="acct__group-title" data-i18n="account.group.notifs">Notifications</span>
-          <label class="check">
-            <input type="checkbox" id="acctNewsletter2">
-            <span data-i18n="account.newsletter">Email me the weekly shelf — what's cheap, what's new</span>
-          </label>
-          <label class="check">
-            <input type="checkbox" id="acctAlerts2">
-            <span data-i18n="account.alerts">Email me when a big or short-dated delivery lands — it might sell out in hours</span>
-          </label>
-          <label class="check">
-            <input type="checkbox" id="acctCSR2">
-            <span data-i18n="account.csr">Send me the quarterly impact report — tonnes rescued, our partners, where it went</span>
-          </label>
+        <div class="acct__subnav" role="tablist">
+          <button type="button" class="acct__subtab is-active" data-section="profile" role="tab" aria-selected="true" data-i18n="account.tab.profile">Profile</button>
+          <button type="button" class="acct__subtab" data-section="orders" role="tab" aria-selected="false" data-i18n="account.tab.orders">Orders</button>
+          <button type="button" class="acct__subtab" data-section="points" role="tab" aria-selected="false" data-i18n="account.tab.points">Club points</button>
         </div>
 
-        <div class="acct__group">
-          <span class="acct__group-title" data-i18n="account.group.prefs">Preferences</span>
-          <label class="field"><span data-i18n="account.diet">Diet</span>
-            <select id="acctDiet2">
-              <option value="none" data-i18n="diet.none">No preference</option>
-              <option value="veggie" data-i18n="diet.veggie">Vegetarian</option>
-              <option value="vegan" data-i18n="diet.vegan">Vegan</option>
-            </select>
-          </label>
-          <p class="acct__fine" data-i18n="account.dietnote">Filters what the shelf and your emails suggest — no meat items if vegetarian, no animal products at all if vegan.</p>
+        <div class="acct__section" data-acct-section="profile">
+          <div class="acct__group">
+            <span class="acct__group-title" data-i18n="account.group.details">Your details</span>
+            <label class="field"><span data-i18n="account.name">Name</span>
+              <input type="text" id="acctNameEdit" autocomplete="name">
+            </label>
+            <label class="field"><span data-i18n="account.email">Email</span>
+              <input type="email" id="acctEmailEdit" autocomplete="email">
+            </label>
+            <button class="btn btn--dark btn--sm" type="button" id="acctSaveProfile" data-i18n="account.save">Save changes</button>
+            <p class="acct__fine acct__saved-msg" id="acctSavedMsg" hidden data-i18n="account.saved.msg">Saved.</p>
+          </div>
+
+          <div class="acct__group">
+            <span class="acct__group-title" data-i18n="account.group.notifs">Notifications</span>
+            <label class="check">
+              <input type="checkbox" id="acctNewsletter2">
+              <span data-i18n="account.newsletter">Email me the weekly shelf — what's cheap, what's new</span>
+            </label>
+            <label class="check">
+              <input type="checkbox" id="acctAlerts2">
+              <span data-i18n="account.alerts">Email me when a big or short-dated delivery lands — it might sell out in hours</span>
+            </label>
+            <label class="check">
+              <input type="checkbox" id="acctCSR2">
+              <span data-i18n="account.csr">Send me the quarterly impact report — tonnes rescued, our partners, where it went</span>
+            </label>
+          </div>
+
+          <div class="acct__group">
+            <span class="acct__group-title" data-i18n="account.group.prefs">Preferences</span>
+            <label class="field"><span data-i18n="account.diet">Diet</span>
+              <select id="acctDiet2">
+                <option value="none" data-i18n="diet.none">No preference</option>
+                <option value="veggie" data-i18n="diet.veggie">Vegetarian</option>
+                <option value="vegan" data-i18n="diet.vegan">Vegan</option>
+              </select>
+            </label>
+            <p class="acct__fine" data-i18n="account.dietnote">Filters what the shelf and your emails suggest — no meat items if vegetarian, no animal products at all if vegan.</p>
+          </div>
         </div>
 
-        <div class="acct__stats">
-          <div><strong id="acctSavedTotal">€0.00</strong><span data-i18n="account.saved">rescued so far</span></div>
-          <div><strong id="acctOrderCount">0</strong><span data-i18n="account.orders">reservations</span></div>
+        <div class="acct__section" data-acct-section="orders" hidden>
+          <div class="acct__stats">
+            <div><strong id="acctSavedTotal">€0.00</strong><span data-i18n="account.saved">rescued so far</span></div>
+            <div><strong id="acctOrderCount">0</strong><span data-i18n="account.orders">reservations</span></div>
+          </div>
+          <ul class="acct__orders" id="acctOrdersList"></ul>
+          <p class="acct__fine acct__orders-empty" id="acctOrdersEmpty" data-i18n="account.orders.empty" hidden>No reservations yet — your next pickup will show up here.</p>
         </div>
+
+        <div class="acct__section" data-acct-section="points" hidden>
+          <p class="acct__lead" data-i18n="account.points.desc">A stamp for every €10 you rescue. Ten stamps, five euros off your next shop.</p>
+          <div class="stampcard">
+            <div class="stampcard__head"><span data-i18n="club.name">RESCUE CLUB</span><span id="acctStampNo">№ 00000</span></div>
+            <div class="stampcard__grid" id="acctStampGrid"></div>
+            <p class="stampcard__foot" id="acctStampFoot"></p>
+          </div>
+          <div class="acct__stats" style="margin-top:16px">
+            <div><strong id="acctRewards">0</strong><span data-i18n="account.points.rewards">€5 rewards earned</span></div>
+            <div><strong id="acctSavedTotal2">€0.00</strong><span data-i18n="account.saved">rescued so far</span></div>
+          </div>
+        </div>
+
         <button class="btn btn--ghost btn--block" id="acctSignOut" type="button" data-i18n="account.signout">Sign out</button>
       </div>
     </div>
@@ -1318,7 +1375,8 @@
       "account.passwordhint.signin": "Enter your password to sign back in.",
       "account.noaccount": "No account with this email yet — use Create account instead.",
       "account.alreadyexists": "This email already has an account — use Sign in instead.",
-      "shop.count1": "{n} product available", "shop.countn": "{n} products available"
+      "shop.count1": "{n} product available", "shop.countn": "{n} products available",
+      "account.points.tocard": "{n} stamps to your next €5 off", "account.points.almost": "One more stamp — your next €5 off is close."
     },
     lv: {
       "tab.good": "Pilnīgi labs", "tab.thirty": "Tie 30%", "tab.store": "Veikals", "tab.shop": "Pirkt", "tab.intake": "Plūsma", "tab.comein": "Ienāc",
@@ -1423,6 +1481,12 @@
       "search.ph": "Meklēt preci…", "search.none": "Nekas neatbilst meklējumam",
       "account.title": "Tavs konts", "account.lead": "Saglabā savu grozu, saņem iknedēļas piedāvājumus un seko līdzi, cik esi ietaupījis.",
       "eb.account": "Konts un Kluba karte", "h2.account": "Pieteicies, vai izveido savu Kluba karti.",
+      "account.tab.profile": "Profils", "account.tab.orders": "Pasūtījumi", "account.tab.points": "Kluba punkti",
+      "account.save": "Saglabāt izmaiņas", "account.saved.msg": "Saglabāts.",
+      "account.orders.empty": "Vēl nav rezervāciju — tavs nākamais pikaps parādīsies šeit.",
+      "account.points.desc": "Zīmogs par katriem izpirktajiem €10. Desmit zīmogi — pieci eiro atlaides nākamajam pirkumam.",
+      "account.points.rewards": "€5 atlaides saņemtas", "account.points.tocard": "{n} zīmogi līdz nākamajai €5 atlaidei",
+      "account.points.almost": "Vēl viens zīmogs — nākamā €5 atlaide ir tuvu.",
       "account.googleerr": "Neizdevās nolasīt Google atbildi — izmanto formu zemāk.",
       "account.name": "Vārds", "account.email": "E-pasts",
       "account.newsletter": "Sūtīt man iknedēļas jaunumus — kas ir lēts, kas ir jauns",
@@ -1552,6 +1616,12 @@
       "search.ph": "Chercher un produit…", "search.none": "Aucun produit ne correspond",
       "account.title": "Votre compte", "account.lead": "Enregistrez votre panier, recevez le rayon de la semaine par e-mail, et suivez ce que vous avez économisé.",
       "eb.account": "Compte et carte Club", "h2.account": "Connectez-vous, ou créez votre carte Club.",
+      "account.tab.profile": "Profil", "account.tab.orders": "Commandes", "account.tab.points": "Points Club",
+      "account.save": "Enregistrer les modifications", "account.saved.msg": "Enregistré.",
+      "account.orders.empty": "Aucune réservation pour l'instant — votre prochain retrait apparaîtra ici.",
+      "account.points.desc": "Un tampon tous les 10€ économisés. Dix tampons, cinq euros de réduction sur votre prochain achat.",
+      "account.points.rewards": "réductions de 5€ obtenues", "account.points.tocard": "{n} tampons avant votre prochaine réduction de 5€",
+      "account.points.almost": "Encore un tampon — votre prochaine réduction de 5€ approche.",
       "account.googleerr": "Impossible de lire la réponse Google — utilisez le formulaire ci-dessous.",
       "account.name": "Nom", "account.email": "E-mail",
       "account.newsletter": "M'envoyer le rayon de la semaine — ce qui est pas cher, ce qui est nouveau",
@@ -2129,6 +2199,19 @@
     saveAccountsDir(dir);
     try { localStorage.setItem(SESSION_LS, account.email.toLowerCase()); } catch (e) {}
   }
+  // a brand-new account gets a couple of plausible past pickups pre-filled — an empty history
+  // isn't a realistic first look at what this page is for, and every account here is a demo anyway
+  function seedOrderHistory() {
+    var picks = [["milk", "eggs", "cheese"], ["sourdough", "apples", "beans"]];
+    var daysAgo = [13, 6];
+    return picks.map(function (ids, i) {
+      var items = ids.map(function (id) { var p = P[id]; return p ? { id: id, name: p.name, qty: 1, price: p.price, was: p.was } : null; }).filter(Boolean);
+      var was = items.reduce(function (s, it) { return s + it.was; }, 0);
+      var now = items.reduce(function (s, it) { return s + it.price; }, 0);
+      var d = new Date(Date.now() - daysAgo[i] * 86400000);
+      return { id: "RC-" + (10000 + i), date: d.toISOString(), items: items, was: was, now: now };
+    });
+  }
   function signInAccount(data) {
     var dir = loadAccountsDir();
     var prior = dir[(data.email || "").toLowerCase()] || null;
@@ -2143,9 +2226,10 @@
       alertsRestock: data.alertsRestock != null ? data.alertsRestock : (prior ? prior.alertsRestock : true),
       newsletterCSR: data.newsletterCSR != null ? data.newsletterCSR : (prior ? prior.newsletterCSR : false),
       diet: data.diet || (prior ? prior.diet : "none"),
-      savedTotal: prior ? prior.savedTotal : 0,
-      orders: prior ? prior.orders : 0
+      orderHistory: prior ? (prior.orderHistory || []) : seedOrderHistory()
     };
+    account.savedTotal = prior ? prior.savedTotal : account.orderHistory.reduce(function (s, o) { return s + (o.was - o.now); }, 0);
+    account.orders = account.orderHistory.length;
     pendingVeggie = null;
     saveAccount(); renderAccount(); closeProfileDrawer();
     toast(tp("account.welcome", { name: (account.name || account.email).split(" ")[0] }));
@@ -2176,12 +2260,17 @@
       $("#acctDisplayEmail").textContent = account.email;
       applyAvatar($("#acctAvatar"), account);
       $$(".acct__veggies").forEach(function (el) { el.innerHTML = veggiePickerHTML(account.avatarVeg); });
+      $("#acctNameEdit").value = account.name || "";
+      $("#acctEmailEdit").value = account.email || "";
       $("#acctNewsletter2").checked = !!account.newsletter;
       $("#acctAlerts2").checked = !!account.alertsRestock;
       $("#acctCSR2").checked = !!account.newsletterCSR;
       $("#acctDiet2").value = account.diet || "none";
       $("#acctSavedTotal").textContent = euro(account.savedTotal || 0);
       $("#acctOrderCount").textContent = account.orders || 0;
+      if (typeof setAcctSection === "function") setAcctSection("profile");
+      if (typeof renderOrders === "function") renderOrders();
+      if (typeof renderPoints === "function") renderPoints();
       // header button becomes just the Club card photo — the profile-popover (hover only) is the
       // one place the "switch account" interface actually shows
       // icon is an <svg> — SVGElement has no reflected `.hidden` IDL property like HTMLElement does,
@@ -2214,6 +2303,51 @@
     }
     try { renderGrid(); } catch (e) {}
   }
+  // Profile / Orders / Club points — navigated inside the account page itself, not three drawers
+  function setAcctSection(name) {
+    $$(".acct__subtab").forEach(function (b) { var on = b.dataset.section === name; b.classList.toggle("is-active", on); b.setAttribute("aria-selected", String(on)); });
+    $$(".acct__section").forEach(function (el) { el.hidden = el.dataset.acctSection !== name; });
+  }
+  function fmtOrderDate(iso) {
+    var d = new Date(iso);
+    return d.toLocaleDateString(LANG === "lv" ? "lv-LV" : LANG === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "short", year: "numeric" });
+  }
+  function renderOrders() {
+    var list = $("#acctOrdersList"), empty = $("#acctOrdersEmpty");
+    if (!list || !account) return;
+    var hist = account.orderHistory || [];
+    if (!hist.length) { list.innerHTML = ""; if (empty) empty.hidden = false; return; }
+    if (empty) empty.hidden = true;
+    list.innerHTML = hist.map(function (o) {
+      var itemsText = o.items.map(function (it) { return (L(it.name) || it.name) + (it.qty > 1 ? " ×" + it.qty : ""); }).join(", ");
+      return '<li class="acct__order">' +
+        '<div class="acct__order__head"><b>' + fmtOrderDate(o.date) + '</b><span>' + o.id + '</span></div>' +
+        '<p class="acct__order__items">' + itemsText + '</p>' +
+        '<div class="acct__order__foot"><span>' + euro(o.now) + ' <s>' + euro(o.was) + '</s></span><span class="save">−' + euro(o.was - o.now) + '</span></div>' +
+        '</li>';
+    }).join("");
+  }
+  // a stamp per €10 rescued, ten stamps = €5 off — same rule quoted in the Come In tab's club pitch
+  function renderPoints() {
+    var grid = $("#acctStampGrid"), foot = $("#acctStampFoot"), no = $("#acctStampNo");
+    if (!grid || !account) return;
+    var saved = account.savedTotal || 0;
+    var totalStamps = Math.floor(saved / 10);
+    var onCard = totalStamps % 10;
+    var rewards = Math.floor(totalStamps / 10);
+    grid.innerHTML = "";
+    for (var i = 0; i < 10; i++) {
+      var b = document.createElement("button");
+      b.type = "button"; b.tabIndex = -1;
+      if (i < onCard) { b.classList.add("on"); b.textContent = "✓"; } else { b.textContent = i + 1; }
+      grid.appendChild(b);
+    }
+    if (foot) foot.textContent = onCard >= 10 - 1 && onCard < 10 ? t("account.points.almost", "One more stamp — your next €5 off is close.") : tp("account.points.tocard", { n: 10 - onCard });
+    if (no) no.textContent = "№ " + (account.email || "").length.toString().padStart(2, "0") + (Math.abs(hashCode(account.email || "")) % 90000 + 10000);
+    var rw = $("#acctRewards"); if (rw) rw.textContent = rewards;
+    var st2 = $("#acctSavedTotal2"); if (st2) st2.textContent = euro(saved);
+  }
+  function hashCode(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h << 5) - h + s.charCodeAt(i) | 0; return h; }
   // the Rescue Club "join online" widget on the Come In tab — same account, a lighter-weight
   // entry point right where the loyalty perks are pitched
   function renderClubCard() {
@@ -5691,10 +5825,19 @@
   $("#reserveBtn").addEventListener("click", function () {
     var label = $("#pickupSlot").options[$("#pickupSlot").selectedIndex].text;
     if (account) {
-      var was = 0, now = 0;
-      Object.keys(basket).forEach(function (id) { var p = P[id]; if (p) { was += p.was * basket[id]; now += p.price * basket[id]; } });
+      var was = 0, now = 0, items = [];
+      Object.keys(basket).forEach(function (id) {
+        var p = P[id]; if (!p) return;
+        var q = basket[id];
+        was += p.was * q; now += p.price * q;
+        items.push({ id: id, name: p.name, qty: q, price: p.price, was: p.was });
+      });
+      if (items.length) {
+        account.orderHistory = account.orderHistory || [];
+        account.orderHistory.unshift({ id: "RC-" + Date.now().toString().slice(-6), date: new Date().toISOString(), items: items, was: was, now: now, slot: label });
+        account.orders = account.orderHistory.length;
+      }
       account.savedTotal = (account.savedTotal || 0) + (was - now);
-      account.orders = (account.orders || 0) + 1;
       saveAccount(); renderAccount();
     }
     basket = {}; saveBasket(); syncBasket(); renderGrid(); closeDrawer();
@@ -5705,6 +5848,19 @@
   $("#popoverSignOut").addEventListener("click", signOutAccount);
   $("#popoverCreate").addEventListener("click", openProfileDrawer);
   $("#acctSignOut").addEventListener("click", signOutAccount);
+  $$(".acct__subtab").forEach(function (b) { b.addEventListener("click", function () { setAcctSection(b.dataset.section); }); });
+  $("#acctSaveProfile").addEventListener("click", function () {
+    if (!account) return;
+    var name = $("#acctNameEdit").value.trim(), email = $("#acctEmailEdit").value.trim();
+    if (!email) return;
+    var dir = loadAccountsDir();
+    delete dir[account.email.toLowerCase()];
+    account.name = name; account.email = email;
+    saveAccountsDir(dir);
+    saveAccount(); renderAccount();
+    var msg = $("#acctSavedMsg");
+    if (msg) { msg.hidden = false; clearTimeout(msg._t); msg._t = setTimeout(function () { msg.hidden = true; }, 2200); }
+  });
   $("#acctNewsletter2").addEventListener("change", function () { if (account) { account.newsletter = this.checked; saveAccount(); } });
   $("#acctAlerts2").addEventListener("change", function () { if (account) { account.alertsRestock = this.checked; saveAccount(); } });
   $("#acctCSR2").addEventListener("change", function () { if (account) { account.newsletterCSR = this.checked; saveAccount(); } });
