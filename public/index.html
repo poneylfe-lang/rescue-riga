@@ -1105,7 +1105,7 @@
   <section class="panel account-page" data-tab="account" role="tabpanel">
     <div class="panel__head">
       <p class="eyebrow" data-i18n="eb.account">Account &amp; Club card</p>
-      <h2 data-i18n="h2.account">Sign in, or start your Club card.</h2>
+      <h2 id="acctPageTitle" data-i18n="h2.account">Sign in, or start your Club card.</h2>
     </div>
 
     <div class="account-page__body">
@@ -1376,7 +1376,8 @@
       "account.noaccount": "No account with this email yet — use Create account instead.",
       "account.alreadyexists": "This email already has an account — use Sign in instead.",
       "shop.count1": "{n} product available", "shop.countn": "{n} products available",
-      "account.points.tocard": "{n} stamps to your next €5 off", "account.points.almost": "One more stamp — your next €5 off is close."
+      "account.points.tocard": "{n} stamps to your next €5 off", "account.points.almost": "One more stamp — your next €5 off is close.",
+      "h2.account.in": "Welcome back, {name}."
     },
     lv: {
       "tab.good": "Pilnīgi labs", "tab.thirty": "Tie 30%", "tab.store": "Veikals", "tab.shop": "Pirkt", "tab.intake": "Plūsma", "tab.comein": "Ienāc",
@@ -1487,6 +1488,7 @@
       "account.points.desc": "Zīmogs par katriem izpirktajiem €10. Desmit zīmogi — pieci eiro atlaides nākamajam pirkumam.",
       "account.points.rewards": "€5 atlaides saņemtas", "account.points.tocard": "{n} zīmogi līdz nākamajai €5 atlaidei",
       "account.points.almost": "Vēl viens zīmogs — nākamā €5 atlaide ir tuvu.",
+      "h2.account.in": "Laipni lūdzam atpakaļ, {name}.",
       "account.googleerr": "Neizdevās nolasīt Google atbildi — izmanto formu zemāk.",
       "account.name": "Vārds", "account.email": "E-pasts",
       "account.newsletter": "Sūtīt man iknedēļas jaunumus — kas ir lēts, kas ir jauns",
@@ -1622,6 +1624,7 @@
       "account.points.desc": "Un tampon tous les 10€ économisés. Dix tampons, cinq euros de réduction sur votre prochain achat.",
       "account.points.rewards": "réductions de 5€ obtenues", "account.points.tocard": "{n} tampons avant votre prochaine réduction de 5€",
       "account.points.almost": "Encore un tampon — votre prochaine réduction de 5€ approche.",
+      "h2.account.in": "Content de vous revoir, {name}.",
       "account.googleerr": "Impossible de lire la réponse Google — utilisez le formulaire ci-dessous.",
       "account.name": "Nom", "account.email": "E-mail",
       "account.newsletter": "M'envoyer le rayon de la semaine — ce qui est pas cher, ce qui est nouveau",
@@ -1994,6 +1997,9 @@
     document.documentElement.lang = l;
     $$(".lang button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.lang === l)); });
     applyI18n();
+    // applyI18n() just reset #acctPageTitle to the generic signed-out copy via its data-i18n
+    // attribute — put the personalised "Welcome back" version back if someone's actually signed in
+    try { if (account && $("#acctPageTitle")) $("#acctPageTitle").textContent = tp("h2.account.in", { name: (account.name || account.email).split(" ")[0] }); } catch (e) {}
     try { renderStatic(); } catch (e) {}
     try { renderGrid(); } catch (e) {}
     try { syncBasket(); } catch (e) {}
@@ -2271,6 +2277,7 @@
       if (typeof setAcctSection === "function") setAcctSection("profile");
       if (typeof renderOrders === "function") renderOrders();
       if (typeof renderPoints === "function") renderPoints();
+      var pt = $("#acctPageTitle"); if (pt) pt.textContent = tp("h2.account.in", { name: (account.name || account.email).split(" ")[0] });
       // header button becomes just the Club card photo — the profile-popover (hover only) is the
       // one place the "switch account" interface actually shows
       // icon is an <svg> — SVGElement has no reflected `.hidden` IDL property like HTMLElement does,
@@ -2284,6 +2291,7 @@
       renderClubCard();
     } else {
       out.hidden = false; inn.hidden = true;
+      var pt2 = $("#acctPageTitle"); if (pt2) pt2.textContent = t("h2.account");
       $("#acctForm").reset(); $("#acctNewsletter").checked = true; $("#acctAlerts").checked = true;
       if (typeof setAcctMode === "function") setAcctMode("create");
       pendingVeggie = null;
