@@ -668,6 +668,7 @@
   .qty span { min-width: 28px; text-align: center; font: 700 13px var(--f-mono); }
   .drawer__empty { padding: 38px 18px; text-align: center; color: var(--ink-70); }
   .drawer__foot { padding: 16px 18px; border-top: var(--edge); background: var(--paper-2); }
+  .drawer__foot .btn + .btn { margin-top: 8px; }
   .tot > div { display: flex; justify-content: space-between; font-size: 0.94rem; padding: 3px 0; font-variant-numeric: tabular-nums; }
   .tot .save { color: var(--leaf); font-weight: 600; }
   .tot .grand { border-top: var(--perf); margin-top: 5px; padding-top: 9px; font: 800 1.22rem var(--f-display); }
@@ -715,6 +716,23 @@
   .pm-bb { font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; }
   .modal__meta .btn { margin-top: auto; }
   @media (max-width: 640px) { .modal__card { grid-template-columns: 1fr; } .stage3d { border-right: 0; border-bottom: var(--edge); } }
+
+  /* ---------------- FAKE ONLINE PAYMENT (always declines — pickup is pay-in-store) ---------------- */
+  .modal__card--pay { grid-template-columns: 1fr; width: min(420px, 100%); border-radius: var(--r); }
+  .pay { padding: 30px 26px 26px; }
+  .pay__eyebrow { font: 800 11px/1 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-70); margin: 0 0 10px; }
+  .pay h3 { font-size: 1.3rem; margin: 0 0 4px; }
+  .pay__amount { font: 800 2rem var(--f-display); color: var(--rescue); font-variant-numeric: tabular-nums; margin: 0 0 18px; }
+  .pay__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .pay__secure { margin: 12px 0 0; font: 500 11px/1.4 var(--f-mono); color: var(--ink-70); text-align: center; }
+  #paySubmit { margin-top: 16px; }
+  #paySubmit[aria-busy="true"] { opacity: 0.7; pointer-events: none; }
+  .pay__result { text-align: center; padding: 6px 0 0; }
+  .pay__result-icon { width: 46px; height: 46px; margin: 0 auto 14px; border-radius: 50%; background: var(--maroon); color: #fff; font: 800 20px/46px var(--f-display); }
+  .pay__result h4 { font-size: 1.15rem; margin: 0 0 8px; color: var(--maroon); }
+  .pay__result p { color: var(--ink-70); font-size: 0.92rem; margin: 0 0 20px; }
+  .pay__result .btn { margin-top: 0; }
+  .pay__result .btn + .btn { margin-top: 8px; }
 
   /* ---------------- TOAST ---------------- */
   /* animates `bottom`, not a translateY(150%) — that was relative to the toast's OWN height, so a
@@ -1353,6 +1371,7 @@
     <p class="drawer__eq" id="sumEq" hidden></p>
     <label class="pickup"><span data-i18n="cart.slot">Collection slot</span><select id="pickupSlot"></select></label>
     <button class="btn btn--solid btn--block" id="reserveBtn" data-i18n="cart.reserve">Reserve for pickup</button>
+    <button class="btn btn--ghost btn--block" id="payOnlineBtn" data-i18n="cart.payonline">Pay online now</button>
     <p class="drawer__note" data-i18n="cart.note">Reserve holds your items for 3 hours. Pay in store.</p>
   </div>
 </aside>
@@ -1373,6 +1392,46 @@
   </div>
 </div>
 
+
+<div class="modal" id="payModal" hidden>
+  <div class="modal__card modal__card--pay" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+    <button class="icon-btn modal__close" id="payClose" aria-label="Close">✕</button>
+    <div class="pay">
+      <p class="pay__eyebrow" data-i18n="pay.eyebrow">Secure checkout</p>
+      <h3 id="payTitle" data-i18n="pay.title">Pay online now</h3>
+      <p class="pay__amount" id="payAmount">€0.00</p>
+
+      <form id="payForm" class="pay__form">
+        <label class="field"><span data-i18n="pay.card">Card number</span>
+          <input type="text" id="payCardNumber" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" maxlength="19" required>
+        </label>
+        <div class="pay__row">
+          <label class="field"><span data-i18n="pay.expiry">Expiry</span>
+            <input type="text" id="payExpiry" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/YY" maxlength="5" required>
+          </label>
+          <label class="field"><span data-i18n="pay.cvc">CVC</span>
+            <input type="text" id="payCVC" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4" required>
+          </label>
+        </div>
+        <label class="field"><span data-i18n="pay.name">Name on card</span>
+          <input type="text" id="payName" autocomplete="cc-name" required>
+        </label>
+        <button class="btn btn--solid btn--block" type="submit" id="paySubmit">
+          <span id="paySubmitLabel" data-i18n="pay.submit">Pay</span>
+        </button>
+        <p class="pay__secure" data-i18n="pay.secure">🔒 Encrypted. Card details are never stored.</p>
+      </form>
+
+      <div class="pay__result" id="payResult" hidden>
+        <div class="pay__result-icon" aria-hidden="true">✕</div>
+        <h4 data-i18n="pay.declined.title">Payment declined</h4>
+        <p data-i18n="pay.declined.body">Your bank declined this card. Nothing was charged.</p>
+        <button class="btn btn--dark btn--block" id="payTryReserve" data-i18n="pay.declined.reserve">Reserve for pickup instead</button>
+        <button class="btn btn--ghost btn--block" id="payTryAgain" data-i18n="pay.declined.retry">Try a different card</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -1518,7 +1577,9 @@
       "comein.signoff": "Nāc izsalcis. Ej prom apmierināts. <b>Nekas uz mūsu plauktiem nekad nav bijis miskastē.</b>",
       "cart.title": "Tavs grozs", "cart.empty": "Vēl nekas nav izglābts.", "cart.back": "Atpakaļ pie plaukta",
       "cart.was": "Plaukta cena", "cart.save": "Tu izglāb", "cart.now": "Maksā, saņemot",
-      "cart.slot": "Saņemšanas laiks", "cart.reserve": "Rezervēt saņemšanai", "cart.note": "Rezervācija tur preces 3 stundas. Maksā veikalā.",
+      "cart.slot": "Saņemšanas laiks", "cart.reserve": "Rezervēt saņemšanai", "cart.payonline": "Maksāt tiešsaistē", "cart.note": "Rezervācija tur preces 3 stundas. Maksā veikalā.",
+      "pay.eyebrow": "Droša norēķināšanās", "pay.title": "Maksāt tiešsaistē", "pay.card": "Kartes numurs", "pay.expiry": "Derīga līdz", "pay.cvc": "CVC", "pay.name": "Vārds uz kartes", "pay.submit": "Maksāt", "pay.processing": "Apstrādā…", "pay.secure": "🔒 Šifrēts. Kartes dati netiek saglabāti.",
+      "pay.declined.title": "Maksājums noraidīts", "pay.declined.body": "Jūsu banka noraidīja šo karti. Nekas netika iekasēts.", "pay.declined.reserve": "Rezervēt saņemšanai veikalā", "pay.declined.retry": "Mēģināt ar citu karti",
       "cart.addbasket": "Pievienot grozam",
       "card.add": "Pievienot", "card.left": "atlikuši", "card.allrescued": "Viss izglābts", "card.was": "bija",
       "bb.pre": "Derīgs līdz:", "bb.today": "šodienai", "bb.tomorrow": "rītdienai", "bb.days": "{n} dienām", "bb.long": "Ilgi glabājams",
@@ -1667,7 +1728,9 @@
       "comein.signoff": "Venez le ventre vide. Repartez fiers. <b>Rien sur nos étagères n’a connu le fond d’une poubelle.</b>",
       "cart.title": "Votre panier", "cart.empty": "Rien de sauvé pour l’instant.", "cart.back": "Retour au rayon",
       "cart.was": "Prix en rayon", "cart.save": "Vous sauvez", "cart.now": "À payer au retrait",
-      "cart.slot": "Créneau de retrait", "cart.reserve": "Réserver pour le retrait", "cart.note": "La réservation garde vos articles 3 h. Paiement en magasin.",
+      "cart.slot": "Créneau de retrait", "cart.reserve": "Réserver pour le retrait", "cart.payonline": "Payer en ligne", "cart.note": "La réservation garde vos articles 3 h. Paiement en magasin.",
+      "pay.eyebrow": "Paiement sécurisé", "pay.title": "Payer en ligne", "pay.card": "Numéro de carte", "pay.expiry": "Expiration", "pay.cvc": "CVC", "pay.name": "Nom sur la carte", "pay.submit": "Payer", "pay.processing": "Traitement…", "pay.secure": "🔒 Chiffré. Les données de carte ne sont jamais conservées.",
+      "pay.declined.title": "Paiement refusé", "pay.declined.body": "Votre banque a refusé cette carte. Rien n’a été débité.", "pay.declined.reserve": "Réserver pour un retrait en magasin", "pay.declined.retry": "Essayer une autre carte",
       "cart.addbasket": "Ajouter au panier",
       "card.add": "Ajouter", "card.left": "restants", "card.allrescued": "Tout est sauvé", "card.was": "avant",
       "bb.pre": "À consommer avant :", "bb.today": "aujourd’hui", "bb.tomorrow": "demain", "bb.days": "{n} jours", "bb.long": "Longue conservation",
@@ -5921,12 +5984,13 @@
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Escape") return;
     if (!$("#pmodal").hidden) closeModal();
+    else if (!$("#payModal").hidden) closePayModal();
     else if ($("#drawer").classList.contains("open")) closeDrawer();
     else if ($("#acctDrawer").classList.contains("open")) closeProfileDrawer();
     else if (!$("#searchResults").hidden) { $("#searchResults").hidden = true; $("#siteSearch").blur(); }
   });
   $("#sortSel").addEventListener("change", function () { sortMode = this.value; renderGrid(); });
-  $("#reserveBtn").addEventListener("click", function () {
+  function doReserve() {
     var label = $("#pickupSlot").options[$("#pickupSlot").selectedIndex].text;
     if (account) {
       var was = 0, now = 0, items = [];
@@ -5946,7 +6010,51 @@
     }
     basket = {}; saveBasket(); syncBasket(); renderGrid(); closeDrawer();
     toast(t("toast.reserved", "Reserved for pickup ·") + " " + label);
+  }
+  $("#reserveBtn").addEventListener("click", doReserve);
+
+  /* ---- fake online payment: always declines at the last step — this is a click-and-collect
+     concept site with no real payment processor behind it. Reserve-for-pickup (pay in store)
+     is the real, working path; this just demonstrates what a checkout would look like. */
+  function openPayModal() {
+    if (!Object.keys(basket).length) return;
+    $("#payAmount").textContent = $("#sumNow").textContent;
+    $("#payForm").hidden = false;
+    $("#payResult").hidden = true;
+    $("#payForm").reset();
+    setPaySubmitBusy(false);
+    $("#payModal").hidden = false;
+  }
+  function closePayModal() { $("#payModal").hidden = true; }
+  function setPaySubmitBusy(busy) {
+    $("#paySubmit").setAttribute("aria-busy", String(busy));
+    $("#paySubmit").disabled = busy;
+    $("#paySubmitLabel").textContent = busy ? t("pay.processing", "Processing…") : t("pay.submit", "Pay");
+  }
+  $("#payCardNumber").addEventListener("input", function () {
+    this.value = this.value.replace(/[^\d]/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
   });
+  $("#payExpiry").addEventListener("input", function () {
+    this.value = this.value.replace(/[^\d]/g, "").slice(0, 4).replace(/(\d{2})(\d)/, "$1/$2");
+  });
+  $("#payCVC").addEventListener("input", function () { this.value = this.value.replace(/[^\d]/g, "").slice(0, 4); });
+  $("#payForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    setPaySubmitBusy(true);
+    setTimeout(function () {
+      $("#payForm").hidden = true;
+      $("#payResult").hidden = false;
+    }, 1400);
+  });
+  $("#payTryAgain").addEventListener("click", function () {
+    $("#payResult").hidden = true;
+    $("#payForm").hidden = false;
+    setPaySubmitBusy(false);
+  });
+  $("#payTryReserve").addEventListener("click", function () { closePayModal(); doReserve(); });
+  $("#payOnlineBtn").addEventListener("click", openPayModal);
+  $("#payClose").addEventListener("click", closePayModal);
+  $("#payModal").addEventListener("click", function (e) { if (e.target === $("#payModal")) closePayModal(); });
   $("#profileBtn").addEventListener("click", openProfileDrawer);
   $("#popoverManage").addEventListener("click", openProfileDrawer);
   $("#popoverSignOut").addEventListener("click", signOutAccount);
