@@ -163,6 +163,8 @@
   .account-page__body .acct { padding: 26px 0; overflow: visible; }
   .acct__lead { color: var(--ink-70); font-size: 0.92rem; }
   .acct__fine { margin-top: 14px; font: 400 12px/1.5 var(--f-mono); color: var(--ink-70); }
+  .acct__forgot { display: inline-block; margin-top: 10px; font: 700 12px/1.5 var(--f-body); color: var(--rescue); text-decoration: underline; }
+  .acct__forgot:hover { color: var(--maroon); }
   .acct__error { color: var(--maroon); font-weight: 700; }
   #googleSignInDiv { display: flex; justify-content: center; min-height: 40px; }
   .field { display: block; margin: 12px 0; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; }
@@ -1143,10 +1145,12 @@
             <label class="field"><span data-i18n="account.email">Email</span>
               <input type="email" id="acctEmail" autocomplete="email" required>
             </label>
-            <label class="field"><span data-i18n="account.password">Password</span>
+            <label class="field"><span id="acctPasswordLabel" data-i18n="account.password">Password</span>
               <input type="password" id="acctPassword" autocomplete="current-password" minlength="4" required>
             </label>
             <p class="acct__fine" id="acctPasswordHint" data-i18n="account.passwordhint.create">Choose a password for your new account.</p>
+            <a href="#" class="acct__forgot acct__only-signin" id="acctForgotLink" data-i18n="account.forgot">Forgot your password? Reset here</a>
+            <p class="acct__fine acct__only-reset" id="acctBackToSignin"><a href="#" id="acctBackToSigninLink" data-i18n="account.backtosignin">Remembered it? Sign in instead</a></p>
             <p class="acct__fine acct__error" id="acctPasswordError" hidden></p>
           </div>
 
@@ -1379,6 +1383,9 @@
       "account.alreadyexists": "This email already has an account — use Sign in instead.",
       "shop.count1": "{n} product available", "shop.countn": "{n} products available",
       "account.points.tocard": "{n} stamps to your next €5 off", "account.points.almost": "One more stamp — your next €5 off is close.",
+      "account.resetbtn": "Reset password", "account.newpassword": "New password",
+      "account.passwordhint.reset": "Set a new password for this email. This demo has no real identity check — anyone who knows the email can reset it.",
+      "account.resetdone": "Password updated — sign in with your new password.",
       "h2.account.in": "Welcome back, {name}."
     },
     lv: {
@@ -1490,6 +1497,10 @@
       "account.points.desc": "Zīmogs par katriem izpirktajiem €10. Desmit zīmogi — pieci eiro atlaides nākamajam pirkumam.",
       "account.points.rewards": "€5 atlaides saņemtas", "account.points.tocard": "{n} zīmogi līdz nākamajai €5 atlaidei",
       "account.points.almost": "Vēl viens zīmogs — nākamā €5 atlaide ir tuvu.",
+      "account.forgot": "Aizmirsi paroli? Atiestati šeit", "account.backtosignin": "Atcerējies? Pieteikties",
+      "account.resetbtn": "Atiestatīt paroli", "account.newpassword": "Jaunā parole",
+      "account.passwordhint.reset": "Iestati jaunu paroli šim e-pastam. Šai demo versijai nav īstas identitātes pārbaudes — ikviens, kas zina e-pastu, var to atiestatīt.",
+      "account.resetdone": "Parole atjaunināta — piesakies ar savu jauno paroli.",
       "h2.account.in": "Laipni lūdzam atpakaļ, {name}.",
       "account.googleerr": "Neizdevās nolasīt Google atbildi — izmanto formu zemāk.",
       "account.name": "Vārds", "account.email": "E-pasts",
@@ -1626,6 +1637,10 @@
       "account.points.desc": "Un tampon tous les 10€ économisés. Dix tampons, cinq euros de réduction sur votre prochain achat.",
       "account.points.rewards": "réductions de 5€ obtenues", "account.points.tocard": "{n} tampons avant votre prochaine réduction de 5€",
       "account.points.almost": "Encore un tampon — votre prochaine réduction de 5€ approche.",
+      "account.forgot": "Mot de passe oublié ? Réinitialiser ici", "account.backtosignin": "Vous vous en souvenez ? Se connecter",
+      "account.resetbtn": "Réinitialiser le mot de passe", "account.newpassword": "Nouveau mot de passe",
+      "account.passwordhint.reset": "Définissez un nouveau mot de passe pour cet e-mail. Cette démo n'a pas de vraie vérification d'identité — n'importe qui connaissant l'e-mail peut le réinitialiser.",
+      "account.resetdone": "Mot de passe mis à jour — connectez-vous avec votre nouveau mot de passe.",
       "h2.account.in": "Content de vous revoir, {name}.",
       "account.googleerr": "Impossible de lire la réponse Google — utilisez le formulaire ci-dessous.",
       "account.name": "Nom", "account.email": "E-mail",
@@ -5869,26 +5884,51 @@
   $("#acctAlerts2").addEventListener("change", function () { if (account) { account.alertsRestock = this.checked; saveAccount(); } });
   $("#acctCSR2").addEventListener("change", function () { if (account) { account.newsletterCSR = this.checked; saveAccount(); } });
   $("#acctDiet2").addEventListener("change", function () { if (account) { account.diet = this.value; saveAccount(); renderGrid(); } });
-  // two explicit modes instead of one form guessing intent from whether the email already exists
+  // three modes instead of one form guessing intent from whether the email already exists —
+  // "reset" is reached only via the "Forgot your password?" link, never shown as its own tab
   var acctMode = "create";
   function setAcctMode(mode) {
     acctMode = mode;
     $$(".acct__mode-tab").forEach(function (b) { var on = b.dataset.mode === mode; b.classList.toggle("is-active", on); b.setAttribute("aria-selected", String(on)); });
     $$("#acctForm .acct__only-create").forEach(function (el) { el.hidden = mode !== "create"; });
+    $$("#acctForm .acct__only-signin").forEach(function (el) { el.hidden = mode !== "signin"; });
+    $$("#acctForm .acct__only-reset").forEach(function (el) { el.hidden = mode !== "reset"; });
     $("#acctName").required = mode === "create";
-    var btn = $("#acctSubmitBtn"); if (btn) btn.textContent = t(mode === "create" ? "account.create" : "account.mode.signin");
-    var hint = $("#acctPasswordHint"); if (hint) hint.textContent = t(mode === "create" ? "account.passwordhint.create" : "account.passwordhint.signin");
+    var btn = $("#acctSubmitBtn");
+    if (btn) btn.textContent = t(mode === "create" ? "account.create" : mode === "reset" ? "account.resetbtn" : "account.mode.signin");
+    var lbl = $("#acctPasswordLabel");
+    if (lbl) lbl.textContent = t(mode === "reset" ? "account.newpassword" : "account.password");
+    var hint = $("#acctPasswordHint");
+    if (hint) hint.textContent = t(mode === "create" ? "account.passwordhint.create" : mode === "reset" ? "account.passwordhint.reset" : "account.passwordhint.signin");
+    $("#acctPassword").autocomplete = mode === "reset" ? "new-password" : "current-password";
     var errEl = $("#acctPasswordError"); if (errEl) errEl.hidden = true;
   }
   $$(".acct__mode-tab").forEach(function (b) { b.addEventListener("click", function () { setAcctMode(b.dataset.mode); }); });
+  $("#acctForgotLink").addEventListener("click", function (e) { e.preventDefault(); setAcctMode("reset"); });
+  $("#acctBackToSigninLink").addEventListener("click", function (e) { e.preventDefault(); setAcctMode("signin"); });
   $("#acctForm").addEventListener("submit", function (e) {
     e.preventDefault();
     var email = $("#acctEmail").value.trim(), password = $("#acctPassword").value;
     var errEl = $("#acctPasswordError");
     if (errEl) errEl.hidden = true;
     if (!email || !password) return;
-    var prior = loadAccountsDir()[email.toLowerCase()] || null;
+    var dir = loadAccountsDir();
+    var prior = dir[email.toLowerCase()] || null;
     function showError(msg) { if (errEl) { errEl.textContent = msg; errEl.hidden = false; } else toast(msg); }
+
+    if (acctMode === "reset") {
+      if (!prior || !prior.passwordHash) { showError(t("account.noaccount", "No account with this email yet — use Create account instead.")); return; }
+      hashPassword(password).then(function (hash) {
+        prior.passwordHash = hash;
+        dir[email.toLowerCase()] = prior;
+        saveAccountsDir(dir);
+        toast(t("account.resetdone", "Password updated — sign in with your new password."));
+        setAcctMode("signin");
+        $("#acctEmail").value = email;
+        $("#acctPassword").value = "";
+      });
+      return;
+    }
 
     if (acctMode === "signin") {
       if (!prior || !prior.passwordHash) { showError(t("account.noaccount", "No account with this email yet — use Create account instead.")); return; }
