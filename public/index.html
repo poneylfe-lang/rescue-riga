@@ -3425,33 +3425,39 @@
       scene.add(mesh(G(0.08, 0.14, 9.0), skirt, 4.65, 0.07, -0.1));
       scene.add(mesh(G(10.6, 0.14, 0.08), skirt, -0.5, 0.07, -4.21));
 
-      var ceil = mesh(G(10.9, 0.2, 9.4), M("#2a231d", 1), -0.5, 3.24, -0.1); ceil.castShadow = false; scene.add(ceil);
+      // roof + ceiling + everything sitting on the roof (parapet, solar array, AC unit, vent) are
+      // kept invisible by default — an open top so the store reads like a cutaway floor plan from
+      // any elevated angle, instead of a sealed box you can only see into through the front glass
+      var roofParts = [];
+      function rf(m) { roofParts.push(m); m.visible = false; return m; }
+
+      var ceil = mesh(G(10.9, 0.2, 9.4), M("#2a231d", 1), -0.5, 3.24, -0.1); ceil.castShadow = false; scene.add(rf(ceil));
       var beamM = M("#3a2f22", 0.85);
-      [-4.8, -3.2, -1.6, 0, 1.6, 3.2].forEach(function (bx) { var b = mesh(G(0.14, 0.26, 9), beamM, bx, 3.02, -0.1); b.castShadow = false; scene.add(b); });
+      [-4.8, -3.2, -1.6, 0, 1.6, 3.2].forEach(function (bx) { var b = mesh(G(0.14, 0.26, 9), beamM, bx, 3.02, -0.1); b.castShadow = false; scene.add(rf(b)); });
 
       // EXTERIOR ROOF — caps the ceiling so it's never exposed to the sky (was reading as a huge glowing slab)
       // flat colour, no noise texture — that fine a dot pattern aliased at the parapet's grazing viewing
       // angle into the striped, staticky "grésillement" reported repeatedly around the shop
       var roofM = M("#4a4842", 0.92, 0);
-      var roof = mesh(G(11.5, 0.14, 10.0), roofM, -0.5, 3.42, -0.1); scene.add(roof);
+      var roof = mesh(G(11.5, 0.14, 10.0), roofM, -0.5, 3.42, -0.1); scene.add(rf(roof));
       var parM = M("#2a231d", 0.85);
-      scene.add(mesh(RB(0.14, 0.34, 10.0, 0.02, 1), parM, -6.15, 3.66, -0.1));
-      scene.add(mesh(RB(0.14, 0.34, 10.0, 0.02, 1), parM, 5.15, 3.66, -0.1));
-      scene.add(mesh(RB(11.3, 0.34, 0.14, 0.02, 1), parM, -0.5, 3.66, -5.02));
-      scene.add(mesh(RB(11.3, 0.34, 0.14, 0.02, 1), parM, -0.5, 3.66, 4.82));
+      scene.add(rf(mesh(RB(0.14, 0.34, 10.0, 0.02, 1), parM, -6.15, 3.66, -0.1)));
+      scene.add(rf(mesh(RB(0.14, 0.34, 10.0, 0.02, 1), parM, 5.15, 3.66, -0.1)));
+      scene.add(rf(mesh(RB(11.3, 0.34, 0.14, 0.02, 1), parM, -0.5, 3.66, -5.02)));
+      scene.add(rf(mesh(RB(11.3, 0.34, 0.14, 0.02, 1), parM, -0.5, 3.66, 4.82)));
       // rooftop plant: solar array (on-brand) + AC condenser + vent
       var panelM = MP("#141d28", { roughness: 0.55, metalness: 0.2, clearcoat: 0.15, clearcoatRoughness: 0.4, envMapIntensity: 0.4 });
       var frameM = M("#c9c2b0", 0.4, 0.6);
       for (var pr = 0; pr < 2; pr++) {
         var rack = mesh(G(2.6, 0.06, 1.5), frameM, -2.6 + pr * 3.0, 3.62, -1.6);
-        rack.rotation.x = -0.28; scene.add(rack);
+        rack.rotation.x = -0.28; scene.add(rf(rack));
         var pan = mesh(G(2.5, 0.03, 1.4), panelM, -2.6 + pr * 3.0, 3.66, -1.55);
-        pan.rotation.x = -0.28; scene.add(pan);
+        pan.rotation.x = -0.28; scene.add(rf(pan));
       }
       var acM = M("#cfc9ba", 0.6, 0.15);
-      var ac = mesh(RB(1.1, 0.5, 0.7, 0.03, 1), acM, 3.0, 3.72, 2.0); scene.add(ac);
-      for (var gx = 0; gx < 5; gx++) { var slat = mesh(G(0.02, 0.4, 0.62), M("#8a857a", 0.5), 2.55 + gx * 0.11, 3.72, 2.0); slat.castShadow = false; scene.add(slat); }
-      scene.add(mesh(new T.CylinderGeometry(0.09, 0.09, 0.5, 10), M("#7a5040", 0.7), -3.6, 3.7, 1.6));
+      var ac = mesh(RB(1.1, 0.5, 0.7, 0.03, 1), acM, 3.0, 3.72, 2.0); scene.add(rf(ac));
+      for (var gx = 0; gx < 5; gx++) { var slat = mesh(G(0.02, 0.4, 0.62), M("#8a857a", 0.5), 2.55 + gx * 0.11, 3.72, 2.0); slat.castShadow = false; scene.add(rf(slat)); }
+      scene.add(rf(mesh(new T.CylinderGeometry(0.09, 0.09, 0.5, 10), M("#7a5040", 0.7), -3.6, 3.7, 1.6)));
 
       // plain alpha glass, not "transmission" — r128 has no real transmission pass, so that rendered
       // as an opaque grey slab with a dark SSAO halo (the "ghost" with black outline)
