@@ -158,9 +158,7 @@
   .profile-popover__actions button { flex: 1; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.03em; padding: 8px; border: 1.5px solid var(--ink); border-radius: var(--r); background: var(--card); cursor: pointer; }
   .profile-popover__actions button:hover { background: var(--paper-2); }
   .acct { padding: 18px; overflow-y: auto; flex: 1; }
-  /* account is a full page now (data-tab="account"), not a narrow slide-out drawer */
-  .account-page__body { max-width: 640px; margin: 0 auto; background: var(--card); border: var(--edge); border-radius: var(--r); box-shadow: var(--shadow); padding: 8px 38px 38px; }
-  .account-page__body .acct { padding: 26px 0; overflow: visible; }
+  .account-drawer .drawer__head h2 { font-size: 1.1rem; }
   .acct__lead { color: var(--ink-70); font-size: 0.92rem; }
   .acct__fine { margin-top: 14px; font: 400 12px/1.5 var(--f-mono); color: var(--ink-70); }
   .acct__forgot { display: inline-block; margin-top: 10px; font: 700 12px/1.5 var(--f-body); color: var(--rescue); text-decoration: underline; }
@@ -1149,14 +1147,26 @@
     <p class="comein__signoff" data-i18n-html="comein.signoff">Come hungry. Leave smug. <b>Nothing on our shelves ever saw the inside of a bin.</b></p>
   </section>
 
-  <!-- ===================== TAB: ACCOUNT (dedicated page, not a drawer) ===================== -->
-  <section class="panel account-page" data-tab="account" role="tabpanel">
-    <div class="panel__head">
-      <p class="eyebrow" data-i18n="eb.account">Account &amp; Club card</p>
+
+</main>
+
+<footer class="foot">
+  <div class="foot__row">
+    <span class="brand__word">RESCUE</span>
+    <p data-i18n="foot.text">A walk-in anti-waste grocery in Rīga. Concept site — product data, lots and figures are illustrative.</p>
+  </div>
+  <p class="corner-note" data-i18n-html="corner">We can’t wait to see you — <b>same food, scenic route.</b></p>
+</footer>
+
+<div class="scrim" id="scrim" hidden></div>
+
+  <!-- ===================== ACCOUNT (right-side drawer) ===================== -->
+  <aside class="drawer account-drawer" id="acctDrawer" aria-label="Account" aria-hidden="true">
+    <div class="drawer__head">
       <h2 id="acctPageTitle" data-i18n="h2.account">Sign in, or start your Club card.</h2>
+      <button class="icon-btn" id="acctDrawerClose" aria-label="Close account">✕</button>
     </div>
 
-    <div class="account-page__body">
       <div class="acct" id="acctSignedOut">
         <p class="acct__lead" data-i18n="account.lead">Save your basket, get the weekly shelf by email, and track how much you've rescued.</p>
 
@@ -1326,20 +1336,7 @@
 
         <button class="btn btn--ghost btn--block" id="acctSignOut" type="button" data-i18n="account.signout">Sign out</button>
       </div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="foot">
-  <div class="foot__row">
-    <span class="brand__word">RESCUE</span>
-    <p data-i18n="foot.text">A walk-in anti-waste grocery in Rīga. Concept site — product data, lots and figures are illustrative.</p>
-  </div>
-  <p class="corner-note" data-i18n-html="corner">We can’t wait to see you — <b>same food, scenic route.</b></p>
-</footer>
-
-<div class="scrim" id="scrim" hidden></div>
+  </aside>
 <aside class="drawer" id="drawer" aria-label="Your basket" aria-hidden="true">
   <div class="drawer__head"><h2 data-i18n="cart.title">Your basket</h2><button class="icon-btn" id="drawerClose" aria-label="Close basket">✕</button></div>
   <ul class="drawer__items" id="drawerItems"></ul>
@@ -2486,10 +2483,17 @@
     });
   }
 
-  // account lives on its own page (data-tab="account") now, not a slide-out drawer — these two
-  // names are kept because dozens of call sites already say "open/close the profile UI"
-  function openProfileDrawer() { showTab("account"); }
-  function closeProfileDrawer() {}
+  function openProfileDrawer() {
+    closeDrawer();
+    $("#acctDrawer").classList.add("open");
+    $("#acctDrawer").setAttribute("aria-hidden", "false");
+    $("#scrim").hidden = false;
+  }
+  function closeProfileDrawer() {
+    $("#acctDrawer").classList.remove("open");
+    $("#acctDrawer").setAttribute("aria-hidden", "true");
+    if (!$("#drawer").classList.contains("open")) $("#scrim").hidden = true;
+  }
 
   /* ---- header product search ---- */
   function searchMatches(q) {
@@ -2519,7 +2523,7 @@
   var activeZone = "all";
   var stockOnly = false;
   var sortMode = "value";
-  var TABS = ["good", "thirty", "store", "shop", "intake", "comein", "account"];
+  var TABS = ["good", "thirty", "store", "shop", "intake", "comein"];
 
   /* ============================ SECTIONS — one long scroll, tabs jump to headings ============================ */
   var currentTab = "good";
@@ -2794,7 +2798,7 @@
     else { eq.hidden = true; }
   }
   function openDrawer() { closeProfileDrawer(); $("#drawer").classList.add("open"); $("#drawer").setAttribute("aria-hidden", "false"); $("#scrim").hidden = false; }
-  function closeDrawer() { $("#drawer").classList.remove("open"); $("#drawer").setAttribute("aria-hidden", "true"); $("#scrim").hidden = true; }
+  function closeDrawer() { $("#drawer").classList.remove("open"); $("#drawer").setAttribute("aria-hidden", "true"); if (!$("#acctDrawer").classList.contains("open")) $("#scrim").hidden = true; }
   function fmtHM(d) { return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
   function buildPickupSlots() {
     var sel = $("#pickupSlot"); sel.innerHTML = "";
@@ -5910,6 +5914,7 @@
   });
   $("#basketBtn").addEventListener("click", openDrawer);
   $("#drawerClose").addEventListener("click", closeDrawer);
+  $("#acctDrawerClose").addEventListener("click", closeProfileDrawer);
   $("#scrim").addEventListener("click", function () { closeDrawer(); closeProfileDrawer(); });
   $("#pmClose").addEventListener("click", closeModal);
   $("#pmodal").addEventListener("click", function (e) { if (e.target === $("#pmodal")) closeModal(); });
@@ -5917,6 +5922,7 @@
     if (e.key !== "Escape") return;
     if (!$("#pmodal").hidden) closeModal();
     else if ($("#drawer").classList.contains("open")) closeDrawer();
+    else if ($("#acctDrawer").classList.contains("open")) closeProfileDrawer();
     else if (!$("#searchResults").hidden) { $("#searchResults").hidden = true; $("#siteSearch").blur(); }
   });
   $("#sortSel").addEventListener("change", function () { sortMode = this.value; renderGrid(); });
@@ -6150,7 +6156,7 @@
       toast(t("account.codewrongdevice", "This reset link only works in the browser you requested it from."));
       return;
     }
-    showTab("account");
+    openProfileDrawer();
     setAcctMode("reset", 2);
     $("#acctEmail").value = pending.email;
     $("#acctResetCode").value = code;
