@@ -362,7 +362,7 @@
   .carrier { border: var(--edge); border-radius: var(--r); background: var(--card); overflow: hidden; transition: transform 0.12s ease, box-shadow 0.12s ease; }
   .carrier:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
   .carrier__art { aspect-ratio: 1; background: var(--paper-2); }
-  .carrier__art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .carrier__art svg { width: 100%; height: 100%; display: block; }
   .carrier__body { padding: 14px 15px 16px; }
   .carrier__count { font: 800 1rem/1.2 var(--f-display); margin: 0 0 3px; }
   .carrier__count b { color: var(--rescue); font-size: 1.35em; font-variant-numeric: tabular-nums; }
@@ -5707,19 +5707,37 @@
   }
 
   /* ============================ THE 30% — BUYING POWER ============================ */
-  // real photos, same verified-keyword+lock approach as the product photos — no more stick-figure
-  // SVG illustrations here, this whole page is meant to look like a real store, not a diagram
   var CARRIERS = [
-    { kind: "cinema",  label: "nights at the cinema",        price: 8,   photo: "cinema,3" },
-    { kind: "transit", label: "monthly transport passes",     price: 50,  photo: "bus,1" },
-    { kind: "swim",    label: "terms of kids’ swimming",      price: 110, photo: "swim,1" },
-    { kind: "shoes",   label: "pairs of running shoes",       price: 95,  photo: "running-shoes,1" },
-    { kind: "weekend", label: "weekends away in Cēsis",       price: 160, photo: "countryside,3" }
+    { kind: "cinema",  label: "nights at the cinema",        price: 8 },
+    { kind: "transit", label: "monthly transport passes",     price: 50 },
+    { kind: "swim",    label: "terms of kids’ swimming",      price: 110 },
+    { kind: "shoes",   label: "pairs of running shoes",       price: 95 },
+    { kind: "weekend", label: "weekends away in Cēsis",       price: 160 }
   ];
-  function carrierPhotoUrl(kind) {
-    var c = CARRIERS.filter(function (x) { return x.kind === kind; })[0];
-    var kw = (c ? c.photo : "cinema,3").split(",");
-    return "https://loremflickr.com/380/380/" + kw[0] + "?lock=" + kw[1];
+  function carrierFigure(prop) {
+    return '<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">' +
+      '<ellipse cx="60" cy="120" rx="46" ry="6" fill="rgba(23,19,14,0.12)"/>' +
+      '<g stroke="#17130e" stroke-width="3.4" stroke-linecap="round" fill="none">' +
+        '<circle cx="52" cy="26" r="10" fill="#f3efe4"/>' +
+        '<path d="M52 36 v30"/>' +
+        '<path d="M52 44 l-16 14 M52 44 l17 9"/>' +
+        '<path d="M52 66 l-11 28 M52 66 l11 28"/>' +
+      '</g>' +
+      '<g transform="translate(24 56)">' +
+        '<path d="M0 5 h18 v20 h-18 z" fill="#e8562f" stroke="#17130e" stroke-width="2.6"/>' +
+        '<path d="M3 5 c0 -7 12 -7 12 0" fill="none" stroke="#17130e" stroke-width="2.6"/>' +
+        '<text x="9" y="19" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="7" fill="#fff">R</text>' +
+      '</g>' + prop + '</svg>';
+  }
+  function carrierArt(kind) {
+    var P = {
+      cinema:  '<g transform="rotate(-8 92 60)"><rect x="78" y="42" width="30" height="38" fill="#d8fb45" stroke="#17130e" stroke-width="2.8"/><path d="M78 52h30M78 70h30" stroke="#17130e" stroke-width="2.2"/><circle cx="93" cy="61" r="3.5" fill="#17130e"/></g>',
+      transit: '<rect x="74" y="48" width="38" height="24" rx="3" fill="#6a5cf0" stroke="#17130e" stroke-width="2.8"/><rect x="79" y="53" width="16" height="6" fill="#f3efe4"/><circle cx="105" cy="64" r="3.5" fill="#f3efe4"/>',
+      swim:    '<circle cx="94" cy="60" r="8" fill="#f3efe4" stroke="#17130e" stroke-width="2.8"/><path d="M86 60 a4 4 0 0 1 16 0" fill="none" stroke="#6a5cf0" stroke-width="2.6"/><path d="M70 92 q9 -8 18 0 t18 0 t18 0" fill="none" stroke="#6a5cf0" stroke-width="3.4"/>',
+      shoes:   '<path d="M74 86 q3 -16 22 -13 q18 3 22 13 q-1 6 -9 6 h-27 q-8 0 -8 -6 z" fill="#1f9d5c" stroke="#17130e" stroke-width="2.8"/><path d="M84 76 l4 4 M90 73 l4 5 M96 72 l4 5" stroke="#17130e" stroke-width="2"/>',
+      weekend: '<rect x="84" y="52" width="24" height="34" rx="3" fill="#c23b2f" stroke="#17130e" stroke-width="2.8"/><path d="M90 52 v-8 h12 v8" fill="none" stroke="#17130e" stroke-width="2.8"/><path d="M90 62 h12" stroke="#f3efe4" stroke-width="2.4"/><circle cx="90" cy="90" r="3.4" fill="#17130e"/><circle cx="102" cy="90" r="3.4" fill="#17130e"/>'
+    };
+    return carrierFigure(P[kind] || P.cinema);
   }
   function renderThirty() {
     var spend = +$("#inSpend").value;
@@ -5730,7 +5748,7 @@
     $("#calcYear").textContent = "€" + yr.toLocaleString("en-GB");
     $("#carriers").innerHTML = CARRIERS.map(function (c) {
       var n = Math.max(1, Math.round(yr / c.price));
-      return '<li class="carrier"><div class="carrier__art"><img loading="lazy" alt="" src="' + carrierPhotoUrl(c.kind) + '"></div>' +
+      return '<li class="carrier"><div class="carrier__art">' + carrierArt(c.kind) + "</div>" +
         '<div class="carrier__body"><p class="carrier__count"><b>×' + n.toLocaleString("en-GB") + "</b> " + L(c.label) + "</p>" +
         '<p class="carrier__price">' + tp("carrier.each", { p: c.price }) + "</p></div></li>";
     }).join("");
