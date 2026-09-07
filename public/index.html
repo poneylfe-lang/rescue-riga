@@ -331,16 +331,13 @@
   .mission__card h4 { font-size: 1.42rem; margin: 0 0 10px; }
   .mission__card p { margin: 0; font-size: 0.93rem; line-height: 1.5; opacity: 0.92; }
 
-  /* ---- rejected-for: full-bleed navy "case file" band + a live studio-lit 3D mugshot ---- */
+  /* ---- rejected-for: flat pop-orange band (mirrors .hero) + a studio-lit 3D mugshot ---- */
   .rejected { margin-top: 60px; }
   .rejected__head {
     margin: 0 calc(50% - 50vw) 30px;
     width: 100vw;
     overflow: hidden;
-    background:
-      radial-gradient(120% 130% at 84% 8%, rgba(232, 86, 47, 0.28), transparent 56%),
-      radial-gradient(90% 120% at 4% 104%, rgba(216, 251, 69, 0.12), transparent 60%),
-      var(--spruce);
+    background: var(--rescue);
     color: #fff;
   }
   .rejected__head-in {
@@ -348,28 +345,31 @@
     margin: 0 auto;
     padding: clamp(30px, 5vw, 52px) clamp(18px, 5vw, 40px);
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 1.08fr);
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 1.05fr);
     gap: clamp(24px, 4vw, 56px);
-    align-items: stretch;
+    align-items: center;
   }
   .rejected__copy { align-self: center; }
-  .rejected__eyebrow { font: 800 12px/1 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--mustard); margin: 0 0 14px; }
-  .rejected__head h3 { font-size: clamp(1.95rem, 4.4vw, 2.95rem); color: #fff; margin: 0 0 12px; }
-  .rejected__copy > p { color: rgba(255, 255, 255, 0.82); font-size: 1.02rem; margin: 0 0 20px; max-width: 42ch; }
-  .rejected__tag { display: inline-flex; align-items: center; gap: 8px; font: 700 11px/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); background: var(--mustard); border-radius: var(--pill); padding: 8px 14px; margin: 0 !important; }
+  .rejected__eyebrow { display: inline-flex; align-items: center; gap: 9px; font: 800 12px/1 var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--mustard); margin: 0 0 18px; }
+  .rejected__eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--mustard); box-shadow: 0 0 0 4px rgba(216, 251, 69, 0.28); }
+  .rejected__head h3 { font-size: clamp(2rem, 4.6vw, 3.1rem); color: #fff; margin: 0 0 14px; }
+  .rejected__copy > p { color: rgba(255, 255, 255, 0.92); font-size: 1.05rem; margin: 0; max-width: 40ch; }
 
-  .mugshot { position: relative; margin: 0; border: 2px solid rgba(255, 255, 255, 0.16); border-radius: var(--r); overflow: hidden; background: #26272e; min-height: 380px; box-shadow: var(--shadow-lg); }
+  /* the mugshot is a studio-lit product photo, not a dark box: light seamless backdrop,
+     a mustard exhibit tag pinned to the corner, a flat navy placard for the charge/plea. */
+  .mugshot { position: relative; margin: 0; border: var(--edge); border-radius: var(--r); overflow: hidden; background: radial-gradient(120% 100% at 50% 10%, #f4eee1, #ded3ba); min-height: 400px; box-shadow: var(--shadow-lg); }
   .mugshot__stage { position: absolute; inset: 0; }
   .mugshot__stage canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; display: block; touch-action: pan-y; cursor: grab; }
   .mugshot__stage:active canvas { cursor: grabbing; }
-  .mugshot__spinner { position: absolute; inset: 0; display: grid; place-items: center; font: 700 11px/1 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45); }
-  .mugshot__scale { position: absolute; left: 12px; top: 14px; bottom: 92px; display: flex; flex-direction: column; justify-content: space-between; font: 700 9px/1 var(--f-mono); color: rgba(255, 255, 255, 0.32); pointer-events: none; }
-  .mugshot__scale span { position: relative; padding-left: 15px; }
-  .mugshot__scale span::before { content: ""; position: absolute; left: 0; top: 50%; width: 9px; height: 1px; background: rgba(255, 255, 255, 0.26); }
-  .mugshot__rap { position: absolute; left: 0; right: 0; bottom: 0; padding: 46px 20px 18px; display: flex; flex-direction: column; gap: 4px; background: linear-gradient(to top, rgba(15, 18, 38, 0.95) 26%, rgba(15, 18, 38, 0.7) 60%, transparent); pointer-events: none; }
+  .mugshot__spinner { position: absolute; inset: 0; display: grid; place-items: center; font: 700 11px/1 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-70); }
+  .mugshot__tag { position: absolute; z-index: 2; right: 14px; top: 14px; max-width: 250px; display: inline-block; font: 800 11px/1.3 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--spruce); background: var(--mustard); border: var(--edge); border-radius: var(--pill); padding: 9px 15px; text-align: right; }
+  .mugshot__scale { position: absolute; left: 14px; top: 16px; bottom: 100px; display: flex; flex-direction: column; justify-content: space-between; font: 700 10px/1 var(--f-mono); color: var(--ink-70); pointer-events: none; }
+  .mugshot__scale span { position: relative; padding-left: 17px; }
+  .mugshot__scale span::before { content: ""; position: absolute; left: 0; top: 50%; width: 11px; height: 1.5px; background: rgba(23, 19, 14, 0.32); }
+  .mugshot__rap { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 4px; background: var(--spruce); pointer-events: none; }
   .mugshot__charge { font: 800 10px/1 var(--f-mono); letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
-  .mugshot__crime { font: 800 clamp(1.55rem, 3.6vw, 2.2rem)/0.98 var(--f-display); letter-spacing: -0.02em; text-transform: uppercase; color: var(--mustard); }
-  .mugshot__plea { font: 800 12px/1.2 var(--f-mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--rescue); }
+  .mugshot__crime { font: 800 clamp(1.5rem, 3.4vw, 2.15rem)/1.02 var(--f-display); letter-spacing: -0.02em; text-transform: uppercase; color: var(--mustard); }
+  .mugshot__plea { font: 800 12px/1.2 var(--f-mono); letter-spacing: 0.04em; text-transform: uppercase; color: rgba(255, 255, 255, 0.78); }
   .mugshot__fallback { position: absolute; inset: 0; display: none; }
   .mugshot__fallback svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .mugshot.is-fallback .mugshot__stage, .mugshot.is-fallback .mugshot__scale { display: none; }
@@ -379,12 +379,13 @@
     .rejected__head-in { grid-template-columns: 1fr; }
     .mugshot { min-height: 340px; }
   }
-  .rej-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-  .rej { border: var(--edge); border-radius: var(--r); background: var(--card); padding: 20px; }
-  .rej__stamp { display: inline-block; border-radius: var(--pill); border: 1.5px solid var(--maroon); color: var(--maroon); font: 800 10px/1 var(--f-mono); letter-spacing: 0.1em; padding: 5px 12px; margin-bottom: 12px; }
-  .rej h4 { font: 800 1.05rem var(--f-display); margin: 0 0 8px; }
-  .rej p { margin: 0; font-size: 0.92rem; }
-  .rej .verdict { margin-top: 12px; font: 700 12px var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--leaf); }
+  .rej-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .rej { position: relative; border: var(--edge); border-radius: var(--r); background: var(--card); padding: 22px 20px 20px; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .rej:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .rej__stamp { display: inline-block; border-radius: var(--pill); border: 1.5px solid var(--maroon); color: var(--maroon); font: 800 10px/1 var(--f-mono); letter-spacing: 0.1em; padding: 5px 12px; margin-bottom: 14px; }
+  .rej h4 { font: 800 1.08rem var(--f-display); margin: 0 0 8px; }
+  .rej p { margin: 0; font-size: 0.92rem; color: var(--ink-70); }
+  .rej .verdict { display: inline-flex; margin-top: 14px; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--leaf); background: rgba(31, 157, 92, 0.12); border-radius: var(--pill); padding: 6px 12px; }
   .rulebook { margin-top: 22px; }
 
   .ticker { margin: 40px 0 0; margin-inline: calc(50% - 50vw); width: 100vw; background: var(--spruce); overflow: hidden; }
@@ -887,17 +888,17 @@
           <p class="rejected__eyebrow" data-i18n="rej.eyebrow">Case files</p>
           <h3 data-i18n="rej.h3">Rejected for:</h3>
           <p data-i18n="rej.intro">Six real lots on the shelf this week. None of it is off. All of it was refused.</p>
-          <p class="rejected__tag" data-i18n="rej.exhibit">Exhibit A · the two-legged carrot</p>
         </div>
         <figure class="mugshot" id="rejMug" role="img" aria-label="A hyper-real two-legged carrot, studio-lit and slowly turning against a police-lineup backdrop. Charge: abnormal curvature. Plea: delicious.">
+          <p class="mugshot__tag" data-i18n="rej.exhibit">Exhibit A · the two-legged carrot</p>
           <div class="mugshot__stage" id="rejStage">
             <div class="mugshot__spinner" id="rejSpinner" data-i18n="rej.developing">Developing…</div>
           </div>
           <div class="mugshot__scale" aria-hidden="true"><span>70</span><span>60</span><span>50</span><span>40</span></div>
           <div class="mugshot__fallback" aria-hidden="true">
             <svg viewBox="0 0 260 320" preserveAspectRatio="xMidYMid slice">
-              <rect width="260" height="320" fill="#26272e" />
-              <g stroke="rgba(255,255,255,0.12)" stroke-width="1">
+              <rect width="260" height="320" fill="#ded3ba" />
+              <g stroke="rgba(23,19,14,0.1)" stroke-width="1">
                 <line x1="0" y1="64" x2="260" y2="64" /><line x1="0" y1="128" x2="260" y2="128" />
                 <line x1="0" y1="192" x2="260" y2="192" /><line x1="0" y1="256" x2="260" y2="256" />
               </g>
@@ -5720,37 +5721,49 @@
       t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(3, 3);
       return t;
     }
-    function skinMat(col, rough) {
-      var m = new T.MeshPhysicalMaterial({ color: new T.Color(col), roughness: rough == null ? 0.52 : rough, metalness: 0, clearcoat: 0.06, clearcoatRoughness: 0.72 });
-      m.envMapIntensity = 0.55;
-      m.normalMap = grooveNormal(); m.normalScale = new T.Vector2(0.5, 0.5);
+    function carrotMat() {
+      var m = new T.MeshStandardMaterial({ color: new T.Color("#e8621f"), roughness: 0.55, metalness: 0 });
+      m.envMapIntensity = 0.25;
+      m.normalMap = grooveNormal(); m.normalScale = new T.Vector2(0.35, 0.35);
       return m;
     }
+    // classic tapered carrot silhouette: rounded shoulder at the top, long point at the bottom
     function carrotGeo(len, topR, bend) {
       var pts = [];
-      for (var t = 0; t <= 1.001; t += 0.06) {
-        var r = topR * Math.pow(1 - t, 0.72) * (1 + 0.06 * Math.sin(t * 40));
-        pts.push(new T.Vector2(Math.max(0.004, r), (t - 0.5) * len));
+      for (var t = 0; t <= 1.0001; t += 0.04) {
+        var body = Math.pow(1 - t, 0.62);                                  // taper to the tip
+        var shoulder = t < 0.17 ? Math.sin((t / 0.17) * Math.PI / 2) : 1;  // round off the crown
+        var r = topR * body * shoulder * (1 + 0.045 * Math.sin(t * 34));   // faint knobs
+        pts.push(new T.Vector2(Math.max(0.004, r), (0.5 - t) * len));       // wide up top, point down low
       }
-      var geo = new T.LatheGeometry(pts, 32);
-      if (bend) bendY(geo, bend);
+      var geo = new T.LatheGeometry(pts, 40);
+      if (bend) bendY(geo, bend);                                          // "abnormal curvature"
+      geo.computeVertexNormals();
       return geo;
     }
-    function fronds(parent, y, spread, h, col) {
-      var m = new T.MeshStandardMaterial({ color: new T.Color(col), roughness: 0.8 });
-      for (var i = 0; i < 10; i++) {
-        var a = (i / 10) * Math.PI * 2;
-        var stem = new T.CylinderGeometry(0.004, 0.02, h, 6, 6); bendY(stem, 0.5 + Math.random() * 0.4);
-        var f = new T.Mesh(stem, m);
-        f.position.set(Math.cos(a) * spread * 0.22, y + h / 2 - 0.05, Math.sin(a) * spread * 0.22);
-        f.rotation.set(Math.cos(a) * 0.5, Math.random(), -Math.sin(a) * 0.5);
-        f.castShadow = true; parent.add(f);
-        for (var l = 0; l < 3; l++) {
-          var lf = new T.Mesh(new T.ConeGeometry(0.02, 0.09, 5), m);
-          lf.position.set(0, 0.14 + l * 0.13 * (h / 0.5), 0);
-          lf.rotation.z = (l % 2 ? 1 : -1) * 0.9;
-          f.add(lf);
-        }
+    // leafy crown: broad blades fanning up and out of the carrot's shoulders
+    function leafCrown(parent, topY) {
+      var greens = ["#3f8f45", "#4e9b3e", "#5aa94a", "#357a3d"];
+      var hub = new T.Mesh(new T.SphereGeometry(topY.hubR || 0.12, 16, 12), new T.MeshStandardMaterial({ color: new T.Color("#6a4a22"), roughness: 0.9 }));
+      hub.position.y = topY.y; hub.scale.y = 0.6; hub.castShadow = true; parent.add(hub);
+      var n = 9;
+      for (var i = 0; i < n; i++) {
+        var a = (i / n) * Math.PI * 2 + Math.random() * 0.3;
+        var lg = new T.ConeGeometry(0.085 + Math.random() * 0.03, 0.62 + Math.random() * 0.28, 5);
+        bendY(lg, 0.55 + Math.random() * 0.35);
+        var blade = new T.Mesh(lg, new T.MeshStandardMaterial({ color: new T.Color(greens[i % greens.length]), roughness: 0.78 }));
+        blade.scale.z = 0.22;                                              // flatten into a blade
+        blade.position.set(Math.cos(a) * 0.08, topY.y + 0.02, Math.sin(a) * 0.08);
+        blade.rotation.set(Math.cos(a) * 0.62, -a, -Math.sin(a) * 0.62);   // splay outward, tips up
+        blade.castShadow = true;
+        parent.add(blade);
+        // a shorter inner frond for fullness
+        var lg2 = new T.ConeGeometry(0.05, 0.34, 4); bendY(lg2, 0.5);
+        var b2 = new T.Mesh(lg2, blade.material);
+        b2.scale.z = 0.2;
+        b2.position.set(Math.cos(a) * 0.03, topY.y + 0.06, Math.sin(a) * 0.03);
+        b2.rotation.set(Math.cos(a) * 0.3, -a, -Math.sin(a) * 0.3);
+        b2.castShadow = true; parent.add(b2);
       }
     }
     function envCube() {
@@ -5761,9 +5774,9 @@
         x.fillStyle = g; x.fillRect(0, 0, 128, 128); return cv;
       }
       var cube = new T.CubeTexture([
-        face("#3c4256", "#2c3040", "#1f2230"), face("#353a4c", "#272b39", "#1c1f2c"),
-        face("#5b6178", "#474c60", "#353947"), face("#17191f", "#131419", "#0f1015"),
-        face("#3c4256", "#2c3040", "#1f2230"), face("#353a4c", "#272b39", "#1c1f2c")
+        face("#2a3050", "#1e2340", "#161a30"), face("#262c48", "#1c2038", "#14182c"),
+        face("#333a5c", "#272d48", "#1d2238"), face("#12152a", "#0f1222", "#0c0e1c"),
+        face("#2a3050", "#1e2340", "#161a30"), face("#262c48", "#1c2038", "#14182c")
       ]);
       cube.needsUpdate = true;
       if (T.sRGBEncoding) cube.encoding = T.sRGBEncoding;
@@ -5771,83 +5784,62 @@
     }
     function bgTex() {
       return ctex(512, 512, function (x, w, h) {
-        var g = x.createRadialGradient(w * 0.64, h * 0.32, 18, w * 0.5, h * 0.55, w * 0.82);
-        g.addColorStop(0, "#4b4130"); g.addColorStop(0.34, "#2f2b24"); g.addColorStop(1, "#191a20");
+        var g = x.createRadialGradient(w * 0.5, h * 0.42, 20, w * 0.5, h * 0.55, w * 0.85);
+        g.addColorStop(0, "#262c54"); g.addColorStop(0.4, "#1b2040"); g.addColorStop(1, "#12152a");
         x.fillStyle = g; x.fillRect(0, 0, w, h);
-        var v = x.createRadialGradient(w / 2, h * 0.44, h * 0.16, w / 2, h * 0.5, h * 0.74);
-        v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(10,9,7,0.52)");
-        x.fillStyle = v; x.fillRect(0, 0, w, h);
+        var vgn = x.createRadialGradient(w / 2, h * 0.46, h * 0.18, w / 2, h * 0.5, h * 0.78);
+        vgn.addColorStop(0, "rgba(0,0,0,0)"); vgn.addColorStop(1, "rgba(6,8,18,0.55)");
+        x.fillStyle = vgn; x.fillRect(0, 0, w, h);
       });
     }
 
     function build() {
       root = new T.Group(); scene.add(root);
 
-      // seamless studio sweep — floor curving up into a backdrop, so no hard horizon
-      var seg = 32, sw = new T.PlaneGeometry(20, 20, seg, seg), pos = sw.attributes.position, v = new T.Vector3();
-      for (var i = 0; i < pos.count; i++) {
-        v.fromBufferAttribute(pos, i);
-        var back = Math.max(0, v.y - 1.2);
-        pos.setXYZ(i, v.x, v.y, back > 0 ? Math.pow(back / 9, 1.7) * 7 : 0);
-      }
-      pos.needsUpdate = true; sw.computeVertexNormals();
-      var swMat = new T.MeshStandardMaterial({ color: new T.Color("#2b2721"), roughness: 0.8, metalness: 0 });
-      swMat.envMapIntensity = 0.4;
-      var sweep = new T.Mesh(sw, swMat);
-      sweep.rotation.x = -Math.PI / 2; sweep.receiveShadow = true; scene.add(sweep);
-
-      // soft contact shadow under the root
-      var blob = new T.Mesh(new T.PlaneGeometry(2.8, 2.8), new T.MeshBasicMaterial({
+      // soft contact shadow beneath the floating root
+      var blob = new T.Mesh(new T.PlaneGeometry(3.4, 3.4), new T.MeshBasicMaterial({
         map: ctex(256, 256, function (x, w, h) {
           var g = x.createRadialGradient(w / 2, h / 2, 4, w / 2, h / 2, w / 2);
-          g.addColorStop(0, "rgba(0,0,0,0.5)"); g.addColorStop(0.55, "rgba(0,0,0,0.2)"); g.addColorStop(1, "rgba(0,0,0,0)");
+          g.addColorStop(0, "rgba(0,0,0,0.42)"); g.addColorStop(0.55, "rgba(0,0,0,0.16)"); g.addColorStop(1, "rgba(0,0,0,0)");
           x.fillStyle = g; x.fillRect(0, 0, w, h);
         }), transparent: true, depthWrite: false
       }));
-      blob.rotation.x = -Math.PI / 2; blob.position.y = 0.004; scene.add(blob);
+      blob.rotation.x = -Math.PI / 2; blob.position.y = -1.5; scene.add(blob);
 
-      // lights: warm key, cool rim, gentle fill + hemi
-      scene.add(new T.HemisphereLight(new T.Color("#fff3e2"), new T.Color("#20222e"), 0.5));
-      var key = new T.DirectionalLight(new T.Color("#ffe7c4"), 1.05);
-      key.position.set(2.6, 5.4, 3.4); key.castShadow = true;
+      // even, punchy lighting — no tone-mapping wash, so the orange stays orange
+      scene.add(new T.HemisphereLight(new T.Color("#ffffff"), new T.Color("#1a1f3a"), 0.62));
+      var key = new T.DirectionalLight(new T.Color("#fff4e4"), 0.82);
+      key.position.set(-2.4, 4.6, 4.2); key.castShadow = true;
       key.shadow.mapSize.set(2048, 2048);
-      key.shadow.camera.left = -3; key.shadow.camera.right = 3; key.shadow.camera.top = 3; key.shadow.camera.bottom = -3;
-      key.shadow.camera.near = 1; key.shadow.camera.far = 18; key.shadow.bias = -0.0005; key.shadow.radius = 6;
+      key.shadow.camera.left = -3; key.shadow.camera.right = 3; key.shadow.camera.top = 3.5; key.shadow.camera.bottom = -3.5;
+      key.shadow.camera.near = 1; key.shadow.camera.far = 20; key.shadow.bias = -0.0005; key.shadow.radius = 5;
       scene.add(key);
-      var rim = new T.DirectionalLight(new T.Color("#8fb0ff"), 0.85); rim.position.set(-3.4, 2, -3.6); scene.add(rim);
-      var fill = new T.DirectionalLight(new T.Color("#ffd9b0"), 0.3); fill.position.set(-2, 1, 3.4); scene.add(fill);
+      var rim = new T.DirectionalLight(new T.Color("#9ab8ff"), 0.55); rim.position.set(3.6, 1.8, -3.4); scene.add(rim);
+      var fill = new T.DirectionalLight(new T.Color("#ffffff"), 0.35); fill.position.set(2.4, 0.4, 3.6); scene.add(fill);
 
-      // ---- the exhibit: one carrot that grew two legs ----
+      // ---- the exhibit: one bent carrot ("abnormal curvature") ----
       carrot = new T.Group();
-      var legMat = skinMat("#df7a24", 0.5);
-      [-1, 1].forEach(function (s) {
-        var leg = new T.Mesh(carrotGeo(1.5, 0.19, s * 0.5), legMat);
-        leg.position.set(s * 0.16, -0.28, 0);
-        leg.rotation.z = s * -0.34;
-        leg.castShadow = true; leg.receiveShadow = true;
-        carrot.add(leg);
-      });
-      var shoulder = new T.Mesh(new T.SphereGeometry(0.24, 24, 18), legMat);
-      shoulder.position.y = 0.42; shoulder.scale.set(1, 0.86, 1); shoulder.castShadow = true;
-      carrot.add(shoulder);
-      fronds(carrot, 0.6, 0.72, 0.62, "#3f8f45");
-      carrot.rotation.z = 0.06;
+      var len = 2.2, mat = carrotMat();
+      var body = new T.Mesh(carrotGeo(len, 0.42, 0.7), mat);
+      body.castShadow = true; body.receiveShadow = true;
+      carrot.add(body);
+      leafCrown(carrot, { y: len * 0.5, hubR: 0.13 });
+      carrot.rotation.z = -0.12;                                          // lean into the curve
       root.add(carrot);
 
-      // scale to a consistent size and stand it on the floor
+      // scale to a fixed size, centre the whole thing at the origin (it floats — turntable style)
       var box = new T.Box3().setFromObject(carrot), c = new T.Vector3(), sz = new T.Vector3();
       box.getCenter(c); box.getSize(sz);
-      var k = 2.15 / Math.max(sz.x, sz.y, sz.z, 0.001);
+      var k = 2.35 / Math.max(sz.x, sz.y, sz.z, 0.001);
       carrot.scale.setScalar(k);
       box.setFromObject(carrot); box.getCenter(c);
-      carrot.position.x -= c.x; carrot.position.z -= c.z;
-      carrot.position.y -= box.min.y;
+      carrot.position.sub(c);
     }
 
     function applyCam() {
-      var r = 5.0, ph = 1.14 + pitch, th = spin.y;
-      cam.position.set(r * Math.sin(ph) * Math.sin(th), 1.12 + r * Math.cos(ph), r * Math.sin(ph) * Math.cos(th));
-      cam.lookAt(0, 1.02, 0);
+      var r = 6.2, ph = 1.32 + pitch, th = spin.y;
+      cam.position.set(r * Math.sin(ph) * Math.sin(th), r * Math.cos(ph), r * Math.sin(ph) * Math.cos(th));
+      cam.lookAt(0, 0, 0);
     }
     function frame() {
       if (!running || broken || !scene || !cam) { raf = 0; return; }
@@ -5875,7 +5867,7 @@
       catch (e) { fail(); return false; }
       ren.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
       if (T.sRGBEncoding) ren.outputEncoding = T.sRGBEncoding;
-      if (T.ACESFilmicToneMapping) { ren.toneMapping = T.ACESFilmicToneMapping; ren.toneMappingExposure = 0.92; }
+      if (T.NoToneMapping != null) ren.toneMapping = T.NoToneMapping;   // keep the carrot orange, not beige
       ren.shadowMap.enabled = true; ren.shadowMap.type = T.PCFSoftShadowMap;
       host.insertBefore(ren.domElement, host.firstChild);
 
