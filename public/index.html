@@ -1218,6 +1218,15 @@
           </div>
 
           <div class="acct__group">
+            <span class="acct__group-title" data-i18n="account.group.password">Password</span>
+            <label class="field"><span data-i18n="account.newpassword">New password</span>
+              <input type="password" id="acctPasswordEdit" autocomplete="new-password" minlength="4" placeholder="••••••••">
+            </label>
+            <button class="btn btn--dark btn--sm" type="button" id="acctSavePassword" data-i18n="account.changepass">Change password</button>
+            <p class="acct__fine acct__saved-msg" id="acctPasswordSavedMsg" hidden data-i18n="account.saved.msg">Saved.</p>
+          </div>
+
+          <div class="acct__group">
             <span class="acct__group-title" data-i18n="account.group.notifs">Notifications</span>
             <label class="check">
               <input type="checkbox" id="acctNewsletter2">
@@ -1501,6 +1510,7 @@
       "account.resetbtn": "Atiestatīt paroli", "account.newpassword": "Jaunā parole",
       "account.passwordhint.reset": "Iestati jaunu paroli šim e-pastam. Šai demo versijai nav īstas identitātes pārbaudes — ikviens, kas zina e-pastu, var to atiestatīt.",
       "account.resetdone": "Parole atjaunināta — piesakies ar savu jauno paroli.",
+      "account.group.password": "Parole", "account.changepass": "Mainīt paroli",
       "h2.account.in": "Laipni lūdzam atpakaļ, {name}.",
       "account.googleerr": "Neizdevās nolasīt Google atbildi — izmanto formu zemāk.",
       "account.name": "Vārds", "account.email": "E-pasts",
@@ -1641,6 +1651,7 @@
       "account.resetbtn": "Réinitialiser le mot de passe", "account.newpassword": "Nouveau mot de passe",
       "account.passwordhint.reset": "Définissez un nouveau mot de passe pour cet e-mail. Cette démo n'a pas de vraie vérification d'identité — n'importe qui connaissant l'e-mail peut le réinitialiser.",
       "account.resetdone": "Mot de passe mis à jour — connectez-vous avec votre nouveau mot de passe.",
+      "account.group.password": "Mot de passe", "account.changepass": "Changer le mot de passe",
       "h2.account.in": "Content de vous revoir, {name}.",
       "account.googleerr": "Impossible de lire la réponse Google — utilisez le formulaire ci-dessous.",
       "account.name": "Nom", "account.email": "E-mail",
@@ -5879,6 +5890,18 @@
     saveAccount(); renderAccount();
     var msg = $("#acctSavedMsg");
     if (msg) { msg.hidden = false; clearTimeout(msg._t); msg._t = setTimeout(function () { msg.hidden = true; }, 2200); }
+  });
+  $("#acctSavePassword").addEventListener("click", function () {
+    if (!account) return;
+    var pwInput = $("#acctPasswordEdit"), newPw = pwInput.value;
+    if (!newPw || newPw.length < 4) return;
+    hashPassword(newPw).then(function (hash) {
+      account.passwordHash = hash;
+      saveAccount();
+      pwInput.value = "";
+      var msg = $("#acctPasswordSavedMsg");
+      if (msg) { msg.hidden = false; clearTimeout(msg._t); msg._t = setTimeout(function () { msg.hidden = true; }, 2200); }
+    });
   });
   $("#acctNewsletter2").addEventListener("change", function () { if (account) { account.newsletter = this.checked; saveAccount(); } });
   $("#acctAlerts2").addEventListener("change", function () { if (account) { account.alertsRestock = this.checked; saveAccount(); } });
