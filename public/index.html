@@ -264,6 +264,17 @@
   .store__promise { font: 700 1.15rem/1.4 var(--f-display); color: var(--ink); max-width: 56ch; margin: 10px 0 0; }
   .store__promise::before { content: "→ "; color: var(--rescue); }
 
+  /* ---- store tab head: title left, illustrated pull-quote right ---- */
+  .store__head { max-width: none; display: grid; grid-template-columns: 1.15fr 1fr; gap: 40px; align-items: start; }
+  .store__head-main { max-width: 46ch; }
+  .store__quote { position: relative; background: var(--card); border: var(--edge); border-radius: var(--r); padding: 30px 26px 24px; box-shadow: var(--shadow); }
+  .store__quote::before { content: "“"; position: absolute; top: -14px; left: 22px; font: 800 4.4rem/1 var(--f-display); color: var(--mustard); -webkit-text-stroke: 1.5px var(--ink); }
+  .store__quote p { font: 600 1.14rem/1.48 var(--f-display); margin: 8px 0 0; color: var(--ink); }
+  .store__quote-tag { width: 42px; height: 42px; display: block; margin-bottom: 4px; animation: tagSwing 3.4s ease-in-out infinite; transform-origin: 30% 10%; }
+  @keyframes tagSwing { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+  @media (prefers-reduced-motion: reduce) { .store__quote-tag { animation: none; } }
+  @media (max-width: 880px) { .store__head { grid-template-columns: 1fr; } }
+
   /* ---------------- TAB: PERFECTLY GOOD — bold flat storefront hero ---------------- */
   .hero { position: relative; background: var(--rescue); color: #fff; margin: 0 calc(50% - 50vw); padding: clamp(40px, 6vw, 64px) clamp(18px, 5vw, 40px) clamp(52px, 8vw, 80px); }
   .hero__inner { max-width: var(--wrap); margin: 0 auto; position: relative; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 30px; }
@@ -902,12 +913,20 @@
 
   <!-- ===================== TAB: THE STORE ===================== -->
   <section class="panel" data-tab="store" role="tabpanel">
-    <div class="panel__head">
-      <p class="eyebrow" data-i18n="eb.store">The store</p>
-      <h2 data-i18n="h2.store">A shop you walk — not a bag you gamble on.</h2>
-      <p class="lede" data-i18n="bag.lede">Surprise-bag apps do a real job — but they hand you a sealed bag and hope for the best. Rescue is the opposite bet: a fixed address, named products, visible dates, and a reason printed on every label.</p>
-      <p class="panel__note" data-i18n="store.note">Move your pointer to look around · tap an aisle marker.</p>
-      <p class="store__promise" data-i18n="store.promise">Shop this 3D aisle for real — add what you click, then walk in and pick it up.</p>
+    <div class="panel__head store__head">
+      <div class="store__head-main">
+        <p class="eyebrow" data-i18n="eb.store">The store</p>
+        <h2 data-i18n="h2.store">A shop you walk — not a bag you gamble on.</h2>
+        <p class="panel__note" data-i18n="store.note">Move your pointer to look around · tap an aisle marker.</p>
+        <p class="store__promise" data-i18n="store.promise">Shop this 3D aisle for real — add what you click, then walk in and pick it up.</p>
+      </div>
+      <aside class="store__quote">
+        <svg class="store__quote-tag" viewBox="0 0 40 40" aria-hidden="true">
+          <path d="M6 6 L22 6 L34 18 L18 34 L6 22 Z" fill="#e8562f" stroke="#17130e" stroke-width="2.2" stroke-linejoin="round"/>
+          <circle cx="13" cy="13" r="3" fill="#fff" stroke="#17130e" stroke-width="1.6"/>
+        </svg>
+        <p data-i18n="bag.lede">Surprise-bag apps do a real job — but they hand you a sealed bag and hope for the best. Rescue is the opposite bet: a fixed address, named products, visible best-before dates, and the exact reason it's discounted printed on every single label — so you know exactly what you're getting before you ever pick it up.</p>
+      </aside>
     </div>
     <div class="store__stage">
       <div class="store3d" id="store3d">
@@ -1402,7 +1421,7 @@
       "store.fb2": "Tavā pārlūkā tas ir izslēgts. Veikalā ir četras ejas — Maize, Dārzeņi, Aukstumkambaris un Pārtika — ap centrālo Kluba leti.",
       "store.aisle": "Eja",
       "store.seeaisle": "Skatīt, kas ir šajā ejā →",
-      "bag.lede": "Pārsteiguma maisu lietotnes dara īstu darbu — bet tās pasniedz aizvērtu maisu un cer uz labāko. Rescue ir pretēja likme: fiksēta adrese, nosaukti produkti, redzami datumi un iemesls uz katras etiķetes.",
+      "bag.lede": "Pārsteiguma maisu lietotnes dara īstu darbu — bet tās pasniedz aizvērtu maisu un cer uz labāko. Rescue ir pretēja likme: fiksēta adrese, nosaukti produkti, redzami derīguma termiņi un precīzs iemesls, kāpēc tas ir lētāks, uzdrukāts uz katras etiķetes — tā tu precīzi zini, ko saņem, pirms to paņem.",
       "bag.p2": "Tā kā tu redzi, ko pērc, tu vari to ieplānot — vakariņas šovakar, kaut ko saldētavai, pamatproduktus skapim. Un tā kā mēs esam veikals, uz kuru tu atgriezies, mēs darām to, ko lietotne nevar: biedru cenas, zīmogu karte, klusa pirmās izvēles stunda pirms pēcdarba steigas.",
       "cmp.us": "Rescue", "cmp.vs": "pret", "cmp.them": "Noslēpuma maiss",
       "shop.sort": "Kārtot", "sort.value": "Labākā vērtība", "sort.date": "Lietot vispirms", "sort.price": "Cena: no zemākās", "sort.disc": "Lielākā atlaide",
@@ -1538,7 +1557,7 @@
       "store.fb2": "Votre navigateur l’a désactivé. Le magasin a quatre rayons — Boulangerie, Primeur, Frais et Épicerie — autour d’un comptoir Club central.",
       "store.aisle": "Rayon",
       "store.seeaisle": "Voir ce qu’il y a dans ce rayon →",
-      "bag.lede": "Les applis de paniers-surprises font un vrai travail — mais elles vous tendent un sac scellé en espérant que ça ira. Rescue fait le pari inverse : une adresse fixe, des produits nommés, des dates visibles, et une raison imprimée sur chaque étiquette.",
+      "bag.lede": "Les applis de paniers-surprises font un vrai travail — mais elles vous tendent un sac scellé en espérant que ça ira. Rescue fait le pari inverse : une adresse fixe, des produits nommés, des dates de péremption visibles, et la raison exacte de la remise imprimée sur chaque étiquette — vous savez toujours exactement ce que vous obtenez avant même de le prendre.",
       "bag.p2": "Comme vous voyez ce que vous achetez, vous pouvez vous organiser autour — le dîner de ce soir, quelque chose pour le congélateur, des bases pour le placard. Et comme nous sommes un magasin où l’on revient, nous faisons ce qu’une appli ne peut pas : prix membres, carte à tampons, une heure calme de premier choix avant la cohue du soir.",
       "cmp.us": "Rescue", "cmp.vs": "contre", "cmp.them": "Un sac mystère",
       "shop.sort": "Trier", "sort.value": "Meilleur rapport", "sort.date": "À consommer vite", "sort.price": "Prix : croissant", "sort.disc": "Plus grosse remise",
