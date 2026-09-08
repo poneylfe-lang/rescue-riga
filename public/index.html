@@ -732,20 +732,32 @@
   .modal__meta .btn { margin-top: auto; }
   @media (max-width: 640px) { .modal__card { grid-template-columns: 1fr; } .stage3d { border-right: 0; border-bottom: var(--edge); } }
 
-  /* ---------------- FAKE ONLINE PAYMENT (always declines — pickup is pay-in-store) ---------------- */
+  /* ---------------- FAKE ONLINE PAYMENT — full client-side checkout simulation: Luhn check,
+     expiry/CVC validation, live card-brand detection, inline field errors. No real charge is
+     ever made (there's no payment processor behind this concept site) — a well-formed card
+     succeeds; the one recognisable "always declines" test number is a nod to how real payment
+     sandboxes work. ---------------- */
   .modal__card--pay { grid-template-columns: 1fr; width: min(420px, 100%); border-radius: var(--r); }
   .pay { padding: 30px 26px 26px; }
   .pay__eyebrow { font: 800 11px/1 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-70); margin: 0 0 10px; }
   .pay h3 { font-size: 1.3rem; margin: 0 0 4px; }
   .pay__amount { font: 800 2rem var(--f-display); color: var(--rescue); font-variant-numeric: tabular-nums; margin: 0 0 18px; }
+  .pay__brands { display: flex; gap: 6px; margin-bottom: 14px; }
+  .pay__brand { flex: 1; padding: 8px 4px; border: 1.5px solid rgba(23, 19, 14, 0.18); border-radius: 8px; background: var(--paper-2); color: var(--ink-70); font: 800 10px/1 var(--f-mono); letter-spacing: 0.02em; text-align: center; cursor: pointer; transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease; }
+  .pay__brand.is-active { border-color: var(--ink); background: var(--mustard); color: var(--ink); }
   .pay__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field.has-error input { border-color: var(--maroon); }
+  .pay__err { display: block; margin-top: 5px; font: 600 11px/1.4 var(--f-mono); color: var(--maroon); min-height: 0; }
   .pay__secure { margin: 12px 0 0; font: 500 11px/1.4 var(--f-mono); color: var(--ink-70); text-align: center; }
   #paySubmit { margin-top: 16px; }
   #paySubmit[aria-busy="true"] { opacity: 0.7; pointer-events: none; }
   .pay__result { text-align: center; padding: 6px 0 0; }
   .pay__result-icon { width: 46px; height: 46px; margin: 0 auto 14px; border-radius: 50%; background: var(--maroon); color: #fff; font: 800 20px/46px var(--f-display); }
+  .pay__result-icon--ok { background: var(--leaf); }
   .pay__result h4 { font-size: 1.15rem; margin: 0 0 8px; color: var(--maroon); }
+  .pay__result--ok h4 { color: var(--leaf); }
   .pay__result p { color: var(--ink-70); font-size: 0.92rem; margin: 0 0 20px; }
+  .pay__summary { font-variant-numeric: tabular-nums; }
   .pay__result .btn { margin-top: 0; }
   .pay__result .btn + .btn { margin-top: 8px; }
 
@@ -1445,20 +1457,31 @@
       <h3 id="payTitle" data-i18n="pay.title">Pay online now</h3>
       <p class="pay__amount" id="payAmount">€0.00</p>
 
-      <form id="payForm" class="pay__form">
+      <form id="payForm" class="pay__form" novalidate>
+        <div class="pay__brands" id="payBrands">
+          <button type="button" class="pay__brand" data-brand="visa">VISA</button>
+          <button type="button" class="pay__brand" data-brand="mastercard">Mastercard</button>
+          <button type="button" class="pay__brand" data-brand="amex">Amex</button>
+          <button type="button" class="pay__brand" data-brand="discover">Discover</button>
+        </div>
+
         <label class="field"><span data-i18n="pay.card">Card number</span>
-          <input type="text" id="payCardNumber" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" maxlength="19" required>
+          <input type="text" id="payCardNumber" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" maxlength="23" required>
+          <span class="pay__err" id="payCardNumberErr" hidden></span>
         </label>
         <div class="pay__row">
           <label class="field"><span data-i18n="pay.expiry">Expiry</span>
             <input type="text" id="payExpiry" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/YY" maxlength="5" required>
+            <span class="pay__err" id="payExpiryErr" hidden></span>
           </label>
           <label class="field"><span data-i18n="pay.cvc">CVC</span>
             <input type="text" id="payCVC" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4" required>
+            <span class="pay__err" id="payCVCErr" hidden></span>
           </label>
         </div>
         <label class="field"><span data-i18n="pay.name">Name on card</span>
           <input type="text" id="payName" autocomplete="cc-name" required>
+          <span class="pay__err" id="payNameErr" hidden></span>
         </label>
         <button class="btn btn--solid btn--block" type="submit" id="paySubmit">
           <span id="paySubmitLabel" data-i18n="pay.submit">Pay</span>
@@ -1466,7 +1489,14 @@
         <p class="pay__secure" data-i18n="pay.secure">🔒 Encrypted. Card details are never stored.</p>
       </form>
 
-      <div class="pay__result" id="payResult" hidden>
+      <div class="pay__result pay__result--ok" id="payResultOk" hidden>
+        <div class="pay__result-icon pay__result-icon--ok" aria-hidden="true">✓</div>
+        <h4 data-i18n="pay.approved.title">Payment successful</h4>
+        <p class="pay__summary" id="payApprovedSummary"></p>
+        <button class="btn btn--solid btn--block" id="payDone" data-i18n="pay.approved.done">Done</button>
+      </div>
+
+      <div class="pay__result" id="payResultFail" hidden>
         <div class="pay__result-icon" aria-hidden="true">✕</div>
         <h4 data-i18n="pay.declined.title">Payment declined</h4>
         <p data-i18n="pay.declined.body">Your bank declined this card. Nothing was charged.</p>
@@ -1505,6 +1535,9 @@
   var I18N = {
     en: {
       "zonechip.all": "All aisles",
+      "pay.err.card": "That card number doesn't look right.", "pay.err.expiry": "Enter a valid, unexpired MM/YY.",
+      "pay.err.cvc": "CVC must be {n} digits.", "pay.err.name": "Enter the name on the card.",
+      "pay.approved.summary": "{brand} •••• {last4} — {amount} charged.",
       "econ.d1": "stores plugged in", "econ.d2": "clears our checks", "econ.d3": "lots triaged / day", "econ.d4": "to triage one lot",
       "econ.note": "Because the sort is automatic, taking a corner shop’s three crates costs about the same as taking a hypermarket’s pallet. So we take everyone’s — and that volume is what makes the price work.",
       "hub.lots": "LOTS TODAY", "hub.gate": "OUR STANDARDS · 71% PASS",
@@ -1629,6 +1662,10 @@
       "cart.slot": "Saņemšanas laiks", "cart.reserve": "Rezervēt saņemšanai", "cart.payonline": "Maksāt tiešsaistē", "cart.note": "Rezervācija tur preces 3 stundas. Maksā veikalā.",
       "pay.eyebrow": "Droša norēķināšanās", "pay.title": "Maksāt tiešsaistē", "pay.card": "Kartes numurs", "pay.expiry": "Derīga līdz", "pay.cvc": "CVC", "pay.name": "Vārds uz kartes", "pay.submit": "Maksāt", "pay.processing": "Apstrādā…", "pay.secure": "🔒 Šifrēts. Kartes dati netiek saglabāti.",
       "pay.declined.title": "Maksājums noraidīts", "pay.declined.body": "Jūsu banka noraidīja šo karti. Nekas netika iekasēts.", "pay.declined.reserve": "Rezervēt saņemšanai veikalā", "pay.declined.retry": "Mēģināt ar citu karti",
+      "pay.approved.title": "Maksājums veiksmīgs", "pay.approved.done": "Gatavs",
+      "pay.approved.summary": "{brand} •••• {last4} — samaksāts {amount}.",
+      "pay.err.card": "Šis kartes numurs neizskatās pareizs.", "pay.err.expiry": "Ievadi derīgu, vēl spēkā esošu MM/GG.",
+      "pay.err.cvc": "CVC jābūt {n} cipariem.", "pay.err.name": "Ievadi vārdu, kas norādīts uz kartes.",
       "cart.addbasket": "Pievienot grozam",
       "card.add": "Pievienot", "card.left": "atlikuši", "card.allrescued": "Viss izglābts", "card.was": "bija",
       "bb.pre": "Derīgs līdz:", "bb.today": "šodienai", "bb.tomorrow": "rītdienai", "bb.days": "{n} dienām", "bb.long": "Ilgi glabājams",
@@ -1785,6 +1822,10 @@
       "cart.slot": "Créneau de retrait", "cart.reserve": "Réserver pour le retrait", "cart.payonline": "Payer en ligne", "cart.note": "La réservation garde vos articles 3 h. Paiement en magasin.",
       "pay.eyebrow": "Paiement sécurisé", "pay.title": "Payer en ligne", "pay.card": "Numéro de carte", "pay.expiry": "Expiration", "pay.cvc": "CVC", "pay.name": "Nom sur la carte", "pay.submit": "Payer", "pay.processing": "Traitement…", "pay.secure": "🔒 Chiffré. Les données de carte ne sont jamais conservées.",
       "pay.declined.title": "Paiement refusé", "pay.declined.body": "Votre banque a refusé cette carte. Rien n’a été débité.", "pay.declined.reserve": "Réserver pour un retrait en magasin", "pay.declined.retry": "Essayer une autre carte",
+      "pay.approved.title": "Paiement réussi", "pay.approved.done": "Terminé",
+      "pay.approved.summary": "{brand} •••• {last4} — {amount} débités.",
+      "pay.err.card": "Ce numéro de carte semble invalide.", "pay.err.expiry": "Indiquez une date MM/AA valide et non expirée.",
+      "pay.err.cvc": "Le CVC doit comporter {n} chiffres.", "pay.err.name": "Indiquez le nom figurant sur la carte.",
       "cart.addbasket": "Ajouter au panier",
       "card.add": "Ajouter", "card.left": "restants", "card.allrescued": "Tout est sauvé", "card.was": "avant",
       "bb.pre": "À consommer avant :", "bb.today": "aujourd’hui", "bb.tomorrow": "demain", "bb.days": "{n} jours", "bb.long": "Longue conservation",
@@ -6091,38 +6132,91 @@
     else if (!$("#searchResults").hidden) { $("#searchResults").hidden = true; $("#siteSearch").blur(); }
   });
   $("#sortSel").addEventListener("change", function () { sortMode = this.value; renderGrid(); });
-  function doReserve() {
-    var label = $("#pickupSlot").options[$("#pickupSlot").selectedIndex].text;
-    if (account) {
-      var was = 0, now = 0, items = [];
-      Object.keys(basket).forEach(function (id) {
-        var p = P[id]; if (!p) return;
-        var q = basket[id];
-        was += p.was * q; now += p.price * q;
-        items.push({ id: id, name: p.name, qty: q, price: p.price, was: p.was });
-      });
-      if (items.length) {
-        account.orderHistory = account.orderHistory || [];
-        account.orderHistory.unshift({ id: "RC-" + Date.now().toString().slice(-6), date: new Date().toISOString(), items: items, was: was, now: now, slot: label });
-        account.orders = account.orderHistory.length;
-      }
+  // shared by "reserve, pay in store" and a successful online payment — records the order
+  // against the signed-in account (if any) and empties the basket. Returns what was charged
+  // so the caller can show it back (a receipt line, a toast).
+  function commitOrder(opts) {
+    opts = opts || {};
+    var label = opts.slot || $("#pickupSlot").options[$("#pickupSlot").selectedIndex].text;
+    var was = 0, now = 0, items = [];
+    Object.keys(basket).forEach(function (id) {
+      var p = P[id]; if (!p) return;
+      var q = basket[id];
+      was += p.was * q; now += p.price * q;
+      items.push({ id: id, name: p.name, qty: q, price: p.price, was: p.was });
+    });
+    if (account && items.length) {
+      account.orderHistory = account.orderHistory || [];
+      account.orderHistory.unshift({ id: "RC-" + Date.now().toString().slice(-6), date: new Date().toISOString(), items: items, was: was, now: now, slot: label, paid: !!opts.paid });
+      account.orders = account.orderHistory.length;
       account.savedTotal = (account.savedTotal || 0) + (was - now);
       saveAccount(); renderAccount();
     }
-    basket = {}; saveBasket(); syncBasket(); renderGrid(); closeDrawer();
-    toast(t("toast.reserved", "Reserved for pickup ·") + " " + label);
+    basket = {}; saveBasket(); syncBasket(); renderGrid();
+    return { label: label, total: now };
+  }
+  function doReserve() {
+    var r = commitOrder({ paid: false });
+    closeDrawer();
+    toast(t("toast.reserved", "Reserved for pickup ·") + " " + r.label);
   }
   $("#reserveBtn").addEventListener("click", doReserve);
 
-  /* ---- fake online payment: always declines at the last step — this is a click-and-collect
-     concept site with no real payment processor behind it. Reserve-for-pickup (pay in store)
-     is the real, working path; this just demonstrates what a checkout would look like. */
+  /* ---- fake online payment: a full client-side checkout simulation — Luhn-validated card
+     number, live brand detection, expiry/CVC checks, inline field errors. There's no real
+     payment processor behind this concept site, so nothing is ever actually charged, but a
+     well-formed card goes all the way through to a real "payment successful" completion (order
+     recorded, basket cleared) rather than always failing. One recognisable number always
+     declines — 4000 0000 0000 0002 — the same convention real payment sandboxes use. */
+  function luhnValid(num) {
+    if (!/^\d{12,19}$/.test(num)) return false;
+    var sum = 0, alt = false;
+    for (var i = num.length - 1; i >= 0; i--) {
+      var d = num.charCodeAt(i) - 48;
+      if (alt) { d *= 2; if (d > 9) d -= 9; }
+      sum += d; alt = !alt;
+    }
+    return sum % 10 === 0;
+  }
+  function detectCardBrand(num) {
+    if (/^4/.test(num)) return "visa";
+    if (/^(5[1-5]|2[2-7])/.test(num)) return "mastercard";
+    if (/^3[47]/.test(num)) return "amex";
+    if (/^6(?:011|5)/.test(num)) return "discover";
+    return null;
+  }
+  function expiryValid(mmYY) {
+    var m = /^(\d{2})\/(\d{2})$/.exec(mmYY);
+    if (!m) return false;
+    var month = +m[1], year = 2000 + (+m[2]);
+    if (month < 1 || month > 12) return false;
+    var now = new Date();
+    if (year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth() + 1)) return false;
+    return true;
+  }
+  var payBrand = null; // manual pick from the brand row; number detection overrides once digits are entered
+  function setPayBrand(brand) {
+    payBrand = brand;
+    $$("#payBrands .pay__brand").forEach(function (b) { b.classList.toggle("is-active", b.dataset.brand === brand); });
+  }
+  function payFieldError(id, msg) {
+    var input = $("#" + id), err = $("#" + id + "Err");
+    input.closest(".field").classList.add("has-error");
+    err.textContent = msg; err.hidden = false;
+  }
+  function clearPayErrors() {
+    $$(".pay__form .field").forEach(function (f) { f.classList.remove("has-error"); });
+    $$(".pay__err").forEach(function (e) { e.hidden = true; e.textContent = ""; });
+  }
   function openPayModal() {
     if (!Object.keys(basket).length) return;
     $("#payAmount").textContent = $("#sumNow").textContent;
     $("#payForm").hidden = false;
-    $("#payResult").hidden = true;
+    $("#payResultOk").hidden = true;
+    $("#payResultFail").hidden = true;
     $("#payForm").reset();
+    clearPayErrors();
+    setPayBrand(null);
     setPaySubmitBusy(false);
     $("#payModal").hidden = false;
   }
@@ -6132,8 +6226,16 @@
     $("#paySubmit").disabled = busy;
     $("#paySubmitLabel").textContent = busy ? t("pay.processing", "Processing…") : t("pay.submit", "Pay");
   }
+  $$("#payBrands .pay__brand").forEach(function (b) {
+    b.addEventListener("click", function () { setPayBrand(b.dataset.brand === payBrand ? null : b.dataset.brand); });
+  });
   $("#payCardNumber").addEventListener("input", function () {
-    this.value = this.value.replace(/[^\d]/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
+    var digits = this.value.replace(/[^\d]/g, "").slice(0, 16);
+    var detected = detectCardBrand(digits);
+    if (digits) setPayBrand(detected); else if (!payBrand) setPayBrand(null);
+    this.value = detected === "amex"
+      ? digits.replace(/^(\d{0,4})(\d{0,6})(\d{0,5}).*/, function (_, a, b, c) { return [a, b, c].filter(Boolean).join(" "); })
+      : digits.replace(/(.{4})/g, "$1 ").trim();
   });
   $("#payExpiry").addEventListener("input", function () {
     this.value = this.value.replace(/[^\d]/g, "").slice(0, 4).replace(/(\d{2})(\d)/, "$1/$2");
@@ -6141,18 +6243,43 @@
   $("#payCVC").addEventListener("input", function () { this.value = this.value.replace(/[^\d]/g, "").slice(0, 4); });
   $("#payForm").addEventListener("submit", function (e) {
     e.preventDefault();
+    clearPayErrors();
+    var cardRaw = $("#payCardNumber").value.replace(/\s+/g, "");
+    var brand = detectCardBrand(cardRaw) || payBrand;
+    var expiry = $("#payExpiry").value.trim();
+    var cvc = $("#payCVC").value.trim();
+    var name = $("#payName").value.trim();
+    var ok = true;
+
+    if (!cardRaw || !luhnValid(cardRaw)) { payFieldError("payCardNumber", t("pay.err.card", "That card number doesn't look right.")); ok = false; }
+    if (!expiryValid(expiry)) { payFieldError("payExpiry", t("pay.err.expiry", "Enter a valid, unexpired MM/YY.")); ok = false; }
+    var cvcLen = brand === "amex" ? 4 : 3;
+    if (!new RegExp("^\\d{" + cvcLen + "}$").test(cvc)) { payFieldError("payCVC", tp("pay.err.cvc", { n: cvcLen })); ok = false; }
+    if (!name) { payFieldError("payName", t("pay.err.name", "Enter the name on the card.")); ok = false; }
+    if (!ok) return;
+
     setPaySubmitBusy(true);
     setTimeout(function () {
+      setPaySubmitBusy(false);
       $("#payForm").hidden = true;
-      $("#payResult").hidden = false;
+      if (cardRaw === "4000000000000002") {
+        $("#payResultFail").hidden = false;
+        return;
+      }
+      var r = commitOrder({ paid: true });
+      $("#payApprovedSummary").textContent = tp("pay.approved.summary", {
+        brand: (brand || "card").toUpperCase(), last4: cardRaw.slice(-4), amount: euro(r.total)
+      });
+      $("#payResultOk").hidden = false;
     }, 1400);
   });
   $("#payTryAgain").addEventListener("click", function () {
-    $("#payResult").hidden = true;
+    $("#payResultFail").hidden = true;
     $("#payForm").hidden = false;
     setPaySubmitBusy(false);
   });
   $("#payTryReserve").addEventListener("click", function () { closePayModal(); doReserve(); });
+  $("#payDone").addEventListener("click", function () { closePayModal(); closeDrawer(); });
   $("#payOnlineBtn").addEventListener("click", openPayModal);
   $("#payClose").addEventListener("click", closePayModal);
   $("#payModal").addEventListener("click", function (e) { if (e.target === $("#payModal")) closePayModal(); });
