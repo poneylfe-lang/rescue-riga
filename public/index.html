@@ -2748,7 +2748,10 @@
   };
   function figFor(p) {
     var body = (p && FIG[p.id]) || (p && FIG[p.model]) || FIG.box;
-    return '<svg viewBox="0 0 100 80" preserveAspectRatio="xMidYMid slice">' + FIG_BG + body + "</svg>";
+    // xmlns is redundant when this is inlined straight into the HTML (its usual use), but it's
+    // required for the standalone data:image/svg+xml URI use in photoFor()'s broken-photo
+    // fallback below — without it, Chromium silently fails to rasterize the <img>.
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" preserveAspectRatio="xMidYMid slice">' + FIG_BG + body + "</svg>";
   }
   // fun Club-card avatars: the same wonky-veg illustrations used on the shelf, repurposed as
   // profile pictures — pick the one that's you today
