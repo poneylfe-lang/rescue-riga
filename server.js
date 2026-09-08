@@ -116,7 +116,13 @@ app.use(
 // single-page fallback
 app.get('*', (req, res) => res.sendFile(path.join(PUBLIC, 'index.html')));
 
-app.listen(PORT, () => {
-  console.log(`\n  Rescue — Riga  ·  http://localhost:${PORT}\n`);
-  if (!BREVO_API_KEY || !BREVO_SENDER_EMAIL) console.log('  (BREVO_API_KEY / BREVO_SENDER_EMAIL not set — welcome emails are disabled)\n');
-});
+// Vercel imports this file as a serverless function (module.exports = app) instead of
+// running it directly, so only bind a real port when this file is executed as a script.
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n  Rescue — Riga  ·  http://localhost:${PORT}\n`);
+    if (!BREVO_API_KEY || !BREVO_SENDER_EMAIL) console.log('  (BREVO_API_KEY / BREVO_SENDER_EMAIL not set — welcome emails are disabled)\n');
+  });
+}
+
+module.exports = app;
