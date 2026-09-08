@@ -673,10 +673,15 @@
   .drawer { position: fixed; top: 0; right: 0; height: 100%; width: min(420px, 92vw); z-index: 151; background: var(--paper); border-left: var(--edge); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1); }
   .drawer.open { transform: none; }
   @media (prefers-reduced-motion: reduce) { .drawer { transition: none; } }
-  .drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: var(--edge); }
-  .drawer__head h2 { font-size: 1.32rem; }
+  .drawer__head { display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-bottom: var(--edge); }
+  .drawer__head h2 { font-size: 1.32rem; flex: 1; }
+  .drawer__clear { flex: none; border: 0; background: transparent; color: var(--ink-70); font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; padding: 8px 10px; border-radius: var(--pill); }
+  .drawer__clear:hover { background: var(--paper-2); color: var(--maroon); }
   .drawer__items { list-style: none; margin: 0; padding: 6px 18px; overflow-y: auto; flex: 1; }
-  .di { display: grid; grid-template-columns: 1fr auto; gap: 5px 12px; padding: 15px 0; border-bottom: 1.5px solid rgba(23, 19, 14, 0.16); }
+  .di__remove { flex: none; border: 0; background: transparent; color: var(--ink-70); cursor: pointer; padding: 4px; margin: -4px -4px -4px 4px; border-radius: 50%; display: grid; place-items: center; }
+  .di__remove:hover { background: rgba(194, 59, 47, 0.12); color: var(--maroon); }
+  .di__remove svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  .di { display: grid; grid-template-columns: 1fr auto auto; align-items: start; gap: 5px 10px; padding: 15px 0; border-bottom: 1.5px solid rgba(23, 19, 14, 0.16); }
   .di h4 { margin: 0; font: 800 0.98rem var(--f-display); }
   .di .b { font: 700 9px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-70); }
   .di .p { font: 800 1rem var(--f-display); text-align: right; font-variant-numeric: tabular-nums; }
@@ -1478,7 +1483,7 @@
       </div>
   </aside>
 <aside class="drawer" id="drawer" aria-label="Your basket" aria-hidden="true">
-  <div class="drawer__head"><h2 data-i18n="cart.title">Your basket</h2><button class="icon-btn" id="drawerClose" aria-label="Close basket">✕</button></div>
+  <div class="drawer__head"><h2 data-i18n="cart.title">Your basket</h2><button type="button" class="drawer__clear" id="drawerClearBtn" hidden data-i18n="cart.clear">Clear basket</button><button class="icon-btn" id="drawerClose" aria-label="Close basket">✕</button></div>
   <ul class="drawer__items" id="drawerItems"></ul>
   <div class="drawer__empty" id="drawerEmpty">
     <div class="empty-veg" aria-hidden="true">
@@ -1697,6 +1702,7 @@
       "pn.lunch": "cook once, lunch tomorrow",
       "pn.onepot": "one pot, feeds {m}",
       "eq.ticket": "That saving ≈ {n} cinema ticket.", "eq.tickets": "That saving ≈ {n} cinema tickets.",
+      "cart.remove": "Remove", "cart.cleared": "Basket cleared.",
       "slot.today": "Today {a}–{b}", "slot.tomorrow": "Tomorrow 12:00–12:30",
       "carrier.each": "€{p} each",
       "ticker.lead": "SAME FOOD · 30% LESS · ~€1,400 A YEAR BACK", "ticker.rejected": "REJECTED:", "ticker.was": "WAS",
@@ -1795,6 +1801,7 @@
       "corner": "Nevaram sagaidīt tevi — <b>tā pati pārtika, garākais ceļš.</b>",
       "comein.signoff": "Nāc izsalcis. Ej prom apmierināts. <b>Nekas uz mūsu plauktiem nekad nav bijis miskastē.</b>",
       "cart.title": "Tavs grozs", "cart.empty": "Vēl nekas nav izglābts.", "cart.back": "Atpakaļ pie plaukta",
+      "cart.clear": "Iztukšot grozu", "cart.remove": "Noņemt", "cart.cleared": "Grozs iztukšots.",
       "cart.emptybubble": "Apskati plauktu!",
       "cart.was": "Plaukta cena", "cart.save": "Tu izglāb", "cart.now": "Maksā, saņemot",
       "cart.slot": "Saņemšanas laiks", "cart.reserve": "Rezervēt saņemšanai", "cart.payonline": "Maksāt tiešsaistē", "cart.note": "Rezervācija tur preces 3 stundas. Maksā veikalā.",
@@ -1962,6 +1969,7 @@
       "corner": "On a hâte de vous voir — <b>même nourriture, chemin des écoliers.</b>",
       "comein.signoff": "Venez le ventre vide. Repartez fiers. <b>Rien sur nos étagères n’a connu le fond d’une poubelle.</b>",
       "cart.title": "Votre panier", "cart.empty": "Rien de sauvé pour l’instant.", "cart.back": "Retour au rayon",
+      "cart.clear": "Vider le panier", "cart.remove": "Retirer", "cart.cleared": "Panier vidé.",
       "cart.emptybubble": "Va voir le rayon !",
       "cart.was": "Prix en rayon", "cart.save": "Vous sauvez", "cart.now": "À payer au retrait",
       "cart.slot": "Créneau de retrait", "cart.reserve": "Réserver pour le retrait", "cart.payonline": "Payer en ligne", "cart.note": "La réservation garde vos articles 3 h. Paiement en magasin.",
@@ -3138,6 +3146,7 @@
     var btEl = $("#basketTotal"); if (btEl) btEl.textContent = euro(totalNow);
     var items = Object.keys(basket);
     var box = $("#drawerItems"), empty = $("#drawerEmpty"), foot = $("#drawerFoot");
+    var clearBtn = $("#drawerClearBtn"); if (clearBtn) clearBtn.hidden = !items.length;
     box.innerHTML = "";
     if (!items.length) { empty.hidden = false; foot.hidden = true; return; }
     empty.hidden = true; foot.hidden = false;
@@ -3150,7 +3159,8 @@
       li.innerHTML =
         "<div><span class=\"b\">" + L(p.brand) + "</span><h4>" + L(p.name) + "</h4>" +
         "<div class=\"qty\"><button data-dec=\"" + id + "\" aria-label=\"one fewer\">–</button><span>" + q + "</span><button data-inc=\"" + id + "\" aria-label=\"one more\">+</button></div></div>" +
-        "<div><div class=\"p\">" + euro(p.price * q) + "</div><div class=\"w\"><s>" + euro(p.was * q) + "</s></div></div>";
+        "<div><div class=\"p\">" + euro(p.price * q) + "</div><div class=\"w\"><s>" + euro(p.was * q) + "</s></div></div>" +
+        "<button type=\"button\" class=\"di__remove\" data-remove=\"" + id + "\" aria-label=\"" + t("cart.remove", "Remove") + "\"><svg viewBox=\"0 0 20 20\" aria-hidden=\"true\"><path d=\"M5 5l10 10M15 5L5 15\"/></svg></button>";
       box.appendChild(li);
     });
     $("#sumWas").textContent = euro(was);
@@ -6257,6 +6267,7 @@
     var view = t.closest("[data-view]"); if (view) { openModal(view.dataset.view); return; }
     var inc = t.closest("[data-inc]"); if (inc) { setQty(inc.dataset.inc, (basket[inc.dataset.inc] || 0) + 1); return; }
     var dec = t.closest("[data-dec]"); if (dec) { setQty(dec.dataset.dec, (basket[dec.dataset.dec] || 0) - 1); return; }
+    var rem = t.closest("[data-remove]"); if (rem) { setQty(rem.dataset.remove, 0); return; }
     if (t.closest("[data-close]")) { closeDrawer(); return; }
     var pick = t.closest("[data-search-pick]"); if (pick) { pickSearchResult(pick.dataset.searchPick); return; }
     var veg = t.closest("[data-veggie]"); if (veg) { pickVeggie(veg.dataset.veggie); return; }
@@ -6282,6 +6293,10 @@
     if (next !== cur) { showTab(TABS[next]); $$(".tab-link")[next].focus(); }
   });
   $("#basketBtn").addEventListener("click", openDrawer);
+  $("#drawerClearBtn").addEventListener("click", function () {
+    basket = {}; saveBasket(); syncBasket(); renderGrid();
+    toast(t("cart.cleared", "Basket cleared."));
+  });
   $("#drawerClose").addEventListener("click", closeDrawer);
   $("#acctDrawerClose").addEventListener("click", closeProfileDrawer);
   $("#scrim").addEventListener("click", function () { closeDrawer(); closeProfileDrawer(); });
