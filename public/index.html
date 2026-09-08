@@ -2664,27 +2664,44 @@
      Real photography instead of illustrations for the shop grid (the FIG/SVG
      set below stays in use for the mini "VIEW 3D" spinning-box preview and
      the veggie-avatar picker, which both need a flat texture, not a photo).
-     loremflickr.com serves a real Flickr photo per keyword with no API key;
-     `?lock=N` pins it to the SAME photo on every load instead of a random
-     one each time — every URL below was checked by hand before use. */
-  var PHOTO_KW = {
-    bread: "sliced-bread,1", crate: "root-vegetables,1", carton: "milk,8", box: "cheese-slices,1",
-    tray: "chicken-thighs,1", bag: "flour,1", jar: "olive-oil-bottle,1", can: "baked-beans,1",
-    sourdough: "sourdough-bread,1", buns: "cinnamon-bun,1", baguette: "baguette,1",
-    apples: "apples,1", roots: "root-vegetables,1", salad: "green-salad,1", bananas: "bananas,1",
-    milk: "milk,8", kefir: "kefir,1", curd: "cottage-cheese,1", chicken: "chicken-thighs,1",
-    meals: "meal-prep,1", eggs: "chicken-eggs,1", pasta: "pasta,1", passata: "marinara-sauce,1",
-    beans: "baked-beans,1", coffee: "coffee,2", choc: "chocolate-squares,1", juice: "orange-juice,1",
-    butter: "butter,1", potatoes: "potatoes,1", onions: "red-onion,1", cabbage: "green-cabbage,1",
-    mushrooms: "button-mushrooms,1", rice: "basmati-rice,1", oats: "oats,1", lentils: "lentils,1",
-    chickpeas: "chickpeas,1", flour: "flour,1", oil: "olive-oil-bottle,1", stock: "spices,1",
-    cheese: "cheese-slices,1", yoghurt: "yogurt,6", bacon: "bacon,2", sausages: "sausages,1",
-    sprats: "sardines,1", herbs: "fresh-herbs,1"
+     Each entry is a real Wikimedia Commons file — public domain / CC-licensed,
+     no API key needed — served through its stable Special:FilePath redirect.
+     Picked and verified by hand (subject match + actually a photo, not a
+     painting/diagram/logo/archive shot) after loremflickr.com turned out to
+     both 500 on most keywords and occasionally return the wrong thing. */
+  var PHOTO_FILE = {
+    apples: "Red Apple.jpg", bacon: "Four strips of bacon.jpg",
+    bag: "Soungouf - millet flour 1. unsifted milled flour.jpg", baguette: "French bread DSC09293.jpg",
+    bananas: "Bunch of bananas on sale.jpg", beans: "Homemade baked beans 2.jpg",
+    box: "Parmesan cheese knife on block of cheese.jpg", bread: "Fresh made bread 05.jpg",
+    buns: "Cinnamon danish in Copenhagen.jpg", butter: "Block of butter in butter dish.jpg",
+    cabbage: "Savoy Cabbage wrinkles.jpg", can: "Canned green beans cooling on rack.jpg",
+    carton: "Milk container types.jpg", cheese: "White cheddar cheese sliced CNE.jpg",
+    chicken: "Raw chicken.jpg", chickpeas: "Ordinary chickpeas in a ceramic bowl.jpg",
+    choc: "Chocolate hazelnut biscuit cake.jpg", coffee: "Roasted coffee beans.jpg",
+    crate: "Neon root veggies (roasted beets, turnips, rutabaga, carrots and onions) (6893015819).jpg",
+    curd: "Cottagecheese200px.jpg", eggs: "Egg cartons with chicken eggs 03.jpg",
+    flour: "All-Purpose Flour (4107895947).jpg", herbs: "Fresh green chopped herbs on wooden board.jpg",
+    jar: "Olive oil bottle Bertolli Riserva Premium.jpg", juice: "A glass of orange juice (2014-12-23).JPG",
+    kefir: "Kefir Ariani bottles in Greece.jpg", lentils: "Pardina lentils, 2024-11-27.jpg",
+    meals: "Meal prep food container (43991880552).jpg", milk: "Milk bottle and two doughnuts.jpg",
+    mushrooms: "Button mushrooms - Wellington, New Zealand.jpg", oats: "Rolled Oats.jpg",
+    oil: "Olive oil bottle Bertolli Riserva Premium.jpg",
+    onions: "Pile of Onions at Barkin Dogo Market, Kaduna North 02.jpg",
+    passata: "Decanted tomato sauce.jpg", pasta: "Pasta with brie sun dried tomatos fresh basil.jpg",
+    potatoes: "Vegetables okra, potatoes, onions tomatoes and raw banana in sunlight.jpg",
+    rice: "A bowl of rice.jpg",
+    roots: "Neon root veggies (roasted beets, turnips, rutabaga, carrots and onions) (6893015819).jpg",
+    salad: "Fresh salad with arugula, cabbage and tomato in a glass bowl.jpg",
+    sausages: "Sausages and meats in Brighton Sausage Co 1 2024-03-16.jpg",
+    sourdough: "Herculaneum loaf 2.jpg", sprats: "Canned sardines.jpg",
+    stock: "Person examines a jar of spice on a wooden shelf in a kitchen pantry during daytime in a cozy home setting.jpg",
+    tray: "Raw chicken thighs.jpg",
+    yoghurt: "Liat Portal for Foodie Disorder - Yogurt Bowl with Figs, Nuts, Chia Seeds, and Seaweed.jpg"
   };
   function photoUrlFor(p) {
-    var key = (p && PHOTO_KW[p.id]) ? p.id : (p && PHOTO_KW[p.model]) ? p.model : "box";
-    var kw = PHOTO_KW[key].split(",");
-    return "https://loremflickr.com/480/380/" + kw[0] + "?lock=" + kw[1];
+    var key = (p && PHOTO_FILE[p.id]) ? p.id : (p && PHOTO_FILE[p.model]) ? p.model : "box";
+    return "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(PHOTO_FILE[key]) + "?width=480";
   }
   // loremflickr serves a real photo per keyword with no API key, but it's a free third-party
   // service — some keywords 404 or time out. Fall back to the flat illustration set (same one
