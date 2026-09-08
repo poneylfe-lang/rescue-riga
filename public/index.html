@@ -678,6 +678,12 @@
   .qty button:hover { background: var(--mustard); color: var(--ink); }
   .qty span { min-width: 28px; text-align: center; font: 700 13px var(--f-mono); }
   .drawer__empty { padding: 38px 18px; text-align: center; color: var(--ink-70); }
+  .empty-veg { display: flex; flex-direction: column; align-items: center; margin-bottom: 22px; }
+  .empty-veg__bubble { position: relative; margin-bottom: 22px; background: var(--card); border: 2px solid var(--ink); border-radius: var(--pill); padding: 10px 18px; font: 800 12px/1 var(--f-mono); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); white-space: nowrap; box-shadow: var(--shadow); }
+  .empty-veg__bubble::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 14px; height: 14px; background: var(--card); border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateX(-50%) rotate(45deg); }
+  .empty-veg__row { display: flex; align-items: flex-end; gap: 10px; }
+  .empty-veg__row .veggie-opt { width: 56px; cursor: default; }
+  .empty-veg__row .veggie-opt:nth-child(2) { width: 66px; }
   .drawer__foot { padding: 16px 18px; border-top: var(--edge); background: var(--paper-2); }
   .drawer__foot .btn + .btn { margin-top: 8px; }
   .tot > div { display: flex; justify-content: space-between; font-size: 0.94rem; padding: 3px 0; font-variant-numeric: tabular-nums; }
@@ -1376,6 +1382,10 @@
   <div class="drawer__head"><h2 data-i18n="cart.title">Your basket</h2><button class="icon-btn" id="drawerClose" aria-label="Close basket">✕</button></div>
   <ul class="drawer__items" id="drawerItems"></ul>
   <div class="drawer__empty" id="drawerEmpty">
+    <div class="empty-veg" aria-hidden="true">
+      <span class="empty-veg__bubble" data-i18n="cart.emptybubble">Check the shelf!</span>
+      <div class="empty-veg__row" id="emptyVegRow"></div>
+    </div>
     <p data-i18n="cart.empty">Nothing rescued yet.</p>
     <button class="btn btn--ghost btn--sm" data-close data-i18n="cart.back">Back to the shelf</button>
   </div>
@@ -1597,6 +1607,7 @@
       "corner": "Nevaram sagaidīt tevi — <b>tā pati pārtika, garākais ceļš.</b>",
       "comein.signoff": "Nāc izsalcis. Ej prom apmierināts. <b>Nekas uz mūsu plauktiem nekad nav bijis miskastē.</b>",
       "cart.title": "Tavs grozs", "cart.empty": "Vēl nekas nav izglābts.", "cart.back": "Atpakaļ pie plaukta",
+      "cart.emptybubble": "Apskati plauktu!",
       "cart.was": "Plaukta cena", "cart.save": "Tu izglāb", "cart.now": "Maksā, saņemot",
       "cart.slot": "Saņemšanas laiks", "cart.reserve": "Rezervēt saņemšanai", "cart.payonline": "Maksāt tiešsaistē", "cart.note": "Rezervācija tur preces 3 stundas. Maksā veikalā.",
       "pay.eyebrow": "Droša norēķināšanās", "pay.title": "Maksāt tiešsaistē", "pay.card": "Kartes numurs", "pay.expiry": "Derīga līdz", "pay.cvc": "CVC", "pay.name": "Vārds uz kartes", "pay.submit": "Maksāt", "pay.processing": "Apstrādā…", "pay.secure": "🔒 Šifrēts. Kartes dati netiek saglabāti.",
@@ -1752,6 +1763,7 @@
       "corner": "On a hâte de vous voir — <b>même nourriture, chemin des écoliers.</b>",
       "comein.signoff": "Venez le ventre vide. Repartez fiers. <b>Rien sur nos étagères n’a connu le fond d’une poubelle.</b>",
       "cart.title": "Votre panier", "cart.empty": "Rien de sauvé pour l’instant.", "cart.back": "Retour au rayon",
+      "cart.emptybubble": "Va voir le rayon !",
       "cart.was": "Prix en rayon", "cart.save": "Vous sauvez", "cart.now": "À payer au retrait",
       "cart.slot": "Créneau de retrait", "cart.reserve": "Réserver pour le retrait", "cart.payonline": "Payer en ligne", "cart.note": "La réservation garde vos articles 3 h. Paiement en magasin.",
       "pay.eyebrow": "Paiement sécurisé", "pay.title": "Payer en ligne", "pay.card": "Numéro de carte", "pay.expiry": "Expiration", "pay.cvc": "CVC", "pay.name": "Nom sur la carte", "pay.submit": "Payer", "pay.processing": "Traitement…", "pay.secure": "🔒 Chiffré. Les données de carte ne sont jamais conservées.",
@@ -5973,6 +5985,9 @@
   }
   function renderStatic() {
     $("#partners").textContent = PARTNERS.join(" · ");
+    $("#emptyVegRow").innerHTML = ["apples", "onions", "bananas"].map(function (id) {
+      return '<span class="veggie-opt">' + veggieSVG(id) + "</span>";
+    }).join("");
     $("#zoneChips").innerHTML =
       '<button data-zone="all" class="is-active">' + t("zonechip.all") + "</button>" +
       ZONES.map(function (z) { return '<button data-zone="' + z.id + '">' + L(z.label) + "</button>"; }).join("");
