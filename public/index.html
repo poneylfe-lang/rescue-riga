@@ -850,7 +850,7 @@
         <button data-lang="en" type="button" aria-pressed="true">ENG</button>
         <button data-lang="fr" type="button">FR</button>
       </div>
-      <button class="icon-btn wish-btn" id="wishBtn" aria-haspopup="dialog" aria-label="Favourites" title="Favourites">
+      <button class="icon-btn wish-btn wish-toggle" id="wishBtn" aria-haspopup="dialog" aria-label="Favourites" title="Favourites">
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17.5s-6.7-4-6.7-8.7a3.8 3.8 0 0 1 6.7-2.4 3.8 3.8 0 0 1 6.7 2.4c0 4.7-6.7 8.7-6.7 8.7z" /></svg>
         <span class="basket-btn__count" id="wishCount" hidden>0</span>
       </button>
@@ -1120,6 +1120,10 @@
       <button type="button" class="chip-stock" id="stockOnlyBtn" aria-pressed="false">
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 5h12M4 10h12M4 15h8" /></svg>
         <span data-i18n="shop.instock">In stock only</span>
+      </button>
+      <button type="button" class="chip-stock wish-toggle" id="wishChipBtn" aria-pressed="false">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17.5s-6.7-4-6.7-8.7a3.8 3.8 0 0 1 6.7-2.4 3.8 3.8 0 0 1 6.7 2.4c0 4.7-6.7 8.7-6.7 8.7z" /></svg>
+        <span data-i18n="shop.favourites">Favourites</span>
       </button>
       <div class="shop__sort">
         <label for="sortSel" data-i18n="shop.sort">Sort</label>
@@ -1867,7 +1871,7 @@
       "account.wrongpass": "Nepareiza parole šim e-pastam.", "account.welcomeback": "Ar atgriešanos, {name}!",
       "account.mode.signin": "Pieteikties", "account.passwordhint.create": "Izvēlies paroli savam jaunajam kontam.", "account.passwordhint.signin": "Ievadi savu paroli, lai pieteiktos atkal.",
       "account.noaccount": "Šim e-pastam vēl nav konta — izmanto \"Izveidot kontu\".", "account.alreadyexists": "Šim e-pastam jau ir konts — izmanto \"Pieteikties\".",
-      "nav.mystore": "Mans veikals", "shop.instock": "Tikai pieejamie", "shop.count1": "{n} prece pieejama", "shop.countn": "{n} preces pieejamas",
+      "nav.mystore": "Mans veikals", "shop.instock": "Tikai pieejamie", "shop.favourites": "Izlase", "shop.count1": "{n} prece pieejama", "shop.countn": "{n} preces pieejamas",
       "shop.empty.filters": "Nekas neatbilst šiem filtriem.", "shop.empty.faves": "Vēl nekas nav pievienots izlasei — pieskaries sirsniņai kaut kam, kas patīk.", "shop.empty.clear": "Notīrīt filtrus",
       "account.saved": "ietaupīts kopā", "account.orders": "rezervācijas", "account.signout": "Iziet",
       "account.manage": "Pārvaldīt", "account.diet": "Uzturs", "account.future": "Tavs turpmākais profils",
@@ -2034,7 +2038,7 @@
       "account.wrongpass": "Mot de passe incorrect pour cet e-mail.", "account.welcomeback": "Content de vous revoir, {name} !",
       "account.mode.signin": "Se connecter", "account.passwordhint.create": "Choisissez un mot de passe pour votre nouveau compte.", "account.passwordhint.signin": "Entrez votre mot de passe pour vous reconnecter.",
       "account.noaccount": "Aucun compte avec cet e-mail pour l'instant — utilisez \"Créer un compte\".", "account.alreadyexists": "Cet e-mail a déjà un compte — utilisez \"Se connecter\".",
-      "nav.mystore": "Mon magasin", "shop.instock": "Disponibles seulement", "shop.count1": "{n} produit disponible", "shop.countn": "{n} produits disponibles",
+      "nav.mystore": "Mon magasin", "shop.instock": "Disponibles seulement", "shop.favourites": "Favoris", "shop.count1": "{n} produit disponible", "shop.countn": "{n} produits disponibles",
       "shop.empty.filters": "Rien ne correspond à ces filtres.", "shop.empty.faves": "Rien en favoris pour l’instant — touchez le cœur sur ce qui vous plaît.", "shop.empty.clear": "Effacer les filtres",
       "account.saved": "économisés au total", "account.orders": "réservations", "account.signout": "Se déconnecter",
       "account.manage": "Gérer", "account.diet": "Régime", "account.future": "Votre futur profil",
@@ -2560,7 +2564,11 @@
   function syncWishlist() {
     var n = Object.keys(wishlist).length;
     var el = $("#wishCount"); if (el) { el.hidden = n === 0; el.textContent = n; }
-    var btn = $("#wishBtn"); if (btn) btn.classList.toggle("is-on", showFavesOnly);
+    $$(".wish-toggle").forEach(function (btn) {
+      btn.classList.toggle("is-on", showFavesOnly);
+      btn.classList.toggle("is-active", showFavesOnly);
+      btn.setAttribute("aria-pressed", String(showFavesOnly));
+    });
   }
 
   /* ---- account: local demo profile (localStorage-only, no real backend on this static site).
@@ -6245,7 +6253,7 @@
     }
     var add = t.closest("[data-add]"); if (add) { addToBasket(add.dataset.add, 1); return; }
     var wish = t.closest("[data-wish]"); if (wish) { toggleWish(wish.dataset.wish); return; }
-    if (t.closest("#wishBtn")) { showFavesOnly = !showFavesOnly; syncWishlist(); showTab("shop"); renderGrid(); return; }
+    if (t.closest(".wish-toggle")) { showFavesOnly = !showFavesOnly; syncWishlist(); showTab("shop"); renderGrid(); return; }
     var view = t.closest("[data-view]"); if (view) { openModal(view.dataset.view); return; }
     var inc = t.closest("[data-inc]"); if (inc) { setQty(inc.dataset.inc, (basket[inc.dataset.inc] || 0) + 1); return; }
     var dec = t.closest("[data-dec]"); if (dec) { setQty(dec.dataset.dec, (basket[dec.dataset.dec] || 0) - 1); return; }
