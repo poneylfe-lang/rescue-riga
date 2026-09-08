@@ -2670,8 +2670,12 @@
     var kw = PHOTO_KW[key].split(",");
     return "https://loremflickr.com/480/380/" + kw[0] + "?lock=" + kw[1];
   }
+  // loremflickr serves a real photo per keyword with no API key, but it's a free third-party
+  // service — some keywords 404 or time out. Fall back to the flat illustration set (same one
+  // used for the 3D box / veggie avatars) instead of leaving a broken image icon on the shelf.
   function photoFor(p) {
-    return '<img loading="lazy" alt="" src="' + photoUrlFor(p) + '">';
+    var fallback = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(figFor(p));
+    return '<img loading="lazy" alt="" src="' + photoUrlFor(p) + '" data-fallback="' + fallback + '" onerror="this.onerror=null;this.src=this.dataset.fallback;">';
   }
 
   /* ============================ FIGURES (one per ingredient) ============================ */
