@@ -687,9 +687,16 @@
   .qty span { min-width: 28px; text-align: center; font: 700 13px var(--f-mono); }
   .drawer__empty { padding: 38px 18px; text-align: center; color: var(--ink-70); }
   .empty-veg { position: relative; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
-  .empty-veg__char { width: 240px; height: auto; }
+  .empty-veg__char { width: 240px; height: auto; animation: vegBob 3.6s ease-in-out infinite; }
   .empty-veg__bubble { position: relative; margin-bottom: 14px; background: var(--card); border: 2px solid var(--ink); border-radius: var(--pill); padding: 11px 18px; font: 800 13px/1 var(--f-mono); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); white-space: nowrap; box-shadow: var(--shadow); }
   .empty-veg__bubble::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 14px; height: 14px; background: var(--card); border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateX(-50%) rotate(45deg); }
+  @keyframes vegBob { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(-1.5deg); } }
+  @media (prefers-reduced-motion: reduce) { .empty-veg__char { animation: none; } }
+
+  /* no-results shelf state: the same mascot, a puzzled/shrugging pose */
+  .grid__empty { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 20px 56px; }
+  .grid__empty-char { width: 210px; height: auto; margin-bottom: 6px; }
+  .grid__empty-title { font: 700 1.05rem/1.4 var(--f-body); color: var(--ink-70); max-width: 34ch; margin: 0 0 18px; }
   .drawer__foot { padding: 16px 18px; border-top: var(--edge); background: var(--paper-2); }
   .drawer__foot .btn + .btn { margin-top: 8px; }
   .tot > div { display: flex; justify-content: space-between; font-size: 0.94rem; padding: 3px 0; font-variant-numeric: tabular-nums; }
@@ -1126,6 +1133,30 @@
     </div>
     <p class="shop__count" id="gridCount"></p>
     <ul class="grid" id="grid"></ul>
+    <div class="grid__empty" id="gridEmpty" hidden>
+      <svg class="grid__empty-char" viewBox="0 -40 300 400" aria-hidden="true">
+        <path d="M128,168 C116,190 104,216 96,246 C90,270 86,292 93,309 C97,318 107,321 115,314 C122,308 126,295 130,276 C137,248 141,218 143,190 C140,180 134,172 128,168 Z" fill="#e07a33" stroke="#17130e" stroke-width="5" stroke-linejoin="round" />
+        <path d="M175,170 C186,195 197,222 205,253 C211,278 214,302 207,320 C202,330 191,333 183,325 C177,318 174,304 171,285 C166,252 163,218 161,190 C164,180 170,174 175,170 Z" fill="#e07a33" stroke="#17130e" stroke-width="5" stroke-linejoin="round" />
+        <path d="M100,110 C82,104 62,100 46,106 C37,109 38,120 47,121 C64,122 84,120 104,120 Z" fill="#e8752f" stroke="#17130e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+        <path d="M198,110 C216,104 236,100 252,106 C261,109 260,120 251,121 C234,122 214,120 194,120 Z" fill="#e8752f" stroke="#17130e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+        <path d="M150,46 C114,46 95,64 93,94 C91,122 98,148 108,170 C118,190 133,202 150,204 C167,202 182,190 192,170 C202,148 209,122 207,94 C205,64 186,46 150,46 Z" fill="#e8752f" stroke="#17130e" stroke-width="5" stroke-linejoin="round" />
+        <g fill="none" stroke-linecap="round">
+          <path d="M148,58 C140,40 148,24 162,18" stroke="#3f8f45" stroke-width="10" />
+          <path d="M150,58 C152,34 158,16 172,8" stroke="#5aa94a" stroke-width="10" />
+          <path d="M153,58 C160,42 154,26 140,20" stroke="#3f8f45" stroke-width="10" />
+          <path d="M142,60 C130,48 132,34 122,26" stroke="#4e9b3e" stroke-width="9" />
+          <path d="M159,60 C170,48 176,36 188,30" stroke="#4e9b3e" stroke-width="9" />
+        </g>
+        <path d="M119,108 q9,-6 18,-1" fill="none" stroke="#17130e" stroke-width="4" stroke-linecap="round" />
+        <circle cx="128" cy="120" r="7" fill="#17130e" />
+        <circle cx="168" cy="120" r="7" fill="#17130e" />
+        <ellipse cx="118" cy="138" rx="9" ry="6" fill="#f2946a" opacity="0.7" />
+        <ellipse cx="178" cy="138" rx="9" ry="6" fill="#f2946a" opacity="0.7" />
+        <path d="M124,152 q10,6 20,0 q10,-6 20,0" fill="none" stroke="#17130e" stroke-width="5" stroke-linecap="round" />
+      </svg>
+      <p class="grid__empty-title" id="gridEmptyTitle" data-i18n="shop.empty.filters">Nothing matches these filters.</p>
+      <button class="btn btn--ghost btn--sm" id="gridEmptyClear" data-i18n="shop.empty.clear">Clear filters</button>
+    </div>
   </section>
 
   <!-- ===================== TAB: THE PIPELINE ===================== -->
@@ -1673,6 +1704,7 @@
       "account.noaccount": "No account with this email yet — use Create account instead.",
       "account.alreadyexists": "This email already has an account — use Sign in instead.",
       "shop.count1": "{n} product available", "shop.countn": "{n} products available",
+      "shop.empty.filters": "Nothing matches these filters.", "shop.empty.faves": "Nothing favourited yet — tap the heart on something you like.", "shop.empty.clear": "Clear filters",
       "account.points.tocard": "{n} stamps to your next €5 off", "account.points.almost": "One more stamp — your next €5 off is close.",
       "account.resetbtn": "Reset password", "account.newpassword": "New password",
       "account.passwordhint.reset": "Enter the code we emailed you and choose a new password.",
@@ -1836,6 +1868,7 @@
       "account.mode.signin": "Pieteikties", "account.passwordhint.create": "Izvēlies paroli savam jaunajam kontam.", "account.passwordhint.signin": "Ievadi savu paroli, lai pieteiktos atkal.",
       "account.noaccount": "Šim e-pastam vēl nav konta — izmanto \"Izveidot kontu\".", "account.alreadyexists": "Šim e-pastam jau ir konts — izmanto \"Pieteikties\".",
       "nav.mystore": "Mans veikals", "shop.instock": "Tikai pieejamie", "shop.count1": "{n} prece pieejama", "shop.countn": "{n} preces pieejamas",
+      "shop.empty.filters": "Nekas neatbilst šiem filtriem.", "shop.empty.faves": "Vēl nekas nav pievienots izlasei — pieskaries sirsniņai kaut kam, kas patīk.", "shop.empty.clear": "Notīrīt filtrus",
       "account.saved": "ietaupīts kopā", "account.orders": "rezervācijas", "account.signout": "Iziet",
       "account.manage": "Pārvaldīt", "account.diet": "Uzturs", "account.future": "Tavs turpmākais profils",
       "account.dietnote": "Filtrē, ko iesakām plauktā un vēstulēs — bez gaļas, ja veģetārietis; bez dzīvnieku izcelsmes produktiem, ja vegāns.",
@@ -2002,6 +2035,7 @@
       "account.mode.signin": "Se connecter", "account.passwordhint.create": "Choisissez un mot de passe pour votre nouveau compte.", "account.passwordhint.signin": "Entrez votre mot de passe pour vous reconnecter.",
       "account.noaccount": "Aucun compte avec cet e-mail pour l'instant — utilisez \"Créer un compte\".", "account.alreadyexists": "Cet e-mail a déjà un compte — utilisez \"Se connecter\".",
       "nav.mystore": "Mon magasin", "shop.instock": "Disponibles seulement", "shop.count1": "{n} produit disponible", "shop.countn": "{n} produits disponibles",
+      "shop.empty.filters": "Rien ne correspond à ces filtres.", "shop.empty.faves": "Rien en favoris pour l’instant — touchez le cœur sur ce qui vous plaît.", "shop.empty.clear": "Effacer les filtres",
       "account.saved": "économisés au total", "account.orders": "réservations", "account.signout": "Se déconnecter",
       "account.manage": "Gérer", "account.diet": "Régime", "account.future": "Votre futur profil",
       "account.dietnote": "Filtre ce qu'on vous suggère au rayon et par e-mail — plus de viande si végétarien, plus aucun produit animal si végan.",
@@ -3045,6 +3079,14 @@
     }));
     var grid = $("#grid"); grid.innerHTML = "";
     var countEl = $("#gridCount"); if (countEl) countEl.textContent = tp(list.length === 1 ? "shop.count1" : "shop.countn", { n: list.length });
+    var emptyEl = $("#gridEmpty");
+    if (emptyEl) {
+      emptyEl.hidden = list.length !== 0;
+      if (!list.length) {
+        $("#gridEmptyTitle").textContent = t(showFavesOnly ? "shop.empty.faves" : "shop.empty.filters",
+          showFavesOnly ? "Nothing favourited yet — tap the heart on something you like." : "Nothing matches these filters.");
+      }
+    }
     list.forEach(function (p) {
       var left = p.qty - inBasketQty(p.id);
       var bb = bbText(p.bb);
@@ -6246,6 +6288,13 @@
     else if (!$("#searchResults").hidden) { $("#searchResults").hidden = true; $("#siteSearch").blur(); }
   });
   $("#sortSel").addEventListener("change", function () { sortMode = this.value; renderGrid(); });
+  $("#gridEmptyClear").addEventListener("click", function () {
+    activeZone = "all"; stockOnly = false; showFavesOnly = false;
+    $$("#zoneChips button").forEach(function (b) { b.classList.toggle("is-active", b.dataset.zone === "all"); });
+    var sb = $("#stockOnlyBtn"); sb.classList.remove("is-active"); sb.setAttribute("aria-pressed", "false");
+    syncWishlist();
+    renderGrid();
+  });
   // shared by "reserve, pay in store" and a successful online payment — records the order
   // against the signed-in account (if any) and empties the basket. Returns what was charged
   // so the caller can show it back (a receipt line, a toast).
