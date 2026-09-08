@@ -252,6 +252,13 @@
   .tab-link[aria-selected="true"] { background: var(--card); color: var(--ink); }
   .tab-link[aria-selected="true"]::before { background: var(--rescue); border-color: var(--ink); }
 
+  /* ---- shop hover menu: jump straight into one aisle instead of the whole shelf ---- */
+  .shop-dropdown { position: fixed; z-index: 140; background: var(--card); border: var(--edge); border-radius: var(--r); box-shadow: var(--shadow-lg); padding: 8px; min-width: 190px; display: flex; flex-direction: column; gap: 1px; }
+  .shop-dropdown button { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; font: 700 13px var(--f-body); padding: 9px 10px; border: 0; border-radius: var(--r); background: transparent; color: var(--ink); cursor: pointer; }
+  .shop-dropdown button:hover, .shop-dropdown button:focus-visible { background: var(--paper-2); }
+  .shop-dropdown .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--z, var(--rescue)); border: 1.5px solid var(--ink); }
+  .shop-dropdown hr { width: 100%; border: 0; border-top: 1.5px solid rgba(23, 19, 14, 0.14); margin: 5px 0; }
+
   /* ---------------- PANELS ---------------- */
   main { max-width: var(--wrap); margin: 0 auto; padding: 0 clamp(18px, 5vw, 40px) 60px; }
   .panel { padding: clamp(52px, 8vw, 96px) 0; scroll-margin-top: 104px; }
@@ -801,7 +808,8 @@
     <button class="tab-link" role="tab" data-tab="good" aria-selected="true" data-i18n="tab.good">About us</button>
     <button class="tab-link" role="tab" data-tab="thirty" aria-selected="false" data-i18n="tab.thirty">The 30%</button>
     <button class="tab-link" role="tab" data-tab="store" aria-selected="false" data-i18n="tab.store">The store</button>
-    <button class="tab-link" role="tab" data-tab="shop" aria-selected="false" data-i18n="tab.shop">Shop</button>
+    <button class="tab-link" role="tab" data-tab="shop" aria-selected="false" aria-haspopup="true" aria-expanded="false" id="shopTabBtn" data-i18n="tab.shop">Shop</button>
+    <div class="shop-dropdown" id="shopDropdown" hidden></div>
     <button class="tab-link" role="tab" data-tab="intake" aria-selected="false" data-i18n="tab.intake">The pipeline</button>
     <button class="tab-link" role="tab" data-tab="comein" aria-selected="false" data-i18n="tab.comein">Come in</button>
   </div>
@@ -2587,6 +2595,12 @@
   var stockOnly = false;
   var sortMode = "value";
   var TABS = ["good", "thirty", "store", "shop", "intake", "comein"];
+  function goToZone(z) {
+    activeZone = z;
+    $$("#zoneChips button").forEach(function (b) { b.classList.toggle("is-active", b.dataset.zone === z); });
+    renderGrid();
+    showTab("shop");
+  }
 
   /* ============================ SECTIONS — one long scroll, tabs jump to headings ============================ */
   var currentTab = "good";
@@ -5916,6 +5930,10 @@
     $("#zoneChips").innerHTML =
       '<button data-zone="all" class="is-active">' + t("zonechip.all") + "</button>" +
       ZONES.map(function (z) { return '<button data-zone="' + z.id + '">' + L(z.label) + "</button>"; }).join("");
+    $("#shopDropdown").innerHTML =
+      ZONES.map(function (z) { return '<button type="button" data-zone="' + z.id + '"><span class="dot" style="--z:' + z.color + '"></span>' + L(z.label) + "</button>"; }).join("") +
+      "<hr>" +
+      '<button type="button" data-zone="all">' + t("zonechip.all") + "</button>";
     $("#rejGrid").innerHTML = REJECTED.map(function (r) {
       return '<li class="rej"><span class="rej__stamp">' + L(r.stamp) + '</span>' +
         "<h4>" + L(r.crime) + "</h4><p>" + L(r.body) + "</p>" +
@@ -5944,6 +5962,8 @@
     var t = e.target;
     if (!t || !t.closest) return;
     var lb = t.closest(".lang button"); if (lb) { setLang(lb.dataset.lang); return; }
+    var zoneNav = t.closest("#shopDropdown [data-zone]");
+    if (zoneNav) { $("#shopDropdown").hidden = true; goToZone(zoneNav.dataset.zone); return; }
     var navTo = t.closest("[data-goto]") || t.closest(".tab-link");
     if (navTo) {
       if (navTo.tagName === "A") e.preventDefault();
@@ -6214,13 +6234,36 @@
     var first = searchMatches(this.value)[0];
     if (first) pickSearchResult(first.id);
   });
-  $("#zoneShopBtn").addEventListener("click", function () {
-    var z = this.dataset.zone || "produce";
-    activeZone = z;
-    $$("#zoneChips button").forEach(function (b) { b.classList.toggle("is-active", b.dataset.zone === z); });
-    renderGrid();
-    showTab("shop");
-  });
+  $("#zoneShopBtn").addEventListener("click", function () { goToZone(this.dataset.zone || "produce"); });
+
+  /* ---- shop hover menu: fixed-position so it isn't clipped by the tabbar's own scroll area ---- */
+  (function () {
+    var btn = $("#shopTabBtn"), menu = $("#shopDropdown"), closeTmo;
+    function place() {
+      var r = btn.getBoundingClientRect();
+      var maxLeft = Math.max(8, window.innerWidth - menu.offsetWidth - 8);
+      menu.style.left = Math.round(Math.min(r.left, maxLeft)) + "px";
+      menu.style.top = Math.round(r.bottom + 8) + "px";
+    }
+    function open() {
+      clearTimeout(closeTmo);
+      menu.hidden = false;
+      place();
+      btn.setAttribute("aria-expanded", "true");
+    }
+    function closeSoon() {
+      clearTimeout(closeTmo);
+      closeTmo = setTimeout(function () { menu.hidden = true; btn.setAttribute("aria-expanded", "false"); }, 180);
+    }
+    btn.addEventListener("mouseenter", open);
+    btn.addEventListener("mouseleave", closeSoon);
+    btn.addEventListener("focus", open);
+    btn.addEventListener("blur", closeSoon);
+    menu.addEventListener("mouseenter", function () { clearTimeout(closeTmo); });
+    menu.addEventListener("mouseleave", closeSoon);
+    window.addEventListener("resize", function () { if (!menu.hidden) place(); });
+    window.addEventListener("scroll", function () { if (!menu.hidden) menu.hidden = true; }, true);
+  })();
   ["Budget", "Mouths", "Meals"].forEach(function (k) {
     var input = $("#in" + k), out = $("#o" + k);
     input.addEventListener("input", function () { out.textContent = (k === "Budget" ? "€" : "") + input.value; });
