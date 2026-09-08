@@ -164,6 +164,73 @@ app.post('/api/reset-email', async (req, res) => {
   }
 });
 
+// email-verification link/code, sent right after a brand-new signup. Same deal as the reset
+// flow: no real server-side account, so the code is generated and checked client-side — this
+// endpoint only sends the mail.
+app.post('/api/verify-email', async (req, res) => {
+  if (!BREVO_API_KEY) return res.status(503).json({ ok: false, error: 'BREVO_API_KEY is not set on the server.' });
+  if (!BREVO_SENDER_EMAIL) return res.status(503).json({ ok: false, error: 'BREVO_SENDER_EMAIL is not set on the server.' });
+  const { name, email, code, link } = req.body || {};
+  if (!email || typeof email !== 'string') return res.status(400).json({ ok: false, error: 'Missing email address.' });
+  if (!code || typeof code !== 'string') return res.status(400).json({ ok: false, error: 'Missing verification code.' });
+  const firstName = (name || '').trim().split(' ')[0] || 'there';
+  const safeLink = typeof link === 'string' ? link : '';
+
+  try {
+    const r = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: { 'api-key': BREVO_API_KEY, 'Content-Type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({
+        sender: { name: BREVO_SENDER_NAME, email: BREVO_SENDER_EMAIL },
+        to: [{ email, name: name || undefined }],
+        subject: 'Confirm your email for the Rescue Club',
+        htmlContent: `
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf3df;padding:32px 16px;font-family:Helvetica,Arial,sans-serif">
+  <tr><td align="center">
+    <table role="presentation" width="100%" style="max-width:480px;background:#ffffff;border:2px solid #17130e;border-radius:18px;overflow:hidden">
+
+      <tr><td style="background:#171c3a;padding:24px 32px;text-align:center">
+        <div style="font-size:20px;font-weight:800;color:#ffffff;letter-spacing:-0.01em">RESCUE</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#d8fb45;margin-top:4px">Confirm your email</div>
+      </td></tr>
+
+      <tr><td style="padding:32px">
+        <h1 style="margin:0 0 14px;font-size:22px;line-height:1.2;color:#17130e">One more thing, ${firstName}.</h1>
+        <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:#17130e">
+          Confirm this is really your inbox and your Club card's fully active — points, order
+          history, restock alerts, all of it.
+        </p>
+        <table role="presentation" cellpadding="0" cellspacing="0">
+          <tr><td style="background:#e8562f;border:2px solid #17130e;border-radius:999px">
+            ${safeLink
+              ? `<a href="${safeLink}" style="display:inline-block;padding:14px 26px;font-size:14px;font-weight:800;color:#ffffff;text-decoration:none">Verify my email →</a>`
+              : ''}
+          </td></tr>
+        </table>
+        <p style="margin:22px 0 0;font-size:14px;line-height:1.6;color:#17130e">Or enter this code by hand: <b style="font-size:20px;letter-spacing:0.12em">${code}</b></p>
+      </td></tr>
+
+      <tr><td style="padding:0 32px 28px;border-top:1.5px solid #ece5d0;padding-top:20px">
+        <p style="margin:0;font-size:12px;line-height:1.6;color:#8a8371">
+          Expires in an hour, and only works back in the browser you signed up from — this concept
+          site keeps accounts on your device, not a real server. Didn't create this account? Ignore
+          the email; nothing happens without the link.
+        </p>
+      </td></tr>
+
+    </table>
+  </td></tr>
+</table>`,
+      }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) return res.status(r.status).json({ ok: false, error: data.message || 'Brevo rejected the request.' });
+    res.json({ ok: true, id: data.messageId });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 app.use(
   express.static(PUBLIC, {
     extensions: ['html'],

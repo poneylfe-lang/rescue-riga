@@ -178,6 +178,10 @@
   .acct__stats strong { display: block; font: 800 1.2rem var(--f-display); }
   .acct__stats span { font: 600 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-70); }
   .field__label { display: block; margin: 4px 0 8px; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-70); }
+  .acct__verify-banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 16px 0 0; padding: 10px 14px; background: var(--mustard); border: 1.5px solid var(--ink); border-radius: var(--r); font-size: 0.85rem; }
+  .acct__verify-banner button { flex: none; font: 800 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.04em; padding: 7px 12px; border: 1.5px solid var(--ink); border-radius: var(--pill); background: var(--card); cursor: pointer; }
+  .acct__verify-banner button:hover { background: var(--paper); }
+  .acct__verify-banner button:disabled { opacity: 0.6; cursor: default; }
   /* signed-in drawer: the veggie picker is discreet too — only surfaces on hovering your own photo */
   /* grid-rows 0fr→1fr instead of a fixed max-height in px — the old fixed number was sized for one
      drawer width and clipped the top of the top row / bottom of the bottom row at any other width
@@ -1281,6 +1285,11 @@
           </div></div>
         </div>
 
+        <div class="acct__verify-banner" id="acctVerifyBanner" hidden>
+          <span data-i18n="account.verify.pending">Verify your email to lock in your Club card — check your inbox.</span>
+          <button type="button" id="acctResendVerify" data-i18n="account.verify.resend">Resend email</button>
+        </div>
+
         <div class="acct__subnav" role="tablist">
           <button type="button" class="acct__subtab is-active" data-section="profile" role="tab" aria-selected="true" data-i18n="account.tab.profile">Profile</button>
           <button type="button" class="acct__subtab" data-section="orders" role="tab" aria-selected="false" data-i18n="account.tab.orders">Orders</button>
@@ -1510,6 +1519,10 @@
       "account.codeexpired": "That code expired — request a new one.",
       "account.codewrongdevice": "This reset link only works in the browser you requested it from — accounts on this demo site live on your device, not a real server.",
       "account.resetdone": "Password updated — sign in with your new password.",
+      "account.verify.pending": "Verify your email to lock in your Club card — check your inbox.",
+      "account.verify.resend": "Resend email", "account.verify.sent": "Verification email sent — check your inbox.",
+      "account.verify.wrongdevice": "This verification link only works in the browser you signed up from.",
+      "account.verify.done": "Email verified — you're all set.",
       "h2.account.in": "Welcome back, {name}."
     },
     lv: {
@@ -1635,6 +1648,10 @@
       "account.codeexpired": "Šim kodam beidzies derīguma termiņš — pieprasi jaunu.",
       "account.codewrongdevice": "Šī atiestatīšanas saite darbojas tikai pārlūkā, no kura to pieprasīji — šīs demo vietnes konti dzīvo tavā ierīcē, nevis īstā serverī.",
       "account.resetdone": "Parole atjaunināta — piesakies ar savu jauno paroli.",
+      "account.verify.pending": "Apstiprini savu e-pastu, lai aktivizētu Kluba karti — pārbaudi iesūtni.",
+      "account.verify.resend": "Sūtīt vēlreiz", "account.verify.sent": "Apstiprinājuma e-pasts nosūtīts — pārbaudi iesūtni.",
+      "account.verify.wrongdevice": "Šī apstiprinājuma saite darbojas tikai pārlūkā, no kura reģistrējies.",
+      "account.verify.done": "E-pasts apstiprināts — viss kārtībā.",
       "account.group.password": "Parole", "account.changepass": "Mainīt paroli",
       "h2.account.in": "Laipni lūdzam atpakaļ, {name}.",
       "account.googleerr": "Neizdevās nolasīt Google atbildi — izmanto formu zemāk.",
@@ -1786,6 +1803,10 @@
       "account.codeexpired": "Ce code a expiré — demandez-en un nouveau.",
       "account.codewrongdevice": "Ce lien de réinitialisation ne fonctionne que dans le navigateur depuis lequel vous l'avez demandé — les comptes de ce site de démo vivent sur votre appareil, pas sur un vrai serveur.",
       "account.resetdone": "Mot de passe mis à jour — connectez-vous avec votre nouveau mot de passe.",
+      "account.verify.pending": "Confirmez votre e-mail pour activer votre carte Club — vérifiez votre boîte mail.",
+      "account.verify.resend": "Renvoyer l'e-mail", "account.verify.sent": "E-mail de confirmation envoyé — vérifiez votre boîte mail.",
+      "account.verify.wrongdevice": "Ce lien de confirmation ne fonctionne que dans le navigateur où vous vous êtes inscrit.",
+      "account.verify.done": "E-mail confirmé — tout est en ordre.",
       "account.group.password": "Mot de passe", "account.changepass": "Changer le mot de passe",
       "h2.account.in": "Content de vous revoir, {name}.",
       "account.googleerr": "Impossible de lire la réponse Google — utilisez le formulaire ci-dessous.",
@@ -2387,7 +2408,10 @@
       alertsRestock: data.alertsRestock != null ? data.alertsRestock : (prior ? prior.alertsRestock : true),
       newsletterCSR: data.newsletterCSR != null ? data.newsletterCSR : (prior ? prior.newsletterCSR : false),
       diet: data.diet || (prior ? prior.diet : "none"),
-      orderHistory: prior ? (prior.orderHistory || []) : seedOrderHistory()
+      orderHistory: prior ? (prior.orderHistory || []) : seedOrderHistory(),
+      // accounts that existed before this feature shipped are grandfathered in as verified —
+      // only a genuinely new signup starts unverified
+      emailVerified: prior ? (prior.emailVerified !== undefined ? prior.emailVerified : true) : false
     };
     account.savedTotal = prior ? prior.savedTotal : account.orderHistory.reduce(function (s, o) { return s + (o.was - o.now); }, 0);
     account.orders = account.orderHistory.length;
@@ -2406,6 +2430,7 @@
           else toast(t("account.mailerr", "Account created, but the welcome email couldn't be sent.") + " (" + (res.body && res.body.error) + ")");
         })
         .catch(function () { toast(t("account.mailerr", "Account created, but the welcome email couldn't be sent.")); });
+      sendVerificationEmail(account, true);
     }
   }
   // signing out only clears the active session — the account itself stays in the directory so its
@@ -2429,6 +2454,7 @@
       $("#acctDiet2").value = account.diet || "none";
       $("#acctSavedTotal").textContent = euro(account.savedTotal || 0);
       $("#acctOrderCount").textContent = account.orders || 0;
+      var vb = $("#acctVerifyBanner"); if (vb) vb.hidden = !!account.emailVerified;
       if (typeof setAcctSection === "function") setAcctSection("profile");
       if (typeof renderOrders === "function") renderOrders();
       if (typeof renderPoints === "function") renderPoints();
@@ -6145,6 +6171,35 @@
   function saveResetRequest(r) { try { localStorage.setItem(RESET_LS, JSON.stringify(r)); } catch (e) {} }
   function clearResetRequest() { try { localStorage.removeItem(RESET_LS); } catch (e) {} }
   function genResetCode() { return String(Math.floor(100000 + Math.random() * 900000)); }
+
+  var VERIFY_LS = "rescue.verify.v1";
+  function loadVerifyRequest() { try { return JSON.parse(localStorage.getItem(VERIFY_LS)); } catch (e) { return null; } }
+  function saveVerifyRequest(r) { try { localStorage.setItem(VERIFY_LS, JSON.stringify(r)); } catch (e) {} }
+  function clearVerifyRequest() { try { localStorage.removeItem(VERIFY_LS); } catch (e) {} }
+  // sent right after a brand-new signup, and again from the "Resend email" banner on an
+  // unverified account. `silent` skips the toast — the signup flow already shows its own
+  // "welcome email sent" toast and doesn't need a second one stacked on top.
+  function sendVerificationEmail(acct, silent) {
+    var code = genResetCode();
+    saveVerifyRequest({ email: acct.email.toLowerCase(), code: code, expires: Date.now() + 60 * 60000 });
+    var link = location.origin + location.pathname + "?verify=" + code;
+    return fetch("/api/verify-email", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: acct.name, email: acct.email, code: code, link: link })
+    }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, body: d }; }); })
+      .then(function (res) {
+        if (!silent) {
+          if (res.ok) toast(t("account.verify.sent", "Verification email sent — check your inbox."));
+          else { clearVerifyRequest(); toast(t("account.mailerr", "Account created, but the welcome email couldn't be sent.") + " (" + (res.body && res.body.error) + ")"); }
+        }
+        return res;
+      })
+      .catch(function () {
+        clearVerifyRequest();
+        if (!silent) toast(t("account.mailerr", "Account created, but the welcome email couldn't be sent."));
+        return { ok: false };
+      });
+  }
   function setAcctMode(mode, step) {
     acctMode = mode; resetStep = step || 1;
     $$(".acct__mode-tab").forEach(function (b) { var on = b.dataset.mode === mode; b.classList.toggle("is-active", on); b.setAttribute("aria-selected", String(on)); });
@@ -6168,6 +6223,11 @@
   $$(".acct__mode-tab").forEach(function (b) { b.addEventListener("click", function () { setAcctMode(b.dataset.mode); }); });
   $("#acctForgotLink").addEventListener("click", function (e) { e.preventDefault(); setAcctMode("reset", 1); });
   $("#acctBackToSigninLink").addEventListener("click", function (e) { e.preventDefault(); clearResetRequest(); setAcctMode("signin"); });
+  $("#acctResendVerify").addEventListener("click", function () {
+    if (!account) return;
+    var btn = this; btn.disabled = true;
+    sendVerificationEmail(account, false).then(function () { btn.disabled = false; });
+  });
   $("#acctForm").addEventListener("submit", function (e) {
     e.preventDefault();
     var email = $("#acctEmail").value.trim();
@@ -6337,6 +6397,27 @@
     setAcctMode("reset", 2);
     $("#acctEmail").value = pending.email;
     $("#acctResetCode").value = code;
+  })();
+  // clicking the "Verify my email →" link from the verification email
+  (function checkVerifyLink() {
+    var m = location.search.match(/[?&]verify=([0-9]{6})/);
+    if (!m) return;
+    var code = m[1];
+    history.replaceState(null, "", location.pathname + location.hash);
+    var pending = loadVerifyRequest();
+    if (!pending || pending.code !== code || Date.now() > pending.expires) {
+      toast(t("account.verify.wrongdevice", "This verification link only works in the browser you signed up from."));
+      return;
+    }
+    clearVerifyRequest();
+    if (account && account.email.toLowerCase() === pending.email) {
+      account.emailVerified = true;
+      saveAccount(); renderAccount(); openProfileDrawer();
+    } else {
+      var dir = loadAccountsDir();
+      if (dir[pending.email]) { dir[pending.email].emailVerified = true; saveAccountsDir(dir); }
+    }
+    toast(t("account.verify.done", "Email verified — you're all set."));
   })();
   initGoogleSignIn();
   if (LANG !== "en") setLang(LANG);
