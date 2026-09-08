@@ -2613,10 +2613,12 @@
     setActive(id);
     var p = panelFor(id);
     if (!p) return;
+    // "Shop" should land on the shelf itself, not scroll past the meal-planner widget above it
+    var target = (id === "shop" && document.querySelector(".shop__toolbar")) || p;
     var scroll = function () {
       var nav = document.querySelector(".nav");
       var navH = nav ? nav.offsetHeight : 100;
-      var y = p.getBoundingClientRect().top + window.pageYOffset - navH - 6;
+      var y = target.getBoundingClientRect().top + window.pageYOffset - navH - 6;
       window.scrollTo({ top: Math.max(0, y), behavior: REDUCED_M ? "auto" : "smooth" });
     };
     scroll();
