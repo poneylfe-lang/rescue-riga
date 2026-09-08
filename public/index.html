@@ -167,6 +167,10 @@
   #googleSignInDiv { display: flex; justify-content: center; min-height: 40px; }
   .field { display: block; margin: 12px 0; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; }
   .field input, .field select { width: 100%; margin-top: 6px; padding: 10px; border: var(--edge); background: #fff; color: var(--ink); font: 500 14px var(--f-body); border-radius: var(--r); }
+  .pw-field { position: relative; }
+  .pw-field input { padding-right: 58px; }
+  .pw-toggle { position: absolute; right: 5px; top: calc(50% + 3px); transform: translateY(-50%); border: 0; background: transparent; cursor: pointer; font: 800 10px/1 var(--f-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-70); padding: 6px 9px; border-radius: var(--pill); }
+  .pw-toggle:hover { background: var(--paper-2); color: var(--ink); }
   .check { display: flex; align-items: flex-start; gap: 8px; margin: 14px 0; font: 500 13px/1.4 var(--f-body); cursor: pointer; }
   .check input { margin-top: 3px; }
   .acct__id { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
@@ -1249,7 +1253,10 @@
               <input type="text" id="acctResetCode" inputmode="numeric" autocomplete="one-time-code" placeholder="123456">
             </label>
             <label class="field" id="acctPasswordField"><span id="acctPasswordLabel" data-i18n="account.password">Password</span>
-              <input type="password" id="acctPassword" autocomplete="current-password" minlength="4">
+              <div class="pw-field">
+                <input type="password" id="acctPassword" autocomplete="current-password" minlength="4">
+                <button type="button" class="pw-toggle" data-toggle-pw="acctPassword" aria-pressed="false" data-i18n="account.pwshow">Show</button>
+              </div>
             </label>
             <p class="acct__fine" id="acctPasswordHint" data-i18n="account.passwordhint.create">Choose a password for your new account.</p>
             <a href="#" class="acct__forgot acct__only-signin" id="acctForgotLink" data-i18n="account.forgot">Forgot your password? Reset here</a>
@@ -1328,7 +1335,10 @@
           <div class="acct__group">
             <span class="acct__group-title" data-i18n="account.group.password">Password</span>
             <label class="field"><span data-i18n="account.newpassword">New password</span>
-              <input type="password" id="acctPasswordEdit" autocomplete="new-password" minlength="4" placeholder="••••••••">
+              <div class="pw-field">
+                <input type="password" id="acctPasswordEdit" autocomplete="new-password" minlength="4" placeholder="••••••••">
+                <button type="button" class="pw-toggle" data-toggle-pw="acctPasswordEdit" aria-pressed="false" data-i18n="account.pwshow">Show</button>
+              </div>
             </label>
             <button class="btn btn--dark btn--sm" type="button" id="acctSavePassword" data-i18n="account.changepass">Change password</button>
             <p class="acct__fine acct__saved-msg" id="acctPasswordSavedMsg" hidden data-i18n="account.saved.msg">Saved.</p>
@@ -1724,6 +1734,7 @@
       "account.newsletter": "Sūtīt man iknedēļas jaunumus — kas ir lēts, kas ir jauns",
       "account.create": "Izveidot kontu",
       "account.password": "Parole", "account.passwordhint": "Šeit pirmo reizi? Tas iestata tavu paroli. Jau reģistrējies ar šo e-pastu? Ievadi to, lai pieteiktos atkal.",
+      "account.pwshow": "Rādīt", "account.pwhide": "Slēpt",
       "account.wrongpass": "Nepareiza parole šim e-pastam.", "account.welcomeback": "Ar atgriešanos, {name}!",
       "account.mode.signin": "Pieteikties", "account.passwordhint.create": "Izvēlies paroli savam jaunajam kontam.", "account.passwordhint.signin": "Ievadi savu paroli, lai pieteiktos atkal.",
       "account.noaccount": "Šim e-pastam vēl nav konta — izmanto \"Izveidot kontu\".", "account.alreadyexists": "Šim e-pastam jau ir konts — izmanto \"Pieteikties\".",
@@ -1884,6 +1895,7 @@
       "account.newsletter": "M'envoyer le rayon de la semaine — ce qui est pas cher, ce qui est nouveau",
       "account.create": "Créer un compte",
       "account.password": "Mot de passe", "account.passwordhint": "Nouveau ici ? Ceci définit votre mot de passe. Déjà inscrit avec cet e-mail ? Entrez-le pour vous reconnecter.",
+      "account.pwshow": "Afficher", "account.pwhide": "Masquer",
       "account.wrongpass": "Mot de passe incorrect pour cet e-mail.", "account.welcomeback": "Content de vous revoir, {name} !",
       "account.mode.signin": "Se connecter", "account.passwordhint.create": "Choisissez un mot de passe pour votre nouveau compte.", "account.passwordhint.signin": "Entrez votre mot de passe pour vous reconnecter.",
       "account.noaccount": "Aucun compte avec cet e-mail pour l'instant — utilisez \"Créer un compte\".", "account.alreadyexists": "Cet e-mail a déjà un compte — utilisez \"Se connecter\".",
@@ -6383,6 +6395,15 @@
     if (!account) return;
     var btn = this; btn.disabled = true;
     sendVerificationEmail(account, false).then(function () { btn.disabled = false; });
+  });
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest(".pw-toggle");
+    if (!btn) return;
+    var input = $("#" + btn.dataset.togglePw);
+    var showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    btn.textContent = showing ? t("account.pwshow", "Show") : t("account.pwhide", "Hide");
+    btn.setAttribute("aria-pressed", String(!showing));
   });
   $("#acctForm").addEventListener("submit", function (e) {
     e.preventDefault();
