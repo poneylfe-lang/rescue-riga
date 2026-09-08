@@ -678,10 +678,10 @@
   .qty button:hover { background: var(--mustard); color: var(--ink); }
   .qty span { min-width: 28px; text-align: center; font: 700 13px var(--f-mono); }
   .drawer__empty { padding: 38px 18px; text-align: center; color: var(--ink-70); }
-  .empty-veg { position: relative; display: inline-flex; flex-direction: column; align-items: flex-end; margin-bottom: 20px; }
-  .empty-veg__char { width: 168px; height: auto; margin-left: 60px; }
-  .empty-veg__bubble { position: relative; margin-bottom: 10px; margin-right: 6px; background: var(--card); border: 2px solid var(--ink); border-radius: var(--pill); padding: 10px 16px; font: 800 12px/1 var(--f-mono); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); white-space: nowrap; box-shadow: var(--shadow); }
-  .empty-veg__bubble::after { content: ""; position: absolute; left: 30%; bottom: -8px; width: 13px; height: 13px; background: var(--card); border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateX(-50%) rotate(45deg); }
+  .empty-veg { position: relative; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+  .empty-veg__char { width: 240px; height: auto; }
+  .empty-veg__bubble { position: relative; margin-bottom: 14px; background: var(--card); border: 2px solid var(--ink); border-radius: var(--pill); padding: 11px 18px; font: 800 13px/1 var(--f-mono); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); white-space: nowrap; box-shadow: var(--shadow); }
+  .empty-veg__bubble::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 14px; height: 14px; background: var(--card); border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateX(-50%) rotate(45deg); }
   .drawer__foot { padding: 16px 18px; border-top: var(--edge); background: var(--paper-2); }
   .drawer__foot .btn + .btn { margin-top: 8px; }
   .tot > div { display: flex; justify-content: space-between; font-size: 0.94rem; padding: 3px 0; font-variant-numeric: tabular-nums; }
