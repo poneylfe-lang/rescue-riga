@@ -678,12 +678,10 @@
   .qty button:hover { background: var(--mustard); color: var(--ink); }
   .qty span { min-width: 28px; text-align: center; font: 700 13px var(--f-mono); }
   .drawer__empty { padding: 38px 18px; text-align: center; color: var(--ink-70); }
-  .empty-veg { display: flex; flex-direction: column; align-items: center; margin-bottom: 22px; }
-  .empty-veg__bubble { position: relative; margin-bottom: 22px; background: var(--card); border: 2px solid var(--ink); border-radius: var(--pill); padding: 10px 18px; font: 800 12px/1 var(--f-mono); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); white-space: nowrap; box-shadow: var(--shadow); }
-  .empty-veg__bubble::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 14px; height: 14px; background: var(--card); border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateX(-50%) rotate(45deg); }
-  .empty-veg__row { display: flex; align-items: flex-end; gap: 10px; }
-  .empty-veg__row .veggie-opt { width: 56px; cursor: default; }
-  .empty-veg__row .veggie-opt:nth-child(2) { width: 66px; }
+  .empty-veg { position: relative; display: inline-flex; flex-direction: column; align-items: flex-end; margin-bottom: 20px; }
+  .empty-veg__char { width: 168px; height: auto; margin-left: 60px; }
+  .empty-veg__bubble { position: relative; margin-bottom: 10px; margin-right: 6px; background: var(--card); border: 2px solid var(--ink); border-radius: var(--pill); padding: 10px 16px; font: 800 12px/1 var(--f-mono); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); white-space: nowrap; box-shadow: var(--shadow); }
+  .empty-veg__bubble::after { content: ""; position: absolute; left: 30%; bottom: -8px; width: 13px; height: 13px; background: var(--card); border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateX(-50%) rotate(45deg); }
   .drawer__foot { padding: 16px 18px; border-top: var(--edge); background: var(--paper-2); }
   .drawer__foot .btn + .btn { margin-top: 8px; }
   .tot > div { display: flex; justify-content: space-between; font-size: 0.94rem; padding: 3px 0; font-variant-numeric: tabular-nums; }
@@ -1384,7 +1382,26 @@
   <div class="drawer__empty" id="drawerEmpty">
     <div class="empty-veg" aria-hidden="true">
       <span class="empty-veg__bubble" data-i18n="cart.emptybubble">Check the shelf!</span>
-      <div class="empty-veg__row" id="emptyVegRow"></div>
+      <svg class="empty-veg__char" viewBox="0 -40 300 400">
+        <path d="M128,168 C116,190 104,216 96,246 C90,270 86,292 93,309 C97,318 107,321 115,314 C122,308 126,295 130,276 C137,248 141,218 143,190 C140,180 134,172 128,168 Z" fill="#e07a33" stroke="#17130e" stroke-width="5" stroke-linejoin="round" />
+        <path d="M175,170 C186,195 197,222 205,253 C211,278 214,302 207,320 C202,330 191,333 183,325 C177,318 174,304 171,285 C166,252 163,218 161,190 C164,180 170,174 175,170 Z" fill="#e07a33" stroke="#17130e" stroke-width="5" stroke-linejoin="round" />
+        <path d="M102,108 C86,118 74,136 72,158 C71,168 80,172 86,165 C92,150 98,130 106,114 Z" fill="#e8752f" stroke="#17130e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+        <path d="M196,100 C210,78 220,54 216,30 C214,20 200,20 198,32 C196,52 194,76 190,98 Z" fill="#e8752f" stroke="#17130e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+        <path d="M150,46 C114,46 95,64 93,94 C91,122 98,148 108,170 C118,190 133,202 150,204 C167,202 182,190 192,170 C202,148 209,122 207,94 C205,64 186,46 150,46 Z" fill="#e8752f" stroke="#17130e" stroke-width="5" stroke-linejoin="round" />
+        <g fill="none" stroke-linecap="round">
+          <path d="M148,58 C136,34 126,14 128,-8" stroke="#3f8f45" stroke-width="10" />
+          <path d="M150,58 C150,28 152,2 150,-22" stroke="#5aa94a" stroke-width="10" />
+          <path d="M153,58 C166,34 176,14 173,-10" stroke="#3f8f45" stroke-width="10" />
+          <path d="M142,60 C126,42 112,28 108,10" stroke="#4e9b3e" stroke-width="9" />
+          <path d="M159,60 C176,42 190,28 194,10" stroke="#4e9b3e" stroke-width="9" />
+        </g>
+        <circle cx="128" cy="118" r="7" fill="#17130e" />
+        <circle cx="168" cy="118" r="7" fill="#17130e" />
+        <ellipse cx="118" cy="136" rx="9" ry="6" fill="#f2946a" opacity="0.7" />
+        <ellipse cx="178" cy="136" rx="9" ry="6" fill="#f2946a" opacity="0.7" />
+        <path d="M120,140 Q148,164 176,140" fill="none" stroke="#17130e" stroke-width="5" stroke-linecap="round" />
+        <circle cx="216" cy="28" r="10" fill="#e8752f" stroke="#17130e" stroke-width="5" />
+      </svg>
     </div>
     <p data-i18n="cart.empty">Nothing rescued yet.</p>
     <button class="btn btn--ghost btn--sm" data-close data-i18n="cart.back">Back to the shelf</button>
@@ -5985,9 +6002,6 @@
   }
   function renderStatic() {
     $("#partners").textContent = PARTNERS.join(" · ");
-    $("#emptyVegRow").innerHTML = ["apples", "onions", "bananas"].map(function (id) {
-      return '<span class="veggie-opt">' + veggieSVG(id) + "</span>";
-    }).join("");
     $("#zoneChips").innerHTML =
       '<button data-zone="all" class="is-active">' + t("zonechip.all") + "</button>" +
       ZONES.map(function (z) { return '<button data-zone="' + z.id + '">' + L(z.label) + "</button>"; }).join("");
