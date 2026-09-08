@@ -146,7 +146,10 @@
   .icon-btn.profile-btn--signed { border: 2px solid var(--ink); background: transparent; padding: 0; width: 54px; height: 54px; border-radius: 50%; overflow: hidden; flex: none; }
   .icon-btn.profile-btn--signed:hover { background: transparent; }
   .profile-btn__avatar { width: 100%; height: 100%; border-radius: 50%; display: grid; place-items: center; background: var(--mustard) center/cover no-repeat; font: 800 14px var(--f-display); overflow: hidden; }
-  .profile-btn__avatar svg { width: 130%; height: 130%; }
+  /* the global `svg { max-width: 100% }` reset clamps width but not height, so without
+     overriding it here a 130%-sized veggie icon stretches unevenly and its square corners
+     poke past the circular mask as thin lines top and bottom */
+  .profile-btn__avatar svg { width: 130%; height: 130%; max-width: none; }
   .profile-popover { position: absolute; top: calc(100% + 8px); right: 0; width: 230px; background: var(--paper); border: var(--edge); border-radius: var(--r); box-shadow: var(--shadow); padding: 14px; z-index: 130;
     opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity 0.15s ease, transform 0.15s ease; pointer-events: none; }
   .profile-wrap:hover .profile-popover, .profile-wrap:focus-within .profile-popover { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
@@ -175,6 +178,7 @@
   .check input { margin-top: 3px; }
   .acct__id { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
   .acct__avatar { width: 44px; height: 44px; border-radius: 50%; border: var(--edge); background: var(--mustard) center/cover no-repeat; display: grid; place-items: center; font: 800 17px var(--f-display); flex: none; overflow: hidden; }
+  .acct__avatar svg:not(.generic), .profile-popover__avatar svg:not(.generic) { width: 130%; height: 130%; max-width: none; }
   .acct__avatar svg { width: 130%; height: 130%; }
   .acct__email { color: var(--ink-70); font-size: 0.85rem; }
   .acct__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
@@ -200,7 +204,7 @@
      value here shows up as a mismatched patch around the icon's own background square.
      Hover/selected are the same thicker black ring, never a color change, so that patch can never appear. */
   .veggie-opt { padding: 6px; border: 1.5px solid var(--ink); border-radius: 50%; background: #efe7d6; cursor: pointer; aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; transition: border-width 0.1s ease; }
-  .veggie-opt svg { width: 140%; height: 140%; }
+  .veggie-opt svg { width: 140%; height: 140%; max-width: none; }
   .veggie-opt:hover, .veggie-opt.is-selected { border-width: 3px; }
   .acct__avatar-hint { color: var(--ink-70); font: 500 12.5px/1.3 var(--f-body); }
 
@@ -746,6 +750,46 @@
   .pay__eyebrow { font: 800 11px/1 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-70); margin: 0 0 10px; }
   .pay h3 { font-size: 1.3rem; margin: 0 0 4px; }
   .pay__amount { font: 800 2rem var(--f-display); color: var(--rescue); font-variant-numeric: tabular-nums; margin: 0 0 18px; }
+
+  /* method switcher: Card / PayPal / Apple Pay */
+  .pay__methods { display: flex; gap: 6px; margin-bottom: 20px; border: var(--edge); border-radius: var(--pill); padding: 4px; }
+  .pay__method { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 6px; border: 0; border-radius: var(--pill); background: transparent; color: var(--ink-70); font: 800 12px/1 var(--f-body); cursor: pointer; }
+  .pay__method svg { width: 20px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+  .pay__method.is-active { background: var(--spruce); color: #fff; }
+  .pay__ppmark { font: 800 13px/1 var(--f-display); color: #003087; }
+  .pay__ppmark b { color: #0070ba; }
+  .pay__method.is-active .pay__ppmark, .pay__method.is-active .pay__ppmark b { color: #fff; }
+  .pay__apmark { font-size: 14px; line-height: 1; }
+
+  /* PayPal panel: a lightweight simulation of the redirect-and-log-in flow, styled in PayPal's
+     own blue rather than this site's palette — it should read as "a different service", the way
+     a real PayPal popup does. */
+  .pp { padding-top: 2px; }
+  .pp__intro { font-size: 0.88rem; color: var(--ink-70); margin: 0 0 16px; text-align: center; }
+  .pp__btn { background: #ffc439; border-color: #17130e; color: #17130e; }
+  .pp__btn:hover { background: #ffb800; }
+  .pp__btn[aria-busy="true"] { opacity: 0.7; pointer-events: none; }
+  .pp__review { text-align: center; background: var(--paper-2); border: var(--edge); border-radius: var(--r); padding: 22px; margin-bottom: 16px; }
+  .pp__reviewlabel { display: block; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-70); }
+  .pp__reviewto { display: block; font: 700 15px var(--f-display); margin: 4px 0 10px; }
+  .pp__reviewamount { display: block; font: 800 2rem var(--f-display); color: #003087; font-variant-numeric: tabular-nums; }
+  #ppStepReview .btn + .btn { margin-top: 8px; }
+
+  /* Apple Pay sheet: dark, rounded, minimal — mirrors the real system sheet's proportions rather
+     than this site's card language. */
+  .ap__sheet { background: #000; color: #fff; border-radius: 14px; padding: 20px; }
+  .ap__row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; font: 600 15px var(--f-body); border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
+  .ap__row:first-child { font-weight: 700; }
+  .ap__card { border-bottom: 0; color: rgba(255, 255, 255, 0.7); font-size: 13px; }
+  .ap__cardchip { width: 22px; height: 16px; border-radius: 3px; background: linear-gradient(135deg, #d8c48a, #b89b5e); display: inline-block; }
+  .ap__confirm { width: 100%; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #000; border: 0; border-radius: 10px; padding: 14px; font: 700 15px var(--f-body); cursor: pointer; }
+  .ap__confirm[aria-busy="true"] { opacity: 0.7; pointer-events: none; }
+  .ap__faceid { width: 22px; height: 22px; display: grid; place-items: center; }
+  .ap__faceid svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ap__faceid.is-scanning svg { animation: apScan 1s ease-in-out infinite; }
+  @keyframes apScan { 50% { transform: scale(0.85); opacity: 0.6; } }
+  @media (prefers-reduced-motion: reduce) { .ap__faceid.is-scanning svg { animation: none; } }
+
   .pay__brands { display: flex; gap: 6px; margin-bottom: 14px; }
   .pay__brand { flex: 1; padding: 8px 4px; border: 1.5px solid rgba(23, 19, 14, 0.18); border-radius: 8px; background: var(--paper-2); color: var(--ink-70); font: 800 10px/1 var(--f-mono); letter-spacing: 0.02em; text-align: center; cursor: pointer; transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease; }
   .pay__brand.is-active { border-color: var(--ink); background: var(--mustard); color: var(--ink); }
@@ -1467,6 +1511,19 @@
       <h3 id="payTitle" data-i18n="pay.title">Pay online now</h3>
       <p class="pay__amount" id="payAmount">€0.00</p>
 
+      <div class="pay__methods" id="payMethods" role="tablist">
+        <button type="button" class="pay__method is-active" data-method="card" role="tab" aria-selected="true">
+          <svg viewBox="0 0 24 16" aria-hidden="true"><rect x="1" y="1" width="22" height="14" rx="2"/><path d="M1 6h22"/></svg>
+          <span data-i18n="pay.method.card">Card</span>
+        </button>
+        <button type="button" class="pay__method" data-method="paypal" role="tab" aria-selected="false">
+          <span class="pay__ppmark">Pay<b>Pal</b></span>
+        </button>
+        <button type="button" class="pay__method" data-method="applepay" role="tab" aria-selected="false">
+          <span class="pay__apmark" aria-hidden="true">🍏</span> Apple Pay
+        </button>
+      </div>
+
       <form id="payForm" class="pay__form" novalidate>
         <div class="pay__brands" id="payBrands">
           <button type="button" class="pay__brand" data-brand="visa">VISA</button>
@@ -1498,6 +1555,40 @@
         </button>
         <p class="pay__secure" data-i18n="pay.secure">🔒 Encrypted. Card details are never stored.</p>
       </form>
+
+      <div class="pp" id="payPaypal" hidden>
+        <div class="pp__step" id="ppStepLogin">
+          <p class="pp__intro" data-i18n="pay.pp.intro">Log in to pay with your PayPal balance, bank or card.</p>
+          <label class="field"><span data-i18n="pay.pp.email">Email or mobile number</span>
+            <input type="email" id="ppEmail" autocomplete="email">
+          </label>
+          <label class="field"><span data-i18n="pay.pp.password">Password</span>
+            <input type="password" id="ppPassword" autocomplete="current-password">
+          </label>
+          <button type="button" class="btn pp__btn btn--block" id="ppLoginBtn" data-i18n="pay.pp.login">Log In</button>
+          <p class="pay__secure" data-i18n="pay.pp.secure">🔒 You'll review the amount before paying.</p>
+        </div>
+        <div class="pp__step" id="ppStepReview" hidden>
+          <div class="pp__review">
+            <span class="pp__reviewlabel" data-i18n="pay.pp.paying">Paying</span>
+            <span class="pp__reviewto" data-i18n="pay.pp.to">Rescue Rīga</span>
+            <span class="pp__reviewamount" id="ppReviewAmount">€0.00</span>
+          </div>
+          <button type="button" class="btn pp__btn btn--block" id="ppPayBtn"><span id="ppPayBtnLabel" data-i18n="pay.pp.paynow">Pay Now</span></button>
+          <button type="button" class="btn btn--ghost btn--block" id="ppCancelBtn" data-i18n="pay.pp.cancel">Cancel and go back</button>
+        </div>
+      </div>
+
+      <div class="ap" id="payApplePay" hidden>
+        <div class="ap__sheet">
+          <div class="ap__row"><span data-i18n="pay.ap.merchant">Rescue Rīga</span><span id="apAmount">€0.00</span></div>
+          <div class="ap__row ap__card"><span class="ap__cardchip" aria-hidden="true"></span><span data-i18n="pay.ap.card">Card •••• 4242</span></div>
+          <button type="button" class="ap__confirm" id="apConfirmBtn">
+            <span class="ap__faceid" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M20 8V5a1 1 0 0 0-1-1h-3M4 16v3a1 1 0 0 0 1 1h3M20 16v3a1 1 0 0 1-1 1h-3" /><circle cx="12" cy="12" r="2.4" /></svg></span>
+            <span id="apConfirmLabel" data-i18n="pay.ap.confirm">Double-click to pay</span>
+          </button>
+        </div>
+      </div>
 
       <div class="pay__result pay__result--ok" id="payResultOk" hidden>
         <div class="pay__result-icon pay__result-icon--ok" aria-hidden="true">✓</div>
@@ -1547,6 +1638,7 @@
       "zonechip.all": "All aisles",
       "pay.err.card": "That card number doesn't look right.", "pay.err.expiry": "Enter a valid, unexpired MM/YY.",
       "pay.err.cvc": "CVC must be {n} digits.", "pay.err.name": "Enter the name on the card.",
+      "pay.ap.scanning": "Scanning…",
       "pay.approved.summary": "{brand} •••• {last4} — {amount} charged.",
       "econ.d1": "stores plugged in", "econ.d2": "clears our checks", "econ.d3": "lots triaged / day", "econ.d4": "to triage one lot",
       "econ.note": "Because the sort is automatic, taking a corner shop’s three crates costs about the same as taking a hypermarket’s pallet. So we take everyone’s — and that volume is what makes the price work.",
@@ -1672,6 +1764,11 @@
       "cart.slot": "Saņemšanas laiks", "cart.reserve": "Rezervēt saņemšanai", "cart.payonline": "Maksāt tiešsaistē", "cart.note": "Rezervācija tur preces 3 stundas. Maksā veikalā.",
       "pay.eyebrow": "Droša norēķināšanās", "pay.title": "Maksāt tiešsaistē", "pay.card": "Kartes numurs", "pay.expiry": "Derīga līdz", "pay.cvc": "CVC", "pay.name": "Vārds uz kartes", "pay.submit": "Maksāt", "pay.processing": "Apstrādā…", "pay.secure": "🔒 Šifrēts. Kartes dati netiek saglabāti.",
       "pay.declined.title": "Maksājums noraidīts", "pay.declined.body": "Jūsu banka noraidīja šo karti. Nekas netika iekasēts.", "pay.declined.reserve": "Rezervēt saņemšanai veikalā", "pay.declined.retry": "Mēģināt ar citu karti",
+      "pay.method.card": "Karte", "pay.pp.intro": "Piesakies, lai maksātu no sava PayPal konta, bankas vai kartes.",
+      "pay.pp.email": "E-pasts vai tālruņa numurs", "pay.pp.password": "Parole", "pay.pp.login": "Pieteikties",
+      "pay.pp.secure": "🔒 Pirms maksājuma redzēsi summu vēlreiz.", "pay.pp.paying": "Maksā", "pay.pp.to": "Rescue Rīga",
+      "pay.pp.paynow": "Maksāt tagad", "pay.pp.cancel": "Atcelt un doties atpakaļ",
+      "pay.ap.merchant": "Rescue Rīga", "pay.ap.card": "Karte •••• 4242", "pay.ap.confirm": "Divkārt klikšķini, lai maksātu", "pay.ap.scanning": "Skenē…",
       "pay.approved.title": "Maksājums veiksmīgs", "pay.approved.done": "Gatavs",
       "pay.approved.summary": "{brand} •••• {last4} — samaksāts {amount}.",
       "pay.err.card": "Šis kartes numurs neizskatās pareizs.", "pay.err.expiry": "Ievadi derīgu, vēl spēkā esošu MM/GG.",
@@ -1833,6 +1930,11 @@
       "cart.slot": "Créneau de retrait", "cart.reserve": "Réserver pour le retrait", "cart.payonline": "Payer en ligne", "cart.note": "La réservation garde vos articles 3 h. Paiement en magasin.",
       "pay.eyebrow": "Paiement sécurisé", "pay.title": "Payer en ligne", "pay.card": "Numéro de carte", "pay.expiry": "Expiration", "pay.cvc": "CVC", "pay.name": "Nom sur la carte", "pay.submit": "Payer", "pay.processing": "Traitement…", "pay.secure": "🔒 Chiffré. Les données de carte ne sont jamais conservées.",
       "pay.declined.title": "Paiement refusé", "pay.declined.body": "Votre banque a refusé cette carte. Rien n’a été débité.", "pay.declined.reserve": "Réserver pour un retrait en magasin", "pay.declined.retry": "Essayer une autre carte",
+      "pay.method.card": "Carte", "pay.pp.intro": "Connectez-vous pour payer avec votre solde PayPal, votre banque ou une carte.",
+      "pay.pp.email": "E-mail ou numéro de mobile", "pay.pp.password": "Mot de passe", "pay.pp.login": "Se connecter",
+      "pay.pp.secure": "🔒 Vous reverrez le montant avant de payer.", "pay.pp.paying": "Paiement à", "pay.pp.to": "Rescue Rīga",
+      "pay.pp.paynow": "Payer maintenant", "pay.pp.cancel": "Annuler et revenir",
+      "pay.ap.merchant": "Rescue Rīga", "pay.ap.card": "Carte •••• 4242", "pay.ap.confirm": "Double-cliquez pour payer", "pay.ap.scanning": "Analyse…",
       "pay.approved.title": "Paiement réussi", "pay.approved.done": "Terminé",
       "pay.approved.summary": "{brand} •••• {last4} — {amount} débités.",
       "pay.err.card": "Ce numéro de carte semble invalide.", "pay.err.expiry": "Indiquez une date MM/AA valide et non expirée.",
@@ -6220,16 +6322,44 @@
     $$(".pay__form .field").forEach(function (f) { f.classList.remove("has-error"); });
     $$(".pay__err").forEach(function (e) { e.hidden = true; e.textContent = ""; });
   }
+  var payActiveMethod = "card";
+  function setPayMethod(method) {
+    payActiveMethod = method;
+    $$("#payMethods .pay__method").forEach(function (b) {
+      var on = b.dataset.method === method;
+      b.classList.toggle("is-active", on);
+      b.setAttribute("aria-selected", String(on));
+    });
+    $("#payForm").hidden = method !== "card";
+    $("#payPaypal").hidden = method !== "paypal";
+    $("#payApplePay").hidden = method !== "applepay";
+  }
+  function resetPaypalPanel() {
+    $("#ppStepReview").hidden = true;
+    $("#ppStepLogin").hidden = false;
+    $("#ppEmail").value = ""; $("#ppPassword").value = "";
+    $("#ppLoginBtn").disabled = false;
+    $("#ppLoginBtn").setAttribute("aria-busy", "false");
+  }
+  function resetApplePayPanel() {
+    $("#apAmount").textContent = $("#payAmount").textContent;
+    $("#apConfirmBtn").disabled = false;
+    $("#apConfirmBtn").setAttribute("aria-busy", "false");
+    $(".ap__faceid").classList.remove("is-scanning");
+    $("#apConfirmLabel").textContent = t("pay.ap.confirm", "Double-click to pay");
+  }
   function openPayModal() {
     if (!Object.keys(basket).length) return;
     $("#payAmount").textContent = $("#sumNow").textContent;
-    $("#payForm").hidden = false;
     $("#payResultOk").hidden = true;
     $("#payResultFail").hidden = true;
     $("#payForm").reset();
     clearPayErrors();
     setPayBrand(null);
     setPaySubmitBusy(false);
+    resetPaypalPanel();
+    resetApplePayPanel();
+    setPayMethod("card");
     $("#payModal").hidden = false;
   }
   function closePayModal() { $("#payModal").hidden = true; }
@@ -6238,6 +6368,9 @@
     $("#paySubmit").disabled = busy;
     $("#paySubmitLabel").textContent = busy ? t("pay.processing", "Processing…") : t("pay.submit", "Pay");
   }
+  $$("#payMethods .pay__method").forEach(function (b) {
+    b.addEventListener("click", function () { setPayMethod(b.dataset.method); });
+  });
   $$("#payBrands .pay__brand").forEach(function (b) {
     b.addEventListener("click", function () { setPayBrand(b.dataset.brand === payBrand ? null : b.dataset.brand); });
   });
@@ -6287,14 +6420,53 @@
   });
   $("#payTryAgain").addEventListener("click", function () {
     $("#payResultFail").hidden = true;
-    $("#payForm").hidden = false;
     setPaySubmitBusy(false);
+    resetPaypalPanel();
+    resetApplePayPanel();
+    setPayMethod(payActiveMethod);
   });
   $("#payTryReserve").addEventListener("click", function () { closePayModal(); doReserve(); });
   $("#payDone").addEventListener("click", function () { closePayModal(); closeDrawer(); });
   $("#payOnlineBtn").addEventListener("click", openPayModal);
   $("#payClose").addEventListener("click", closePayModal);
   $("#payModal").addEventListener("click", function (e) { if (e.target === $("#payModal")) closePayModal(); });
+
+  /* ---- PayPal panel: log in (any input accepted, this is a demo) -> review -> always
+     declines at the last step, same "goes all the way to the end, then fails" shape as the
+     Apple Pay flow below. Neither ever touches the basket unless it succeeds. ---- */
+  $("#ppLoginBtn").addEventListener("click", function () {
+    var btn = this;
+    btn.disabled = true; btn.setAttribute("aria-busy", "true");
+    setTimeout(function () {
+      btn.disabled = false; btn.setAttribute("aria-busy", "false");
+      $("#ppReviewAmount").textContent = $("#payAmount").textContent;
+      $("#ppStepLogin").hidden = true;
+      $("#ppStepReview").hidden = false;
+    }, 900);
+  });
+  $("#ppCancelBtn").addEventListener("click", resetPaypalPanel);
+  $("#ppPayBtn").addEventListener("click", function () {
+    var btn = $("#ppPayBtn");
+    btn.setAttribute("aria-busy", "true"); btn.disabled = true;
+    $("#ppPayBtnLabel").textContent = t("pay.processing", "Processing…");
+    setTimeout(function () {
+      $("#payPaypal").hidden = true;
+      $("#payResultFail").hidden = false;
+    }, 1400);
+  });
+
+  /* ---- Apple Pay panel: a single confirm step (the real thing has no login — Face ID/Touch ID
+     is the only gate), then the same last-moment decline. ---- */
+  $("#apConfirmBtn").addEventListener("click", function () {
+    var btn = $("#apConfirmBtn");
+    btn.disabled = true; btn.setAttribute("aria-busy", "true");
+    $(".ap__faceid").classList.add("is-scanning");
+    $("#apConfirmLabel").textContent = t("pay.ap.scanning", "Scanning…");
+    setTimeout(function () {
+      $("#payApplePay").hidden = true;
+      $("#payResultFail").hidden = false;
+    }, 1300);
+  });
   $("#profileBtn").addEventListener("click", openProfileDrawer);
   $("#popoverManage").addEventListener("click", openProfileDrawer);
   $("#popoverSignOut").addEventListener("click", signOutAccount);
