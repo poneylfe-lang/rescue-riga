@@ -321,7 +321,8 @@
   .stat-card.dark { background: var(--spruce); color: #fff; }
   .stat-card.dark b { color: var(--mustard); }
   .stat-card.dark span { color: #c7cadd; }
-  .stat-card.loc { display: flex; align-items: center; gap: 12px; }
+  .stat-card.loc { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; transition: background-color 0.15s ease; }
+  .stat-card.loc:hover, .stat-card.loc:focus-visible { background: var(--paper-2); }
   .stat-card.loc svg { width: 22px; height: 22px; fill: var(--rescue); stroke: var(--ink); stroke-width: 0.6; flex: none; }
 
 
@@ -900,10 +901,10 @@
        <b>≈ 14,000 t</b>
        <span data-i18n="good.stat">Class-II fruit &amp; veg left unsold in Latvia last year*</span>
      </div>
-     <div class="stat-card loc">
+     <a class="stat-card loc" href="https://www.google.com/maps/search/?api=1&amp;query=Miera+iela+58%2C+R%C4%ABga%2C+Latvia" target="_blank" rel="noopener">
        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2c-2.7 0-4.9 2.1-4.9 4.9 0 3.5 4.9 8.7 4.9 8.7s4.9-5.2 4.9-8.7c0-2.8-2.2-4.9-4.9-4.9z" /><circle cx="8" cy="6" r="1.7" /></svg>
        <span data-i18n="good.loc">Miera iela 58, Rīga · open till 20:00 · walk in any time</span>
-     </div>
+     </a>
    </div>
 
    <div class="mission">
