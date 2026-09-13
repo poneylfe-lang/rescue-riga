@@ -324,10 +324,6 @@
   .stat-card.loc { display: flex; align-items: center; gap: 12px; }
   .stat-card.loc svg { width: 22px; height: 22px; fill: var(--rescue); stroke: var(--ink); stroke-width: 0.6; flex: none; }
 
-  /* ---- hero -30% badge: the first thing you see on the homepage ---- */
-  .hero__badge { display: inline-flex; align-items: baseline; gap: 8px; background: var(--rescue); color: #fff; border-radius: var(--pill); padding: 8px 18px 8px 14px; margin: 0 0 18px; font: 800 1rem/1 var(--f-display); }
-  .hero__badge b { font-size: 1.5rem; font-family: var(--f-display); }
-  .hero__badge span { font: 700 11px/1 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.92; }
 
   /* ---- mission: dark navy band, three bold colour cards ---- */
   .mission { background: var(--spruce); color: #fff; margin: 56px calc(50% - 50vw) 0; padding: clamp(48px, 7vw, 76px) clamp(18px, 5vw, 40px); }
@@ -877,9 +873,8 @@
    <div class="hero">
     <div class="hero__inner">
       <div class="hero__copy">
-        <p class="hero__badge"><b>-30%</b> <span data-i18n="good.badge">vs. full-price supermarkets, same food</span></p>
         <p class="kicker"><span class="dot"></span> <span data-i18n="good.kicker">A walk-in grocery store in Rīga</span></p>
-        <h1 class="good__title" data-i18n-html="good.title">A beautiful shop. <em>For unsold food.</em></h1>
+        <h1 class="good__title" data-i18n-html="good.title">-30% off. <em>Same great food.</em></h1>
         <p class="good__lead" data-i18n="good.lead">
           Every week, Latvian shops and producers pull tonnes of good food off sale —
           wrong shape, old label, short date. An AI sorts that surplus overnight; we
@@ -924,8 +919,8 @@
          </div>
          <div class="mission__card">
            <span class="n" data-i18n="mission.n2">02 · Sorted</span>
-           <h4 data-i18n="how.2t">Sorted by AI</h4>
-           <p data-i18n="how.2s">overnight — matched to what sells, priced by how urgent it is, double-checked by our human team</p>
+           <h4 data-i18n="how.2t">How -30%?</h4>
+           <p data-i18n="how.2s">an AI prices every lot overnight by real urgency, double-checked by our human team — no flat markdown, so nothing sits longer than it should</p>
          </div>
          <div class="mission__card">
            <span class="n" data-i18n="mission.n3">03 · Shelved</span>
@@ -1685,13 +1680,12 @@
     lv: {
       "tab.good": "Par mums", "tab.thirty": "Tie 30%", "tab.store": "Veikals", "tab.shop": "Pirkt", "tab.intake": "Plūsma", "tab.comein": "Ienāc",
       "nav.basket": "Grozs",
-      "good.badge": "salīdzinot ar pilnas cenas veikaliem, tā pati pārtika",
       "good.kicker": "Veikals ar durvīm Rīgā",
-      "good.title": "Skaists veikals. <em>Nepārdotai pārtikai.</em>",
+      "good.title": "-30% lētāk. <em>Tā pati labā pārtika.</em>",
       "good.lead": "Katru nedēļu Latvijas veikali un ražotāji noņem no pārdošanas tonnām labas pārtikas — nepareiza forma, vecs logo, īss derīguma termiņš. Mākslīgais intelekts to pārpalikumu sašķiro vienā naktī; mēs to noliekam uz īstiem plauktiem, īstā veikalā, lēti.",
       "good.cta1": "Ko dod ietaupījums", "good.cta2": "Šodienas plaukts",
       "how.1t": "Noraidīts", "how.1s": "no veikaliem un ražotājiem — nepareiza forma, vecs logo, īss derīguma termiņš",
-      "how.2t": "Sašķiro AI", "how.2s": "katru nakti — atbilstoši pieprasījumam, cena pēc steidzamības, ar dubultpārbaudi no mūsu cilvēku komandas",
+      "how.2t": "Kāpēc -30%?", "how.2s": "AI katru nakti nosaka cenu pēc reālas steidzamības, ar dubultpārbaudi no mūsu cilvēku komandas — bez vienotas atlaides, tāpēc nekas plauktā nestāv ilgāk, nekā vajadzīgs",
       "how.3t": "Uz mūsu plauktiem", "how.3s": "īsts veikals ar durvīm Rīgā — tajā pašā dienā, lēti",
       "good.loc": "Miera iela 58, Rīga · atvērts līdz 20:00 · ienāc jebkurā laikā",
       "good.stat": "II šķiras augļi un dārzeņi, kas pagājušogad Latvijā palika nepārdoti*",
@@ -1853,13 +1847,12 @@
     fr: {
       "tab.good": "À propos", "tab.thirty": "Les 30 %", "tab.store": "Le magasin", "tab.shop": "Acheter", "tab.intake": "Le flux", "tab.comein": "Venir",
       "nav.basket": "Panier",
-      "good.badge": "vs. supermarchés au prix fort, même nourriture",
       "good.kicker": "Une épicerie physique, à Rīga",
-      "good.title": "Un beau magasin. <em>Pour des invendus.</em>",
+      "good.title": "-30 % moins cher. <em>La même bonne nourriture.</em>",
       "good.lead": "Chaque semaine, magasins et producteurs lettons retirent de la vente des tonnes de bonne nourriture — mauvaise forme, ancien logo, date courte. Une IA trie ces surplus pendant la nuit ; on les met en rayon, dans un vrai magasin, pas cher.",
       "good.cta1": "Ce que l’économie permet", "good.cta2": "Le rayon du jour",
       "how.1t": "Recalé", "how.1s": "par les magasins et producteurs — mauvaise forme, ancien logo, date courte",
-      "how.2t": "Trié par IA", "how.2s": "chaque nuit — selon la demande, prix selon l’urgence, vérifié en double par notre équipe humaine",
+      "how.2t": "Pourquoi -30 % ?", "how.2s": "une IA fixe le prix de chaque lot chaque nuit selon l’urgence réelle, vérifié en double par notre équipe — pas de démarque uniforme, donc rien ne reste en rayon plus longtemps que nécessaire",
       "how.3t": "En rayon", "how.3s": "une vraie épicerie physique à Rīga — le jour même, pas cher",
       "good.loc": "Miera iela 58, Rīga · ouvert jusqu’à 20:00 · entrez quand vous voulez",
       "good.stat": "Fruits et légumes de catégorie II restés invendus en Lettonie l’an dernier*",
