@@ -401,11 +401,6 @@
   @media (prefers-reduced-motion: reduce) { .ticker__track { animation: none; } }
 
   /* ---------------- TAB: THE 30% ---------------- */
-  .thirty__hero { display: grid; grid-template-columns: auto 1fr; gap: 34px; align-items: center; margin-bottom: 38px; padding-bottom: 32px; border-bottom: var(--perf); }
-  .thirty__big { font: 800 clamp(4.5rem, 17vw, 11rem)/0.85 var(--f-display); color: var(--rescue); letter-spacing: -0.045em; display: flex; align-items: flex-start; font-variant-numeric: tabular-nums; }
-  .thirty__big span { font-size: 0.32em; margin-top: 0.15em; }
-  .thirty__big .pct { font-size: 0.42em; }
-  .thirty__claim { font-size: 1.14rem; line-height: 1.5; max-width: 46ch; margin: 0; }
   .calc { border: var(--edge); border-radius: var(--r); box-shadow: var(--shadow-lg); background: var(--card); padding: 24px 26px; margin-bottom: 46px; }
   .calc__row { display: grid; grid-template-columns: 1fr auto; gap: 30px; align-items: end; }
   .calc .ctl { max-width: 420px; }
@@ -431,7 +426,7 @@
   .carrier__count { font: 800 1rem/1.2 var(--f-display); margin: 0 0 3px; }
   .carrier__count b { color: var(--rescue); font-size: 1.35em; font-variant-numeric: tabular-nums; }
   .carrier__price { font: 500 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-70); margin: 0; }
-  @media (max-width: 720px) { .thirty__hero { grid-template-columns: 1fr; gap: 18px; } .calc__row { grid-template-columns: 1fr; } .calc__out { text-align: left; flex-wrap: wrap; } }
+  @media (max-width: 720px) { .calc__row { grid-template-columns: 1fr; } .calc__out { text-align: left; flex-wrap: wrap; } }
 
   /* ---------------- TAB: THE STORE ---------------- */
   .store__stage { display: grid; grid-template-columns: 1fr 296px; border: var(--edge); border-radius: var(--r); box-shadow: var(--shadow-lg); overflow: hidden; }
@@ -563,8 +558,24 @@
   @keyframes flowMove { to { stroke-dashoffset: -12; } }
   @media (prefers-reduced-motion: reduce) { .hub .flow { animation: none; } }
   .hub .parcel { fill: var(--rescue); stroke: var(--ink); stroke-width: 1; }
-  .hub .pnode rect { fill: var(--card); stroke: var(--ink); stroke-width: 1.6; }
-  .hub .pnode text { font-family: var(--f-mono); font-weight: 700; font-size: 11px; fill: var(--ink); }
+  /* ---- supplier groups: collapsed bubble <-> fanned-out suppliers, on hover/click/focus ---- */
+  .hub .pgroup { cursor: pointer; }
+  .hub .pgroup__collapsed { transition: opacity 0.18s ease; }
+  .hub .pgroup__fan { opacity: 0; transition: opacity 0.18s ease; }
+  .hub .pgroup:hover .pgroup__fan, .hub .pgroup.is-open .pgroup__fan, .hub .pgroup:focus-visible .pgroup__fan { opacity: 1; }
+  .hub .pgroup:hover .pgroup__collapsed, .hub .pgroup.is-open .pgroup__collapsed, .hub .pgroup:focus-visible .pgroup__collapsed { opacity: 0; }
+  .hub .pgroup__fan { pointer-events: none; }
+  .hub .pgroup:hover .pgroup__fan, .hub .pgroup.is-open .pgroup__fan, .hub .pgroup:focus-visible .pgroup__fan { pointer-events: auto; }
+  .hub .pbubble { fill: var(--rescue); stroke: var(--paper); stroke-width: 2.5; }
+  .hub .pgroup[data-group="small"] .pbubble { fill: var(--blue); }
+  .hub .pgroup[data-group="local"] .pbubble { fill: var(--mustard); }
+  .hub .pgroup[data-group="local"] .pbubble-label, .hub .pgroup[data-group="local"] .pbubble-count { fill: var(--ink); }
+  .hub .pgroup[data-group="local"] .pbubble-count { fill: var(--ink-70); }
+  .hub .pbubble-label { font-family: var(--f-display); font-weight: 800; font-size: 13px; fill: #fff; text-anchor: middle; }
+  .hub .pbubble-count { font-family: var(--f-mono); font-size: 10px; fill: rgba(255, 255, 255, 0.85); text-anchor: middle; letter-spacing: 0.04em; }
+  .hub .fan-link { fill: none; stroke: rgba(236, 231, 218, 0.32); stroke-width: 1.3; }
+  .hub .fnode rect { fill: var(--card); stroke: var(--ink); stroke-width: 1.4; }
+  .hub .fnode text { font-family: var(--f-mono); font-weight: 700; font-size: 10.5px; fill: var(--ink); }
   .hub .hub-ring { fill: none; stroke: var(--rescue); stroke-width: 2.5; opacity: 0.5; animation: hubPulse 2.6s ease-out infinite; transform-origin: center; }
   @keyframes hubPulse { 0% { transform: scale(0.9); opacity: 0.6; } 70%, 100% { transform: scale(1.5); opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { .hub .hub-ring { animation: none; opacity: 0.3; } }
@@ -985,19 +996,6 @@
 
   <!-- ===================== TAB: THE 30% ===================== -->
   <section class="panel" data-tab="thirty" role="tabpanel">
-    <div class="panel__head">
-      <h2 data-i18n="h2.thirty">Your groceries, about a third off.</h2>
-    </div>
-
-    <div class="thirty__hero">
-      <div class="thirty__big" aria-hidden="true"><span>≈</span>30<span class="pct">%</span></div>
-      <p class="thirty__claim" data-i18n-html="thirty.claim">
-        Item for item, a Rescue basket runs about <b>30% under</b> the same trolley at a
-        full-price supermarket — and most single items are marked down far more. That gap
-        doesn’t disappear. It’s money you keep, every week you shop.
-      </p>
-    </div>
-
     <div class="calc">
       <div class="calc__row">
         <label class="ctl">
@@ -1638,6 +1636,7 @@
       "econ.d1": "stores plugged in", "econ.d2": "clears our checks", "econ.d3": "lots triaged / day", "econ.d4": "to triage one lot",
       "econ.note": "Because the sort is automatic, taking a corner shop’s three crates costs about the same as taking a hypermarket’s pallet. So we take everyone’s — and that volume is what makes the price work.",
       "hub.lots": "LOTS TODAY", "hub.gate": "OUR STANDARDS · 71% PASS",
+      "hub.group.big": "Big supermarkets", "hub.group.small": "Small shops", "hub.group.local": "Local producers", "hub.suppliers": "suppliers",
       "log.pass": "PASS", "log.hold": "HOLD", "log.reject": "REJECT",
       "plan.tight": "That budget is a bit tight",
       "plan.tightsub": "No single recipe on today’s shelf fits {b}. Try {b2}, or fewer meals.",
@@ -1708,13 +1707,11 @@
       "rej.charge": "Nenormāls izliekums",
       "rej.plea": "Aizstāvība: garšīgs.",
       "rej.rulebook": "* ES svaigie produkti tiek klasificēti kā “Ekstra”, “I šķira” vai “II šķira” saskaņā ar Regulu (ES) 543/2011 — izmērs, krāsa un “brīvība no nenormāla izliekuma”. II šķira ir pilnīgi ēdama un regulāri paliek nepārdota. Skaitļi un partijas šajā lapā ir ilustratīvi.",
-      "h2.thirty": "Tavs pirkums, apmēram par trešdaļu lētāk.",
       "eb.store": "Veikals", "h2.store": "Veikals, kurā ieej — nevis maiss, uz kuru paļaujies.",
       "eb.shop": "Šodienas plaukts", "h2.shop": "Piepildi grozu. Paņem to.",
       "eb.intake": "Plūsma", "h2.intake": "Visu veikalu pārpalikumi, ko šķiro mašīna.",
       "eb.comein": "Ienāc", "h2.comein": "Miera iela 58, Rīga.",
       "thirty.spend": "Tavs iknedēļas pārtikas pirkums", "thirty.wk": "atpakaļ nedēļā", "thirty.mo": "atpakaļ mēnesī", "thirty.yr": "atpakaļ gadā",
-      "thirty.claim": "Prece pret preci, Rescue grozs izmaksā apmēram <b>par 30% mazāk</b> nekā tie paši pirkumi pilnas cenas lielveikalā — un lielākā daļa atsevišķu preču ir atlaistas vēl vairāk. Šī starpība nepazūd. Tā ir nauda, ko tu paturi katru nedēļu, kad iepērcies.",
       "thirty.calcnote": "Pieņemts 30% vidējais ietaupījums visam grozam. Atlaides uz paša plaukta ir aptuveni 45–75%.",
       "thirty.hint": "Novieto kursoru šeit, lai redzētu, ko var nopirkt par gada ietaupījumu ↓",
       "thirty.subhead": "Gads šāda ietaupījuma, iztērēts kaut kam citam",
@@ -1779,6 +1776,7 @@
       "econ.d1": "pieslēgti veikali", "econ.d2": "iztur mūsu pārbaudes", "econ.d3": "partijas šķirotas / dienā", "econ.d4": "vienas partijas šķirošana",
       "econ.note": "Tā kā šķirošana ir automātiska, stūra veikaliņa trīs kastu paņemšana izmaksā aptuveni tikpat, cik hipermārketa paletes. Tāpēc mēs paņemam visu — un tieši šis apjoms padara cenu iespējamu.",
       "hub.lots": "PARTIJAS ŠODIEN", "hub.gate": "MŪSU STANDARTI · IZTUR 71%",
+      "hub.group.big": "Lielie veikali", "hub.group.small": "Mazie veikali", "hub.group.local": "Vietējie ražotāji", "hub.suppliers": "piegādātāji",
       "log.pass": "IZTUR", "log.hold": "GAIDA", "log.reject": "NORAIDA",
       "plan.tight": "Šis budžets ir mazliet par ciešu",
       "plan.tightsub": "Neviena atsevišķa recepte šodienas plauktā neietilpst {b}. Pamēģini {b2} vai mazāk ēdienreižu.",
@@ -1876,13 +1874,11 @@
       "rej.charge": "Courbure anormale",
       "rej.plea": "Plaidoyer : délicieux.",
       "rej.rulebook": "* Dans l’UE, les produits frais sont classés « Extra », « Catégorie I » ou « Catégorie II » selon le règlement (UE) 543/2011 — taille, couleur et « absence de courbure anormale ». La catégorie II est parfaitement comestible et reste régulièrement invendue. Les chiffres et lots de cette page sont indicatifs.",
-      "h2.thirty": "Vos courses, environ un tiers moins cher.",
       "eb.store": "Le magasin", "h2.store": "Un magasin où l’on entre — pas un sac à l’aveugle.",
       "eb.shop": "Le rayon du jour", "h2.shop": "Remplissez un panier. Passez le chercher.",
       "eb.intake": "Le flux", "h2.intake": "Les invendus de tous les magasins, triés par la machine.",
       "eb.comein": "Venir", "h2.comein": "Miera iela 58, Rīga.",
       "thirty.spend": "Votre budget courses hebdo", "thirty.wk": "récupérés / semaine", "thirty.mo": "récupérés / mois", "thirty.yr": "récupérés / an",
-      "thirty.claim": "Article pour article, un panier Rescue coûte environ <b>30 % de moins</b> que le même chariot dans un supermarché au prix fort — et la plupart des articles isolés sont démarqués bien plus. Cet écart ne disparaît pas. C’est de l’argent que vous gardez, chaque semaine où vous faites vos courses.",
       "thirty.calcnote": "Sur la base d’une économie moyenne de 30 % sur le panier. Les démarques en rayon vont d’environ 45 à 75 %.",
       "thirty.hint": "Passez la souris ici pour voir ce qu’achète une année de cette économie ↓",
       "thirty.subhead": "Une année de cette économie, dépensée à autre chose",
@@ -1947,6 +1943,7 @@
       "econ.d1": "magasins branchés", "econ.d2": "passent nos contrôles", "econ.d3": "lots triés / jour", "econ.d4": "pour trier un lot",
       "econ.note": "Comme le tri est automatique, prendre les trois cageots d’une épicerie de quartier coûte à peu près autant que prendre la palette d’un hypermarché. Alors on prend ceux de tout le monde — et c’est ce volume qui rend le prix possible.",
       "hub.lots": "LOTS AUJOURD’HUI", "hub.gate": "NOS NORMES · 71 % PASSENT",
+      "hub.group.big": "Grands supermarchés", "hub.group.small": "Petits commerçants", "hub.group.local": "Producteurs locaux", "hub.suppliers": "fournisseurs",
       "log.pass": "OK", "log.hold": "ATTENTE", "log.reject": "REFUS",
       "plan.tight": "Ce budget est un peu juste",
       "plan.tightsub": "Aucune recette du rayon du jour ne tient dans {b}. Essayez {b2}, ou moins de repas.",
@@ -2135,6 +2132,7 @@
       "weekends away in Cēsis": "nedēļas nogales Cēsīs",
       "gig tickets": "koncertu biļetes",
       "Sky&More": "Sky&More", "Your Neighbour Grocery": "Tavs Kaimiņu Veikaliņš", "Baltic Fresh": "Baltic Fresh",
+      "Zemgale Farms": "Zemgales Saimniecība", "Vidzeme Dairy": "Vidzemes Piena Ferma", "Kurzeme Growers": "Kurzemes Audzētāji",
       "42 rye loaves": "42 rudzu maizes", "end-of-day bake": "dienas beigu cepiens",
       "6 crates apples": "6 kastes ābolu", "hail marks, calibre 61 mm": "krusas pēdas, kalibrs 61 mm",
       "18 L milk": "18 l piena", "old carton design": "vecs pakas dizains",
@@ -2288,6 +2286,7 @@
       "weekends away in Cēsis": "week-ends à Cēsis",
       "gig tickets": "billets de concert",
       "Sky&More": "Sky&More", "Your Neighbour Grocery": "L’Épicerie du Coin", "Baltic Fresh": "Baltic Fresh",
+      "Zemgale Farms": "Fermes de Zemgale", "Vidzeme Dairy": "Laiterie de Vidzeme", "Kurzeme Growers": "Maraîchers de Kurzeme",
       "42 rye loaves": "42 pains de seigle", "end-of-day bake": "fournée de fin de journée",
       "6 crates apples": "6 cageots de pommes", "hail marks, calibre 61 mm": "marques de grêle, calibre 61 mm",
       "18 L milk": "18 L de lait", "old carton design": "ancien design de brique",
@@ -2488,10 +2487,12 @@
   var PARTNERS = ["Rimi", "Maxima", "Barbora", "Valmiermuiža Bakery", "Talsu Piens", "Spilva", "Balticovo", "Ķekava"];
 
   // Stores that feed surplus into the pipeline — real Latvian chains + stand-ins
-  var FEEDERS = [
-    "Rimi", "Maxima", "Lidl", "Sky&More", "Barbora", "Elvi",
-    "top!", "Mego", "Aibe", "LaTS", "Your Neighbour Grocery", "Baltic Fresh"
+  var FEEDER_GROUPS = [
+    { key: "big", items: ["Rimi", "Maxima", "Lidl", "Barbora"] },
+    { key: "small", items: ["top!", "Elvi", "Aibe", "Mego", "LaTS", "Sky&More", "Your Neighbour Grocery"] },
+    { key: "local", items: ["Baltic Fresh", "Zemgale Farms", "Vidzeme Dairy", "Kurzeme Growers"] }
   ];
+  var FEEDERS = FEEDER_GROUPS.reduce(function (a, g) { return a.concat(g.items); }, []);
   var LOG_ITEMS = [
     ["42 rye loaves", "end-of-day bake"], ["6 crates apples", "hail marks, calibre 61 mm"],
     ["18 L milk", "old carton design"], ["9 chicken trays", "sell-by tomorrow"],
@@ -4927,37 +4928,79 @@
 
   /* ============================ THE PIPELINE — hub + live triage ============================ */
   function buildHub() {
-    var W = 640, H = 470, cx = W / 2, cy = H / 2, rx = 258, ry = 188;
-    var n = FEEDERS.length;
-    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagram: ' + n + ' supermarkets feeding surplus into a central Rescue hub">';
-    var spokes = "", nodes = "", parcels = "";
+    var W = 760, H = 580, cx = W / 2, cy = H / 2, rx = 210, ry = 175;
+    var groups = FEEDER_GROUPS, n = groups.length;
+    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagram: suppliers grouped into big supermarkets, small shops, and local producers, all feeding surplus into a central Rescue hub">';
+    var spokes = "", parcels = "", groupsMarkup = "";
     for (var i = 0; i < n; i++) {
+      var g = groups[i];
       var a = (-90 + i * (360 / n)) * Math.PI / 180;
       var px = cx + rx * Math.cos(a), py = cy + ry * Math.sin(a);
-      // curved connector from node toward hub
+      // curved connector from group toward hub
       var mx = cx + (px - cx) * 0.5 - (py - cy) * 0.12;
       var my = cy + (py - cy) * 0.5 + (px - cx) * 0.12;
       var d = "M" + px.toFixed(1) + " " + py.toFixed(1) + " Q" + mx.toFixed(1) + " " + my.toFixed(1) + " " + cx + " " + cy;
       spokes += '<path class="spoke" d="' + d + '"/><path class="flow" d="' + d + '"/>';
       if (!REDUCED) {
-        parcels += '<circle class="parcel" r="4"><animateMotion dur="' + (2.6 + seeded(i) * 1.8).toFixed(2) +
+        parcels += '<circle class="parcel" r="4.5"><animateMotion dur="' + (2.6 + seeded(i) * 1.8).toFixed(2) +
           's" begin="-' + (seeded(i + 9) * 4).toFixed(2) + 's" repeatCount="indefinite" path="' + d + '"/></circle>';
       }
-      var label = L(FEEDERS[i]);
-      var w = 22 + label.length * 7.4;
-      nodes += '<g class="pnode" transform="translate(' + px.toFixed(1) + " " + py.toFixed(1) + ')">' +
-        '<rect x="' + (-w / 2) + '" y="-13" width="' + w + '" height="26" rx="2"/>' +
-        '<text x="0" y="4" text-anchor="middle">' + label + "</text></g>";
+
+      // the group's own suppliers, packed into a small grid of bubbles near it —
+      // hidden until the group opens. Rows are filled by a width budget (not a
+      // fixed count) so a long name like "Your Neighbour Grocery" gets its own
+      // room instead of colliding with its neighbours.
+      var m = g.items.length;
+      var maxRowW = 230, cgap = 9, rowH = 30;
+      var labels = g.items.map(function (s) { return L(s); });
+      var widths = labels.map(function (s) { return 22 + s.length * 6.6; });
+      var rows = [], cur = [], curW = 0;
+      for (var j = 0; j < m; j++) {
+        if (cur.length && curW + cgap + widths[j] > maxRowW) { rows.push(cur); cur = []; curW = 0; }
+        cur.push(j);
+        curW += (cur.length > 1 ? cgap : 0) + widths[j];
+      }
+      if (cur.length) rows.push(cur);
+      var rowWidths = rows.map(function (row) {
+        return row.reduce(function (s, idx, k) { return s + widths[idx] + (k > 0 ? cgap : 0); }, 0);
+      });
+      var gridW = Math.max.apply(null, rowWidths), gridH = rows.length * rowH;
+      var ux = Math.cos(a), uy = Math.sin(a), push = 92;
+      var gcx = px + ux * push, gcy = py + uy * push;
+      gcx = Math.max(gridW / 2 + 16, Math.min(W - gridW / 2 - 16, gcx));
+      gcy = Math.max(gridH / 2 + 16, Math.min(H - gridH / 2 - 16, gcy));
+      var fan = '<path class="fan-link" d="M' + px.toFixed(1) + " " + py.toFixed(1) + " L" + gcx.toFixed(1) + " " + gcy.toFixed(1) + '"/>';
+      rows.forEach(function (row, ri) {
+        var rw = rowWidths[ri];
+        var xcur = gcx - rw / 2;
+        var y = gcy - gridH / 2 + ri * rowH + rowH / 2;
+        row.forEach(function (idx) {
+          var w = widths[idx], qx = xcur + w / 2;
+          fan += '<g class="fnode" transform="translate(' + qx.toFixed(1) + " " + y.toFixed(1) + ')">' +
+            '<rect x="' + (-w / 2) + '" y="-12" width="' + w + '" height="24" rx="12"/>' +
+            '<text x="0" y="4" text-anchor="middle">' + labels[idx] + "</text></g>";
+          xcur += w + cgap;
+        });
+      });
+
+      var label = t("hub.group." + g.key);
+      groupsMarkup += '<g class="pgroup" data-group="' + g.key + '" tabindex="0" role="button" aria-expanded="false" aria-label="' + label + " · " + m + " " + t("hub.suppliers") + '">' +
+        '<g class="pgroup__fan">' + fan + "</g>" +
+        '<g class="pgroup__collapsed" transform="translate(' + px.toFixed(1) + " " + py.toFixed(1) + ')">' +
+        '<circle class="pbubble" r="54"/>' +
+        '<text class="pbubble-label" x="0" y="-4" text-anchor="middle">' + label + "</text>" +
+        '<text class="pbubble-count" x="0" y="16" text-anchor="middle">' + m + " " + t("hub.suppliers") + "</text>" +
+        "</g></g>";
     }
-    svg += spokes + parcels + nodes;
+    svg += spokes + parcels + groupsMarkup;
 
     // "our standards" — the gate every incoming lot must clear before it reaches the shelf
-    var gR = 98;
+    var gR = 88;
     svg += '<circle class="gate" cx="' + cx + '" cy="' + cy + '" r="' + gR + '"/>';
     [34, 149, 262].forEach(function (deg, k) {
       var ga = deg * Math.PI / 180;
       var ix = cx + gR * Math.cos(ga), iy = cy + gR * Math.sin(ga);
-      var ox = cx + (gR + 48) * Math.cos(ga), oy = cy + (gR + 48) * Math.sin(ga);
+      var ox = cx + (gR + 46) * Math.cos(ga), oy = cy + (gR + 46) * Math.sin(ga);
       var bx = (ix + ox) / 2 - (oy - iy) * 0.55, by = (iy + oy) / 2 + (ox - ix) * 0.55;
       var kd = "M" + ix.toFixed(1) + " " + iy.toFixed(1) + " Q" + bx.toFixed(1) + " " + by.toFixed(1) + " " + ox.toFixed(1) + " " + oy.toFixed(1);
       svg += '<path class="kick" d="' + kd + '"/>' +
@@ -4976,6 +5019,28 @@
     svg += "</svg>";
     $("#hub").innerHTML = svg;
   }
+  // click/tap toggles a group open (closing the others); clicking outside closes all —
+  // bound once via delegation so it survives buildHub() re-running on language switch
+  document.addEventListener("click", function (e) {
+    var hubEl = document.getElementById("hub");
+    if (!hubEl) return;
+    var allGroups = hubEl.querySelectorAll(".pgroup");
+    var grp = e.target.closest ? e.target.closest(".pgroup") : null;
+    if (grp && hubEl.contains(grp)) {
+      var willOpen = !grp.classList.contains("is-open");
+      allGroups.forEach(function (o) { o.classList.remove("is-open"); o.setAttribute("aria-expanded", "false"); });
+      if (willOpen) { grp.classList.add("is-open"); grp.setAttribute("aria-expanded", "true"); }
+    } else if (!hubEl.contains(e.target)) {
+      allGroups.forEach(function (o) { o.classList.remove("is-open"); o.setAttribute("aria-expanded", "false"); });
+    }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    var grp = e.target.closest ? e.target.closest(".pgroup") : null;
+    if (!grp) return;
+    e.preventDefault();
+    grp.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  });
   function logInner(r) {
     return '<span class="lg-store">' + L(r.s) + '</span>' +
       '<span class="lg-item">' + L(r.i) + ' · AI ' + r.sc.toFixed(1) + '</span>' +
