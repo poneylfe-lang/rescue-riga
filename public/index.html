@@ -4942,7 +4942,7 @@
 
   /* ============================ THE PIPELINE — hub + live triage ============================ */
   function buildHub() {
-    var W = 760, H = 580, cx = W / 2, cy = H / 2, rx = 210, ry = 175;
+    var W = 940, H = 720, cx = W / 2, cy = H / 2, rx = 210, ry = 175;
     var groups = FEEDER_GROUPS, n = groups.length;
     var svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Diagram: suppliers grouped into big supermarkets, small shops, and local producers, all feeding surplus into a central Rescue hub">';
     var spokes = "", parcels = "", groupsMarkup = "";
@@ -4979,7 +4979,11 @@
         return row.reduce(function (s, idx, k) { return s + widths[idx] + (k > 0 ? cgap : 0); }, 0);
       });
       var gridW = Math.max.apply(null, rowWidths), gridH = rows.length * rowH;
-      var ux = Math.cos(a), uy = Math.sin(a), push = 92;
+      var ux = Math.cos(a), uy = Math.sin(a);
+      // push far enough that the grid's own bounding circle clears the 54px round
+      // (plus a margin) regardless of how the grid's rows happen to be oriented
+      var boundRadius = Math.sqrt(Math.pow(gridW / 2, 2) + Math.pow(gridH / 2, 2));
+      var push = 54 + 42 + boundRadius;
       var gcx = px + ux * push, gcy = py + uy * push;
       gcx = Math.max(gridW / 2 + 16, Math.min(W - gridW / 2 - 16, gcx));
       gcy = Math.max(gridH / 2 + 16, Math.min(H - gridH / 2 - 16, gcy));
@@ -5016,7 +5020,7 @@
     // "our standards" — the gate every incoming lot must clear before it reaches the shelf
     var gR = 88;
     svg += '<circle class="gate" cx="' + cx + '" cy="' + cy + '" r="' + gR + '"/>';
-    [34, 149, 262].forEach(function (deg, k) {
+    [90, 210, 330].forEach(function (deg, k) {
       var ga = deg * Math.PI / 180;
       var ix = cx + gR * Math.cos(ga), iy = cy + gR * Math.sin(ga);
       var ox = cx + (gR + 46) * Math.cos(ga), oy = cy + (gR + 46) * Math.sin(ga);
