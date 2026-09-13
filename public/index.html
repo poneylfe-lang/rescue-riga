@@ -413,10 +413,16 @@
   .calc__out b { font: 800 1.9rem/1 var(--f-display); color: var(--rescue); display: block; font-variant-numeric: tabular-nums; }
   .calc__out span { font: 400 10px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-70); }
   .calc__note { font: 400 12px var(--f-mono); color: var(--ink-70); margin: 16px 0 0; }
+  .calc__hint { font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--rescue); margin: 10px 0 0; }
+  /* the "spend it elsewhere" block only reveals on hover/focus of the calculator above it */
+  .thirty__sub, .carriers, .fineprint { display: none; }
+  .calc:hover ~ .thirty__sub, .calc:focus-within ~ .thirty__sub,
+  .calc:hover ~ .fineprint, .calc:focus-within ~ .fineprint { display: block; }
+  .calc:hover ~ .carriers, .calc:focus-within ~ .carriers { display: grid; }
   .thirty__sub { font-size: 1.4rem; margin-bottom: 20px; }
-  .carriers { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-  @media (max-width: 920px) { .carriers { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 560px) { .carriers { grid-template-columns: repeat(2, 1fr); } }
+  .carriers { list-style: none; margin: 0 0 16px; padding: 0; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  @media (max-width: 920px) { .calc:hover ~ .carriers, .calc:focus-within ~ .carriers { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 560px) { .calc:hover ~ .carriers, .calc:focus-within ~ .carriers { grid-template-columns: repeat(2, 1fr); } }
   .carrier { border: var(--edge); border-radius: var(--r); background: var(--card); overflow: hidden; transition: transform 0.12s ease, box-shadow 0.12s ease; }
   .carrier:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
   .carrier__art { aspect-ratio: 1; background: var(--paper-2); }
@@ -920,8 +926,8 @@
          </div>
          <div class="mission__card">
            <span class="n" data-i18n="mission.n2">02 · Sorted</span>
-           <h4 data-i18n="how.2t">How -30%?</h4>
-           <p data-i18n="how.2s">an AI prices every lot overnight by real urgency, double-checked by our human team — no flat markdown, so nothing sits longer than it should</p>
+           <h4 data-i18n="how.2t">How?</h4>
+           <p data-i18n="how.2s">We recover food that's unsold, short-dated, or slightly off-spec — never spoiled — so we get it cheap and pass that straight on to you.</p>
          </div>
          <div class="mission__card">
            <span class="n" data-i18n="mission.n3">03 · Shelved</span>
@@ -980,7 +986,6 @@
   <!-- ===================== TAB: THE 30% ===================== -->
   <section class="panel" data-tab="thirty" role="tabpanel">
     <div class="panel__head">
-      <p class="eyebrow" data-i18n="eb.thirty">Buying power</p>
       <h2 data-i18n="h2.thirty">Your groceries, about a third off.</h2>
     </div>
 
@@ -1006,6 +1011,7 @@
         </div>
       </div>
       <p class="calc__note" data-i18n="thirty.calcnote">Assumes a 30% blended saving across the basket. Markdowns on the shelf itself run roughly 45–75%.</p>
+      <p class="calc__hint" data-i18n="thirty.hint">Hover here to see what a year of that saving buys ↓</p>
     </div>
 
     <h3 class="thirty__sub" data-i18n="thirty.subhead">A year of that saving, spent on something else</h3>
@@ -1686,7 +1692,7 @@
       "good.lead": "Katru nedēļu Latvijas veikali un ražotāji noņem no pārdošanas tonnām labas pārtikas — nepareiza forma, vecs logo, īss derīguma termiņš. Mākslīgais intelekts to pārpalikumu sašķiro vienā naktī; mēs to noliekam uz īstiem plauktiem, īstā veikalā, lēti.",
       "good.cta1": "Ko dod ietaupījums", "good.cta2": "Šodienas plaukts",
       "how.1t": "Noraidīts", "how.1s": "no veikaliem un ražotājiem — nepareiza forma, vecs logo, īss derīguma termiņš",
-      "how.2t": "Kāpēc -30%?", "how.2s": "AI katru nakti nosaka cenu pēc reālas steidzamības, ar dubultpārbaudi no mūsu cilvēku komandas — bez vienotas atlaides, tāpēc nekas plauktā nestāv ilgāk, nekā vajadzīgs",
+      "how.2t": "Kā?", "how.2s": "Mēs pārņemam pārtiku, kas palikusi nepārdota, ar īsu derīguma termiņu vai nedaudz neatbilst standartam — nekad bojātu — tāpēc iegūstam to lēti un to pašu ietaupījumu nododam tev.",
       "how.3t": "Uz mūsu plauktiem", "how.3s": "īsts veikals ar durvīm Rīgā — tajā pašā dienā, lēti",
       "good.loc": "Miera iela 58, Rīga · atvērts līdz 20:00 · ienāc jebkurā laikā",
       "good.stat": "II šķiras augļi un dārzeņi, kas pagājušogad Latvijā palika nepārdoti*",
@@ -1702,7 +1708,7 @@
       "rej.charge": "Nenormāls izliekums",
       "rej.plea": "Aizstāvība: garšīgs.",
       "rej.rulebook": "* ES svaigie produkti tiek klasificēti kā “Ekstra”, “I šķira” vai “II šķira” saskaņā ar Regulu (ES) 543/2011 — izmērs, krāsa un “brīvība no nenormāla izliekuma”. II šķira ir pilnīgi ēdama un regulāri paliek nepārdota. Skaitļi un partijas šajā lapā ir ilustratīvi.",
-      "eb.thirty": "Pirktspēja", "h2.thirty": "Tavs pirkums, apmēram par trešdaļu lētāk.",
+      "h2.thirty": "Tavs pirkums, apmēram par trešdaļu lētāk.",
       "eb.store": "Veikals", "h2.store": "Veikals, kurā ieej — nevis maiss, uz kuru paļaujies.",
       "eb.shop": "Šodienas plaukts", "h2.shop": "Piepildi grozu. Paņem to.",
       "eb.intake": "Plūsma", "h2.intake": "Visu veikalu pārpalikumi, ko šķiro mašīna.",
@@ -1710,6 +1716,7 @@
       "thirty.spend": "Tavs iknedēļas pārtikas pirkums", "thirty.wk": "atpakaļ nedēļā", "thirty.mo": "atpakaļ mēnesī", "thirty.yr": "atpakaļ gadā",
       "thirty.claim": "Prece pret preci, Rescue grozs izmaksā apmēram <b>par 30% mazāk</b> nekā tie paši pirkumi pilnas cenas lielveikalā — un lielākā daļa atsevišķu preču ir atlaistas vēl vairāk. Šī starpība nepazūd. Tā ir nauda, ko tu paturi katru nedēļu, kad iepērcies.",
       "thirty.calcnote": "Pieņemts 30% vidējais ietaupījums visam grozam. Atlaides uz paša plaukta ir aptuveni 45–75%.",
+      "thirty.hint": "Novieto kursoru šeit, lai redzētu, ko var nopirkt par gada ietaupījumu ↓",
       "thirty.subhead": "Gads šāda ietaupījuma, iztērēts kaut kam citam",
       "thirty.fineprint": "Tipiskas Rīgas 2024. gada cenas, ilustrācijai. Būtība nav precīzais skaits — būtība ir tā, ka nauda ir īsta, un tā gāja miskastē.",
       "plan.title": "Saplāno man", "plan.blurb": "Pasaki budžetu un cik cilvēku. Mēs izvēlēsimies receptes no šodienas plaukta, uzskaitīsim ēdienus un precīzu iepirkumu sarakstu, un parādīsim, ja budžeta nepietiek.",
@@ -1853,7 +1860,7 @@
       "good.lead": "Chaque semaine, magasins et producteurs lettons retirent de la vente des tonnes de bonne nourriture — mauvaise forme, ancien logo, date courte. Une IA trie ces surplus pendant la nuit ; on les met en rayon, dans un vrai magasin, pas cher.",
       "good.cta1": "Ce que l’économie permet", "good.cta2": "Le rayon du jour",
       "how.1t": "Recalé", "how.1s": "par les magasins et producteurs — mauvaise forme, ancien logo, date courte",
-      "how.2t": "Pourquoi -30 % ?", "how.2s": "une IA fixe le prix de chaque lot chaque nuit selon l’urgence réelle, vérifié en double par notre équipe — pas de démarque uniforme, donc rien ne reste en rayon plus longtemps que nécessaire",
+      "how.2t": "Comment ?", "how.2s": "On récupère des produits invendus, à date courte, ou légèrement non conformes — jamais abîmés — donc on les obtient à bas prix et on vous fait profiter de l’économie.",
       "how.3t": "En rayon", "how.3s": "une vraie épicerie physique à Rīga — le jour même, pas cher",
       "good.loc": "Miera iela 58, Rīga · ouvert jusqu’à 20:00 · entrez quand vous voulez",
       "good.stat": "Fruits et légumes de catégorie II restés invendus en Lettonie l’an dernier*",
@@ -1869,7 +1876,7 @@
       "rej.charge": "Courbure anormale",
       "rej.plea": "Plaidoyer : délicieux.",
       "rej.rulebook": "* Dans l’UE, les produits frais sont classés « Extra », « Catégorie I » ou « Catégorie II » selon le règlement (UE) 543/2011 — taille, couleur et « absence de courbure anormale ». La catégorie II est parfaitement comestible et reste régulièrement invendue. Les chiffres et lots de cette page sont indicatifs.",
-      "eb.thirty": "Pouvoir d’achat", "h2.thirty": "Vos courses, environ un tiers moins cher.",
+      "h2.thirty": "Vos courses, environ un tiers moins cher.",
       "eb.store": "Le magasin", "h2.store": "Un magasin où l’on entre — pas un sac à l’aveugle.",
       "eb.shop": "Le rayon du jour", "h2.shop": "Remplissez un panier. Passez le chercher.",
       "eb.intake": "Le flux", "h2.intake": "Les invendus de tous les magasins, triés par la machine.",
@@ -1877,6 +1884,7 @@
       "thirty.spend": "Votre budget courses hebdo", "thirty.wk": "récupérés / semaine", "thirty.mo": "récupérés / mois", "thirty.yr": "récupérés / an",
       "thirty.claim": "Article pour article, un panier Rescue coûte environ <b>30 % de moins</b> que le même chariot dans un supermarché au prix fort — et la plupart des articles isolés sont démarqués bien plus. Cet écart ne disparaît pas. C’est de l’argent que vous gardez, chaque semaine où vous faites vos courses.",
       "thirty.calcnote": "Sur la base d’une économie moyenne de 30 % sur le panier. Les démarques en rayon vont d’environ 45 à 75 %.",
+      "thirty.hint": "Passez la souris ici pour voir ce qu’achète une année de cette économie ↓",
       "thirty.subhead": "Une année de cette économie, dépensée à autre chose",
       "thirty.fineprint": "Prix typiques de Rīga en 2024, à titre indicatif. L’important n’est pas le chiffre exact — c’est que l’argent est réel, et qu’il partait à la poubelle.",
       "plan.title": "Planifiez pour moi", "plan.blurb": "Donnez le budget et le nombre de convives. On choisit des recettes dans le rayon du jour, on liste les plats et la liste de courses exacte, et on montre le manque si le budget ne suffit pas.",
