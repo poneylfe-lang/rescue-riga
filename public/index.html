@@ -409,15 +409,15 @@
   .calc__out span { font: 400 10px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-70); }
   .calc__note { font: 400 12px var(--f-mono); color: var(--ink-70); margin: 16px 0 0; }
   .calc__hint { font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--rescue); margin: 10px 0 0; }
-  /* the "spend it elsewhere" block only reveals on hover/focus of the calculator above it */
-  .thirty__sub, .carriers, .fineprint { display: none; }
-  .calc:hover ~ .thirty__sub, .calc:focus-within ~ .thirty__sub,
-  .calc:hover ~ .fineprint, .calc:focus-within ~ .fineprint { display: block; }
-  .calc:hover ~ .carriers, .calc:focus-within ~ .carriers { display: grid; }
+  /* the "spend it elsewhere" block only reveals on hover/focus of the calculator above
+     it — a smooth unfold (grid-rows 0fr -> 1fr) rather than an instant display pop */
+  .thirty__reveal { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease; }
+  .calc:hover ~ .thirty__reveal, .calc:focus-within ~ .thirty__reveal { grid-template-rows: 1fr; opacity: 1; }
+  .thirty__reveal-inner { overflow: hidden; min-height: 0; padding-top: 8px; }
   .thirty__sub { font-size: 1.4rem; margin-bottom: 20px; }
-  .carriers { list-style: none; margin: 0 0 16px; padding: 0; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-  @media (max-width: 920px) { .calc:hover ~ .carriers, .calc:focus-within ~ .carriers { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 560px) { .calc:hover ~ .carriers, .calc:focus-within ~ .carriers { grid-template-columns: repeat(2, 1fr); } }
+  .carriers { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  @media (max-width: 920px) { .carriers { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 560px) { .carriers { grid-template-columns: repeat(2, 1fr); } }
   .carrier { border: var(--edge); border-radius: var(--r); background: var(--card); overflow: hidden; transition: transform 0.12s ease, box-shadow 0.12s ease; }
   .carrier:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
   .carrier__art { aspect-ratio: 1; background: var(--paper-2); }
@@ -558,22 +558,26 @@
   @keyframes flowMove { to { stroke-dashoffset: -12; } }
   @media (prefers-reduced-motion: reduce) { .hub .flow { animation: none; } }
   .hub .parcel { fill: var(--rescue); stroke: var(--ink); stroke-width: 1; }
-  /* ---- supplier groups: collapsed bubble <-> fanned-out suppliers, on hover/click/focus ---- */
+  /* ---- supplier groups: the round bubble stays put; its suppliers bloom out next to
+     it, each connected back to it with its own line. Opening is driven by the JS
+     .is-open class (set on hover-in AND click) so the bloom stays open even after the
+     mouse leaves — only clicking elsewhere, or opening a different group, closes it. */
   .hub .pgroup { cursor: pointer; }
-  .hub .pgroup__collapsed { transition: opacity 0.18s ease; }
-  .hub .pgroup__fan { opacity: 0; transition: opacity 0.18s ease; }
-  .hub .pgroup:hover .pgroup__fan, .hub .pgroup.is-open .pgroup__fan, .hub .pgroup:focus-visible .pgroup__fan { opacity: 1; }
-  .hub .pgroup:hover .pgroup__collapsed, .hub .pgroup.is-open .pgroup__collapsed, .hub .pgroup:focus-visible .pgroup__collapsed { opacity: 0; }
-  .hub .pgroup__fan { pointer-events: none; }
-  .hub .pgroup:hover .pgroup__fan, .hub .pgroup.is-open .pgroup__fan, .hub .pgroup:focus-visible .pgroup__fan { pointer-events: auto; }
-  .hub .pbubble { fill: var(--rescue); stroke: var(--paper); stroke-width: 2.5; }
+  .hub .pgroup__fan { opacity: 0; pointer-events: none; transition: opacity 0.22s ease; }
+  .hub .pgroup.is-open .pgroup__fan, .hub .pgroup:focus-visible .pgroup__fan { opacity: 1; pointer-events: auto; }
+  .hub .fnode { opacity: 0; transform: scale(0.4); transform-box: fill-box; transform-origin: center; transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .hub .pgroup.is-open .fnode, .hub .pgroup:focus-visible .fnode { opacity: 1; transform: scale(1); }
+  .hub .fan-link { opacity: 0; transition: opacity 0.25s ease 0.05s; }
+  .hub .pgroup.is-open .fan-link, .hub .pgroup:focus-visible .fan-link { opacity: 1; }
+  .hub .pbubble { fill: var(--rescue); stroke: var(--paper); stroke-width: 2.5; transition: stroke-width 0.18s ease; }
+  .hub .pgroup:hover .pbubble, .hub .pgroup.is-open .pbubble { stroke-width: 4; }
   .hub .pgroup[data-group="small"] .pbubble { fill: var(--blue); }
   .hub .pgroup[data-group="local"] .pbubble { fill: var(--mustard); }
   .hub .pgroup[data-group="local"] .pbubble-label, .hub .pgroup[data-group="local"] .pbubble-count { fill: var(--ink); }
   .hub .pgroup[data-group="local"] .pbubble-count { fill: var(--ink-70); }
   .hub .pbubble-label { font-family: var(--f-display); font-weight: 800; font-size: 13px; fill: #fff; text-anchor: middle; }
   .hub .pbubble-count { font-family: var(--f-mono); font-size: 10px; fill: rgba(255, 255, 255, 0.85); text-anchor: middle; letter-spacing: 0.04em; }
-  .hub .fan-link { fill: none; stroke: rgba(236, 231, 218, 0.32); stroke-width: 1.3; }
+  .hub .fan-link { fill: none; stroke: rgba(236, 231, 218, 0.4); stroke-width: 1.3; }
   .hub .fnode rect { fill: var(--card); stroke: var(--ink); stroke-width: 1.4; }
   .hub .fnode text { font-family: var(--f-mono); font-weight: 700; font-size: 10.5px; fill: var(--ink); }
   .hub .hub-ring { fill: none; stroke: var(--rescue); stroke-width: 2.5; opacity: 0.5; animation: hubPulse 2.6s ease-out infinite; transform-origin: center; }
@@ -996,6 +1000,10 @@
 
   <!-- ===================== TAB: THE 30% ===================== -->
   <section class="panel" data-tab="thirty" role="tabpanel">
+    <div class="panel__head">
+      <h2 data-i18n="h2.thirty">How much would you save?</h2>
+    </div>
+
     <div class="calc">
       <div class="calc__row">
         <label class="ctl">
@@ -1012,9 +1020,13 @@
       <p class="calc__hint" data-i18n="thirty.hint">Hover here to see what a year of that saving buys ↓</p>
     </div>
 
-    <h3 class="thirty__sub" data-i18n="thirty.subhead">A year of that saving, spent on something else</h3>
-    <ul class="carriers" id="carriers"></ul>
-    <p class="fineprint" data-i18n="thirty.fineprint">Typical Rīga 2024 prices, for illustration. The point isn’t the exact count — it’s that the money is real, and it was going in the bin.</p>
+    <div class="thirty__reveal">
+      <div class="thirty__reveal-inner">
+        <h3 class="thirty__sub" data-i18n="thirty.subhead">A year of that saving, spent on something else</h3>
+        <ul class="carriers" id="carriers"></ul>
+        <p class="fineprint" data-i18n="thirty.fineprint">Typical Rīga 2024 prices, for illustration. The point isn’t the exact count — it’s that the money is real, and it was going in the bin.</p>
+      </div>
+    </div>
   </section>
 
   <!-- ===================== TAB: THE STORE ===================== -->
@@ -1707,6 +1719,7 @@
       "rej.charge": "Nenormāls izliekums",
       "rej.plea": "Aizstāvība: garšīgs.",
       "rej.rulebook": "* ES svaigie produkti tiek klasificēti kā “Ekstra”, “I šķira” vai “II šķira” saskaņā ar Regulu (ES) 543/2011 — izmērs, krāsa un “brīvība no nenormāla izliekuma”. II šķira ir pilnīgi ēdama un regulāri paliek nepārdota. Skaitļi un partijas šajā lapā ir ilustratīvi.",
+      "h2.thirty": "Cik daudz tu ietaupītu?",
       "eb.store": "Veikals", "h2.store": "Veikals, kurā ieej — nevis maiss, uz kuru paļaujies.",
       "eb.shop": "Šodienas plaukts", "h2.shop": "Piepildi grozu. Paņem to.",
       "eb.intake": "Plūsma", "h2.intake": "Visu veikalu pārpalikumi, ko šķiro mašīna.",
@@ -1874,6 +1887,7 @@
       "rej.charge": "Courbure anormale",
       "rej.plea": "Plaidoyer : délicieux.",
       "rej.rulebook": "* Dans l’UE, les produits frais sont classés « Extra », « Catégorie I » ou « Catégorie II » selon le règlement (UE) 543/2011 — taille, couleur et « absence de courbure anormale ». La catégorie II est parfaitement comestible et reste régulièrement invendue. Les chiffres et lots de cette page sont indicatifs.",
+      "h2.thirty": "Combien économiseriez-vous ?",
       "eb.store": "Le magasin", "h2.store": "Un magasin où l’on entre — pas un sac à l’aveugle.",
       "eb.shop": "Le rayon du jour", "h2.shop": "Remplissez un panier. Passez le chercher.",
       "eb.intake": "Le flux", "h2.intake": "Les invendus de tous les magasins, triés par la machine.",
@@ -4969,17 +4983,22 @@
       var gcx = px + ux * push, gcy = py + uy * push;
       gcx = Math.max(gridW / 2 + 16, Math.min(W - gridW / 2 - 16, gcx));
       gcy = Math.max(gridH / 2 + 16, Math.min(H - gridH / 2 - 16, gcy));
-      var fan = '<path class="fan-link" d="M' + px.toFixed(1) + " " + py.toFixed(1) + " L" + gcx.toFixed(1) + " " + gcy.toFixed(1) + '"/>';
+      var fan = "", seq = 0, total = m;
       rows.forEach(function (row, ri) {
         var rw = rowWidths[ri];
         var xcur = gcx - rw / 2;
         var y = gcy - gridH / 2 + ri * rowH + rowH / 2;
         row.forEach(function (idx) {
           var w = widths[idx], qx = xcur + w / 2;
-          fan += '<g class="fnode" transform="translate(' + qx.toFixed(1) + " " + y.toFixed(1) + ')">' +
+          var delay = (seq / Math.max(1, total - 1) * 220).toFixed(0) + "ms";
+          // each bubble gets its own line back to the round it belongs to — a bloom, not a pop
+          fan += '<path class="fan-link" style="transition-delay:' + delay + '" d="M' + px.toFixed(1) + " " + py.toFixed(1) + " L" + qx.toFixed(1) + " " + y.toFixed(1) + '"/>' +
+            '<g class="fnode-pos" transform="translate(' + qx.toFixed(1) + " " + y.toFixed(1) + ')">' +
+            '<g class="fnode" style="transition-delay:' + delay + '">' +
             '<rect x="' + (-w / 2) + '" y="-12" width="' + w + '" height="24" rx="12"/>' +
-            '<text x="0" y="4" text-anchor="middle">' + labels[idx] + "</text></g>";
+            '<text x="0" y="4" text-anchor="middle">' + labels[idx] + "</text></g></g>";
           xcur += w + cgap;
+          seq++;
         });
       });
 
@@ -5019,19 +5038,31 @@
     svg += "</svg>";
     $("#hub").innerHTML = svg;
   }
-  // click/tap toggles a group open (closing the others); clicking outside closes all —
-  // bound once via delegation so it survives buildHub() re-running on language switch
+  // Hovering OR clicking a group opens it and keeps it open — moving the mouse away
+  // does not close it. Only clicking on something that isn't a group (or hovering a
+  // different group) closes the current one. Bound once via delegation so it survives
+  // buildHub() re-running on language switch.
+  function openHubGroup(grp) {
+    var hubEl = document.getElementById("hub");
+    if (!hubEl) return;
+    hubEl.querySelectorAll(".pgroup").forEach(function (o) { o.classList.remove("is-open"); o.setAttribute("aria-expanded", "false"); });
+    grp.classList.add("is-open");
+    grp.setAttribute("aria-expanded", "true");
+  }
+  document.addEventListener("mouseover", function (e) {
+    var hubEl = document.getElementById("hub");
+    if (!hubEl) return;
+    var grp = e.target.closest ? e.target.closest(".pgroup") : null;
+    if (grp && hubEl.contains(grp) && !grp.classList.contains("is-open")) openHubGroup(grp);
+  });
   document.addEventListener("click", function (e) {
     var hubEl = document.getElementById("hub");
     if (!hubEl) return;
-    var allGroups = hubEl.querySelectorAll(".pgroup");
     var grp = e.target.closest ? e.target.closest(".pgroup") : null;
     if (grp && hubEl.contains(grp)) {
-      var willOpen = !grp.classList.contains("is-open");
-      allGroups.forEach(function (o) { o.classList.remove("is-open"); o.setAttribute("aria-expanded", "false"); });
-      if (willOpen) { grp.classList.add("is-open"); grp.setAttribute("aria-expanded", "true"); }
-    } else if (!hubEl.contains(e.target)) {
-      allGroups.forEach(function (o) { o.classList.remove("is-open"); o.setAttribute("aria-expanded", "false"); });
+      openHubGroup(grp);
+    } else {
+      hubEl.querySelectorAll(".pgroup").forEach(function (o) { o.classList.remove("is-open"); o.setAttribute("aria-expanded", "false"); });
     }
   });
   document.addEventListener("keydown", function (e) {
@@ -5039,7 +5070,7 @@
     var grp = e.target.closest ? e.target.closest(".pgroup") : null;
     if (!grp) return;
     e.preventDefault();
-    grp.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    openHubGroup(grp);
   });
   function logInner(r) {
     return '<span class="lg-store">' + L(r.s) + '</span>' +
